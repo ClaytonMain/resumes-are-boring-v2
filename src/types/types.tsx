@@ -11,4 +11,5 @@ export interface AppStore {
   currentPage: Page;
   firstVisit: boolean;
   disableStrobeEffects: boolean;
+  skipIntro: boolean;
 }
