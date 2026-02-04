@@ -17,6 +17,7 @@ const useAppStore = create<AppStore>()(
         firstVisit: true,
         disableStrobeEffects: false,
         skipIntro: false,
+        debug: true,
       }),
       {
         name: "app-store",

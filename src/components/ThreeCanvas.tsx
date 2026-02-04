@@ -1,4 +1,4 @@
-import { Loader, Stats } from "@react-three/drei";
+import { Bounds, Loader, OrbitControls, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useRef } from "react";
 import * as THREE from "three";
@@ -21,12 +21,16 @@ export default function ThreeCanvas() {
         }}
         style={{
           touchAction: "none",
+          height: "100vh",
         }}
       >
         <Suspense fallback={null}>
-          <EnterThree />
-          <ambientLight intensity={0.5} />
+          <Bounds>
+            <EnterThree />
+          </Bounds>
+          {/* <ambientLight intensity={0.5} /> */}
           <Stats />
+          <OrbitControls makeDefault />
         </Suspense>
       </Canvas>
       <Loader />
