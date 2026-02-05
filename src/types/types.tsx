@@ -14,3 +14,5 @@ export interface AppStore {
   skipIntro: boolean;
   debug: boolean;
 }
+
+export type SceneBackgroundColors = Record<Page, string>;

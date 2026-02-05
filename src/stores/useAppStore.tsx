@@ -6,7 +6,7 @@ import {
 } from "zustand/middleware";
 import type { AppStore } from "../types/types";
 
-const persistOmit: (keyof AppStore)[] = ["currentPage"];
+const persistOmit: (keyof AppStore)[] = ["currentPage", "debug"];
 
 const useAppStore = create<AppStore>()(
   subscribeWithSelector(
@@ -17,7 +17,7 @@ const useAppStore = create<AppStore>()(
         firstVisit: true,
         disableStrobeEffects: false,
         skipIntro: false,
-        debug: true,
+        debug: window.location.hash === "#debug",
       }),
       {
         name: "app-store",
