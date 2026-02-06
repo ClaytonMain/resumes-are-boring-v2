@@ -70,7 +70,7 @@ export default function EnterThree() {
           ref={boundsRef}
           position={[0, 1, 0]}
           args={[9, 16, 1]}
-          scale={0.25}
+          scale={0.15}
           visible={debug}
         >
           <meshBasicMaterial wireframe />

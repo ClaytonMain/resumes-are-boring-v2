@@ -33,7 +33,7 @@ export default function ThreeCanvas() {
         }}
         dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
-          position: [0.5, 1, 4],
+          position: [0.5, 1.25, 5],
           fov: 65,
         }}
         style={{
