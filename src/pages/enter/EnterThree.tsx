@@ -1,9 +1,7 @@
 import {
-  Box,
   Center,
   ContactShadows,
   Plane,
-  useBounds,
 } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -12,43 +10,69 @@ import type { Page } from "../../types/types";
 import Chair from "./Chair";
 import Cubicle from "./Cubicle";
 import Keyboard from "./Keyboard";
+import Monitor from "./Monitor";
 import Mouse from "./Mouse";
 import { PottedPlant } from "./PottedPlant";
 import floorFragmentShader from "./shaders/floor/floor.frag";
 import floorVertexShader from "./shaders/floor/floor.vert";
+import { DEFAULT_CAMERA_FOV, DEFAULT_CAMERA_LOOK_AT, DEFAULT_CAMERA_POSITION } from "../../constants/constants";
 
 const PAGE_NAME: Page = "enter";
 
 export default function EnterThree() {
-  const debug = useAppStore.getState().debug;
-  const boundsRef = useRef<THREE.Mesh>(null!);
-  const bounds = useBounds();
+  // const debug = useAppStore((state) => state.debug);
+  const targetRef = useRef<THREE.Mesh>(null!);
 
   const uniforms = {
     uColor: { value: new THREE.Color("#93a1ab") },
   };
+
+  function requestCameraUpdate(
+    position: THREE.Vector3 = DEFAULT_CAMERA_POSITION.clone(),
+    lookAt: THREE.Vector3 = DEFAULT_CAMERA_LOOK_AT.clone(),
+    fov: number = DEFAULT_CAMERA_FOV,
+  ) {
+    useAppStore.setState({
+      cameraPositionTarget: position,
+      cameraLookAtTarget: lookAt,
+      cameraFovTarget: fov,
+      cameraPositionUpdateRequestedAt: Date.now(),
+      cameraLookAtUpdateRequestedAt: Date.now(),
+      cameraFovUpdateRequestedAt: Date.now(),
+     });
+  }
 
   useEffect(() => {
     const unsubCurrentPage = useAppStore.subscribe(
       (state) => state.currentPage,
       (value, previousValue) => {
         if (value === PAGE_NAME && previousValue !== PAGE_NAME) {
-          bounds.refresh(boundsRef.current).fit().clip();
+          requestCameraUpdate();
         }
       },
     );
     return () => {
       unsubCurrentPage();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     if (useAppStore.getState().currentPage === PAGE_NAME) {
-      bounds.refresh(boundsRef.current).fit().clip();
+      requestCameraUpdate();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const unsubEnterState = useAppStore.subscribe(
+      (state) => state.enterState,
+      (value, previousValue) => {
+        if (value === "prepareToApproachMonitor" && previousValue === "idleBoring") {
+          requestCameraUpdate(
+            new THREE.Vector3(0, 1.5, 2.5),
+            new THREE.Vector3(0, 1, 0),
+            35,
+          );
+        } else if (value === "approachMonitor" && previousValue === "prepareToApproachMonitor") {
 
   return (
     <>
@@ -66,23 +90,21 @@ export default function EnterThree() {
             transparent
           />
         </Plane>
-        <Box
-          ref={boundsRef}
-          position={[0, 1, 0]}
-          args={[9, 16, 1]}
-          scale={0.15}
-          visible={debug}
-        >
-          <meshBasicMaterial wireframe />
-        </Box>
         <group>
           <Center top rotation={[0, 2.2, 0]} position={[-0.5, 0, 0.6]}>
             <Chair scale={[1.7, 1.7, 1.7]} />
           </Center>
           <Cubicle position={[0, 0, 0]} />
-          <Keyboard scale={[1.6, 1.6, 1.6]} position={[-0.25, 0.7, 0.17]} />
+          <Keyboard
+            scale={[1.6, 1.6, 1.6]}
+            position={[-0.25, 0.71, 0.17]}
+            rotation={[0, -0.02, 0]}
+          />
           <Mouse scale={[1.6, 1.6, 1.6]} position={[0.4, 0.7, 0.16]} />
-          <PottedPlant position={[0.66, 0.7, -0.3]} scale={0.5} />
+          <PottedPlant position={[0.66, 0.7, -0.28]} scale={0.55} />
+          <Center position={[0, 0.92, -0.15]} rotation={[0, 0.03, 0]}>
+            <Monitor scale={1.5} targetRef={targetRef} />
+          </Center>
         </group>
         {/* TODO: consider baking shadows */}
         <directionalLight

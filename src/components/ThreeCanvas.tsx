@@ -2,9 +2,14 @@ import { Bounds, Loader, OrbitControls, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { SCENE_BACKGROUND_COLORS } from "../constants/constants";
+import {
+  DEFAULT_CAMERA_FOV,
+  DEFAULT_CAMERA_POSITION,
+  SCENE_BACKGROUND_COLORS,
+} from "../constants/constants";
 import EnterThree from "../pages/enter/EnterThree";
 import useAppStore from "../stores/useAppStore";
+import CameraController from "./CameraController";
 
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -33,8 +38,8 @@ export default function ThreeCanvas() {
         }}
         dpr={Math.min(window.devicePixelRatio, 2)}
         camera={{
-          position: [0.5, 1.25, 5],
-          fov: 65,
+          position: DEFAULT_CAMERA_POSITION,
+          fov: DEFAULT_CAMERA_FOV,
         }}
         style={{
           touchAction: "none",
@@ -43,7 +48,7 @@ export default function ThreeCanvas() {
           position: "fixed",
           top: 0,
           left: 0,
-          zIndex: -1,
+          zIndex: 0,
         }}
       >
         <Suspense fallback={null}>
@@ -53,6 +58,7 @@ export default function ThreeCanvas() {
           {/* <ambientLight intensity={0.5} /> */}
           <Stats />
           <OrbitControls makeDefault />
+          <CameraController />
         </Suspense>
       </Canvas>
       <Loader />
