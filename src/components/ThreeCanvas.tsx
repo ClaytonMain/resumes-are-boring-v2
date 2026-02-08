@@ -1,11 +1,11 @@
-import { Bounds, Loader, Stats } from "@react-three/drei";
+import { Bounds, Loader, OrbitControls, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
 import { SCENE_BACKGROUND_COLORS } from "../constants/constants";
-import EnterThree from "../pages/enter/EnterThree";
 import useAppStore from "../stores/useAppStore";
-import CameraController from "./CameraController";
+// import CameraController from "./CameraController";
+import ThreeBackground from "./three-background/ThreeBackground";
 
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -36,7 +36,7 @@ export default function ThreeCanvas() {
         style={{
           touchAction: "none",
           height: "100vh",
-          background: SCENE_BACKGROUND_COLORS["enter"],
+          background: SCENE_BACKGROUND_COLORS["home"],
           position: "fixed",
           top: 0,
           left: 0,
@@ -45,11 +45,12 @@ export default function ThreeCanvas() {
       >
         <Suspense fallback={null}>
           <Bounds>
-            <EnterThree />
+            <ThreeBackground />
           </Bounds>
           {/* <ambientLight intensity={0.5} /> */}
           <Stats />
-          <CameraController />
+          {/* <CameraController /> */}
+          <OrbitControls makeDefault />
         </Suspense>
       </Canvas>
       <Loader />

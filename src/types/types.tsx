@@ -4,21 +4,10 @@ import * as THREE from "three";
 export type Page =
   | "about"
   | "contact"
-  | "enter"
   | "history"
   | "home"
   | "projects"
   | "skills";
-
-export type EnterState =
-  | "idleBoring"
-  | "prepareToApproachMonitor"
-  | "waitForCameraToReachPosition"
-  | "rearBackAndExpandFov"
-  | "zoomTowardsMonitorTightenFov"
-  | "pauseAtMonitor"
-  | "fadeInResumeland"
-  | "idleResumeland";
 
 export interface AppStore {
   currentPage: Page;
@@ -26,7 +15,6 @@ export interface AppStore {
   disableStrobeEffects: boolean;
   skipIntro: boolean;
   debug: boolean;
-  enterState: EnterState;
   cameraPositionTarget?: THREE.Vector3;
   cameraLookAtTarget?: THREE.Vector3;
   cameraFovTarget?: number;
@@ -39,6 +27,8 @@ export interface AppStore {
   cameraAtPositionTarget: boolean;
   cameraAtLookAtTarget: boolean;
   cameraAtFovTarget: boolean;
+
+  displayThreeBackground: boolean;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;

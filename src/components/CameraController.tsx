@@ -208,11 +208,7 @@ export default function CameraController() {
       positionSprings.y.get(),
       positionSprings.z.get(),
     );
-    camera.position.set(
-      currentSpringPosition.x,
-      currentSpringPosition.y,
-      currentSpringPosition.z,
-    );
+    camera.position.lerp(currentSpringPosition, 0.5);
     const positionTarget = useAppStore.getState().cameraPositionTarget;
     if (
       positionTarget &&
@@ -247,16 +243,6 @@ export default function CameraController() {
       if (fovTarget && Math.abs(currentSpringFov - fovTarget) < 0.1) {
         cameraAtTargetFovRef.current = true;
         useAppStore.setState({ cameraAtFovTarget: true });
-      }
-    }
-
-    if (useAppStore.getState().enterState === "waitForCameraToReachPosition") {
-      if (
-        cameraAtTargetPositionRef.current &&
-        cameraAtTargetLookAtRef.current &&
-        cameraAtTargetFovRef.current
-      ) {
-        useAppStore.setState({ enterState: "rearBackAndExpandFov" });
       }
     }
     // }

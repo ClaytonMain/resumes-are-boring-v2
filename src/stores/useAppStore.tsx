@@ -22,12 +22,11 @@ const useAppStore = create<AppStore>()(
     persist(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       (_set) => ({
-        currentPage: "enter",
+        currentPage: "home",
         firstVisit: true,
         disableStrobeEffects: false,
         skipIntro: false,
         debug: false,
-        enterState: "idleBoring",
         cameraPositionTarget: DEFAULT_CAMERA_POSITION,
         cameraLookAtTarget: DEFAULT_CAMERA_LOOK_AT,
         cameraFovTarget: DEFAULT_CAMERA_FOV,
@@ -40,6 +39,8 @@ const useAppStore = create<AppStore>()(
         cameraAtPositionTarget: false,
         cameraAtLookAtTarget: false,
         cameraAtFovTarget: false,
+
+        displayThreeBackground: false,
       }),
       {
         name: "resumes-are-boring-app-store",
