@@ -20,7 +20,7 @@ export default function EnterHtml() {
   function handleExitComplete(label: string) {
     if (label === "outer") {
       if (useAppStore.getState().enterState === "prepareToApproachMonitor") {
-        useAppStore.setState({ enterState: "approachMonitor" });
+        useAppStore.setState({ enterState: "waitForCameraToReachPosition" });
       }
     } else if (label === "inner") {
       setShowOuter(false);
@@ -67,7 +67,7 @@ export default function EnterHtml() {
                 exit={{
                   opacity: 0,
                   scaleY: 0,
-                  transition: { duration: 0.5, ease: "easeIn" },
+                  transition: { duration: 0.25, ease: "easeIn" },
                 }}
               >
                 <AnimatePresence
@@ -92,7 +92,7 @@ export default function EnterHtml() {
                         exit={{
                           opacity: 0,
                           y: 20,
-                          transition: { duration: 0.25, delay: 0.0 },
+                          transition: { duration: 0.25, delay: 0.3 },
                         }}
                       >
                         RÉSUMÉS
@@ -113,7 +113,7 @@ export default function EnterHtml() {
                         exit={{
                           opacity: 0,
                           y: 20,
-                          transition: { duration: 0.25, delay: 0.25 },
+                          transition: { duration: 0.25, delay: 0.2 },
                         }}
                       >
                         ARE
@@ -134,7 +134,7 @@ export default function EnterHtml() {
                         exit={{
                           opacity: 0,
                           y: 20,
-                          transition: { duration: 0.25, delay: 0.5 },
+                          transition: { duration: 0.25, delay: 0.1 },
                         }}
                       >
                         BORING.
@@ -145,11 +145,11 @@ export default function EnterHtml() {
                         initial={{ opacity: 0 }}
                         animate={{
                           opacity: 1,
-                          transition: { duration: 0.75, delay: 5 },
+                          transition: { duration: 3.75, delay: 4 },
                         }}
                         exit={{
                           opacity: 0,
-                          transition: { duration: 0.25, delay: 0.75 },
+                          transition: { duration: 0.25, delay: 0.0 },
                         }}
                       >
                         click to continue

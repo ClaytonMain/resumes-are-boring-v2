@@ -13,7 +13,9 @@ export type Page =
 export type EnterState =
   | "idleBoring"
   | "prepareToApproachMonitor"
-  | "approachMonitor"
+  | "waitForCameraToReachPosition"
+  | "rearBackAndExpandFov"
+  | "zoomTowardsMonitorTightenFov"
   | "pauseAtMonitor"
   | "fadeInResumeland"
   | "idleResumeland";
@@ -25,15 +27,18 @@ export interface AppStore {
   skipIntro: boolean;
   debug: boolean;
   enterState: EnterState;
-  cameraPositionTarget: THREE.Vector3;
-  cameraLookAtTarget: THREE.Vector3;
-  cameraFovTarget: number;
-  cameraPositionUpdateRequestedAt: number;
-  cameraLookAtUpdateRequestedAt: number;
-  cameraFovUpdateRequestedAt: number;
-  cameraPositionSpringConfig: SpringConfig | null;
-  cameraLookAtSpringConfig: SpringConfig | null;
-  cameraFovSpringConfig: SpringConfig | null;
+  cameraPositionTarget?: THREE.Vector3;
+  cameraLookAtTarget?: THREE.Vector3;
+  cameraFovTarget?: number;
+  cameraPositionUpdateRequestedAt?: number;
+  cameraLookAtUpdateRequestedAt?: number;
+  cameraFovUpdateRequestedAt?: number;
+  cameraPositionSpringConfig?: SpringConfig;
+  cameraLookAtSpringConfig?: SpringConfig;
+  cameraFovSpringConfig?: SpringConfig;
+  cameraAtPositionTarget: boolean;
+  cameraAtLookAtTarget: boolean;
+  cameraAtFovTarget: boolean;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;

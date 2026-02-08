@@ -14,7 +14,21 @@ export const SCENE_BACKGROUND_COLORS: SceneBackgroundColors = {
   skills: "#ffffff",
 };
 
-export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(0.5, 1.25, 5);
+export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(1.5, 1.25, 3.5);
 export const DEFAULT_CAMERA_LOOK_AT = new THREE.Vector3(0, 0, 0);
 export const DEFAULT_CAMERA_FOV = 65;
-export const DEFAULT_SPRING_CONFIG = { tension: 280, friction: 60 };
+export const DEFAULT_SPRING_POSITION_CONFIG = {
+  tension: 100,
+  friction: 36,
+  mass: 30,
+};
+export const DEFAULT_SPRING_LOOK_AT_CONFIG = {
+  tension: 100,
+  friction: 16,
+  mass: 1,
+};
+export const DEFAULT_SPRING_FOV_CONFIG = {
+  tension: 100,
+  friction: 36,
+  mass: 10,
+};

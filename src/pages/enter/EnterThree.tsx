@@ -1,12 +1,14 @@
-import {
-  Center,
-  ContactShadows,
-  Plane,
-} from "@react-three/drei";
+import { easings } from "@react-spring/three";
+import { Center, ContactShadows, Plane } from "@react-three/drei";
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
+import {
+  DEFAULT_CAMERA_FOV,
+  DEFAULT_CAMERA_POSITION,
+} from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
 import type { Page } from "../../types/types";
+import * as UTILS from "../../utils/utils";
 import Chair from "./Chair";
 import Cubicle from "./Cubicle";
 import Keyboard from "./Keyboard";
@@ -15,7 +17,6 @@ import Mouse from "./Mouse";
 import { PottedPlant } from "./PottedPlant";
 import floorFragmentShader from "./shaders/floor/floor.frag";
 import floorVertexShader from "./shaders/floor/floor.vert";
-import { DEFAULT_CAMERA_FOV, DEFAULT_CAMERA_LOOK_AT, DEFAULT_CAMERA_POSITION } from "../../constants/constants";
 
 const PAGE_NAME: Page = "enter";
 
@@ -27,27 +28,19 @@ export default function EnterThree() {
     uColor: { value: new THREE.Color("#93a1ab") },
   };
 
-  function requestCameraUpdate(
-    position: THREE.Vector3 = DEFAULT_CAMERA_POSITION.clone(),
-    lookAt: THREE.Vector3 = DEFAULT_CAMERA_LOOK_AT.clone(),
-    fov: number = DEFAULT_CAMERA_FOV,
-  ) {
-    useAppStore.setState({
-      cameraPositionTarget: position,
-      cameraLookAtTarget: lookAt,
-      cameraFovTarget: fov,
-      cameraPositionUpdateRequestedAt: Date.now(),
-      cameraLookAtUpdateRequestedAt: Date.now(),
-      cameraFovUpdateRequestedAt: Date.now(),
-     });
-  }
-
   useEffect(() => {
     const unsubCurrentPage = useAppStore.subscribe(
       (state) => state.currentPage,
       (value, previousValue) => {
         if (value === PAGE_NAME && previousValue !== PAGE_NAME) {
-          requestCameraUpdate();
+          const targetRefWorldPosition = targetRef.current.localToWorld(
+            new THREE.Vector3(0, 0, 0),
+          );
+          UTILS.requestCameraUpdate({
+            position: DEFAULT_CAMERA_POSITION,
+            lookAt: targetRefWorldPosition,
+            fov: DEFAULT_CAMERA_FOV,
+          });
         }
       },
     );
@@ -58,7 +51,14 @@ export default function EnterThree() {
 
   useEffect(() => {
     if (useAppStore.getState().currentPage === PAGE_NAME) {
-      requestCameraUpdate();
+      const targetRefWorldPosition = targetRef.current.localToWorld(
+        new THREE.Vector3(0, 0, 0),
+      );
+      UTILS.requestCameraUpdate({
+        position: DEFAULT_CAMERA_POSITION,
+        lookAt: targetRefWorldPosition,
+        fov: DEFAULT_CAMERA_FOV,
+      });
     }
   }, []);
 
@@ -66,13 +66,84 @@ export default function EnterThree() {
     const unsubEnterState = useAppStore.subscribe(
       (state) => state.enterState,
       (value, previousValue) => {
-        if (value === "prepareToApproachMonitor" && previousValue === "idleBoring") {
-          requestCameraUpdate(
-            new THREE.Vector3(0, 1.5, 2.5),
-            new THREE.Vector3(0, 1, 0),
-            35,
-          );
-        } else if (value === "approachMonitor" && previousValue === "prepareToApproachMonitor") {
+        const targetRefWorldPosition = targetRef.current.localToWorld(
+          new THREE.Vector3(0, 0, 0),
+        );
+        if (
+          value === "prepareToApproachMonitor" &&
+          previousValue === "idleBoring"
+        ) {
+          UTILS.requestCameraUpdate({
+            position: new THREE.Vector3(0, 1.5, 3.5),
+            lookAt: targetRefWorldPosition,
+            fov: 65,
+            positionSpringConfig: {
+              duration: 5000,
+              easing: easings.easeInOutCubic,
+            },
+            lookAtSpringConfig: {
+              duration: 5000,
+              easing: easings.easeInOutCubic,
+            },
+            fovSpringConfig: { duration: 5000, easing: easings.easeInOutCubic },
+          });
+        } else if (
+          value === "rearBackAndExpandFov" &&
+          previousValue === "waitForCameraToReachPosition"
+        ) {
+          UTILS.requestCameraUpdate({
+            position: targetRefWorldPosition
+              .clone()
+              .add(new THREE.Vector3(0, 1.0, 6.5)),
+            fov: 100,
+            positionSpringConfig: {
+              mass: 1,
+              tension: 170,
+              friction: 16,
+            },
+            fovSpringConfig: {
+              mass: 5.5,
+              tension: 170,
+              friction: 16,
+            },
+          });
+          const timeoutId = setTimeout(() => {
+            useAppStore.setState({
+              enterState: "zoomTowardsMonitorTightenFov",
+            });
+          }, 500);
+          return () => {
+            clearTimeout(timeoutId);
+          };
+        } else if (
+          value === "zoomTowardsMonitorTightenFov" &&
+          previousValue === "rearBackAndExpandFov"
+        ) {
+          UTILS.requestCameraUpdate({
+            position: targetRefWorldPosition
+              .clone()
+              .add(new THREE.Vector3(0, 0, 0.1)),
+            fov: 5,
+            positionSpringConfig: {
+              mass: 1,
+              tension: 170,
+              friction: 16,
+              clamp: true,
+            },
+            fovSpringConfig: {
+              mass: 0.5,
+              tension: 150,
+              friction: 10,
+              clamp: true,
+            },
+          });
+        }
+      },
+    );
+    return () => {
+      unsubEnterState();
+    };
+  }, []);
 
   return (
     <>
