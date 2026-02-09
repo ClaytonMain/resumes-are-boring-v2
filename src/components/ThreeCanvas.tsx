@@ -2,7 +2,12 @@ import { Bounds, Loader, OrbitControls, Stats } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
-import { SCENE_BACKGROUND_COLORS } from "../constants/constants";
+import {
+  DEFAULT_CAMERA_FOV,
+  DEFAULT_CAMERA_LOOK_AT,
+  DEFAULT_CAMERA_POSITION,
+  SCENE_BACKGROUND_COLORS,
+} from "../constants/constants";
 import useAppStore from "../stores/useAppStore";
 // import CameraController from "./CameraController";
 import ThreeBackground from "./three-background/ThreeBackground";
@@ -32,7 +37,11 @@ export default function ThreeCanvas() {
           enabled: true,
           type: THREE.PCFShadowMap,
         }}
-        dpr={Math.min(window.devicePixelRatio, 2)}
+        camera={{
+          position: DEFAULT_CAMERA_POSITION,
+          fov: DEFAULT_CAMERA_FOV,
+        }}
+        dpr={1}
         style={{
           touchAction: "none",
           height: "100vh",

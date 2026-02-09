@@ -1,4 +1,6 @@
+import { useTexture } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
+import { button, useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import { DEFAULT_CAMERA_FOV } from "../../constants/constants";
@@ -10,6 +12,8 @@ export default function ThreeBackground() {
   const displayThreeBackgroundRef = useRef(
     useAppStore.getState().displayThreeBackground,
   );
+
+  const perlinNoiseTexture = useTexture("textures/perlin-noise-small.png");
 
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
@@ -32,8 +36,13 @@ export default function ThreeBackground() {
         value: -1 / (2 * Math.tan(DEFAULT_CAMERA_FOV * (Math.PI / 180) * 0.5)),
       },
       uVisibility: { value: 0 },
+      uPerlinNoiseTexture: { value: new THREE.Texture() },
     };
   }, []);
+
+  useControls({
+    resetBackgroundVisibility: button(() => (uniforms.uVisibility.value = 0)),
+  });
 
   const cameraPosition = new THREE.Vector3();
   const uDeltaRef = useRef(0);
