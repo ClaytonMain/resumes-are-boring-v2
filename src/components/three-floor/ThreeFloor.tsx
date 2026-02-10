@@ -1,20 +1,20 @@
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import floorFragmentShader from "./shaders/floor.frag";
 import floorVertexShader from "./shaders/floor.vert";
 
-const FLOOR_SIZE = 100;
-const FLOOR_SEGMENTS = 200;
+const FLOOR_SIZE = 1000;
+const FLOOR_SEGMENTS = 50;
 
 const uniforms = {
   uTime: { value: 0 },
-  uBasePosFreq: { value: 0.05 },
-  uBaseTimeFreq: { value: 0.01 },
-  uBaseStrength: { value: 4.09 },
+  uBasePosFreq: { value: 0.5 },
+  uBaseTimeFreq: { value: 0.05 },
+  uBaseStrength: { value: 25.0 },
   uVisibility: { value: 0 },
 };
 
@@ -39,53 +39,53 @@ export default function ThreeFloor() {
     basePosFreq: {
       value: uniforms.uBasePosFreq.value,
       min: 0.01,
-      max: 5,
+      max: 1,
       step: 0.01,
       onChange: (value) => (uniforms.uBasePosFreq.value = value),
     },
     baseTimeFreq: {
       value: uniforms.uBaseTimeFreq.value,
       min: 0.01,
-      max: 5,
+      max: 1,
       step: 0.01,
       onChange: (value) => (uniforms.uBaseTimeFreq.value = value),
     },
     baseStrength: {
       value: uniforms.uBaseStrength.value,
       min: 0,
-      max: 5,
+      max: 100,
       step: 0.01,
       onChange: (value) => (uniforms.uBaseStrength.value = value),
     },
     materialColor: {
-      value: "#2a0012",
+      value: "#691f31",
     },
     materialRoughness: {
-      value: 0.61,
+      value: 0.75,
       min: 0,
       max: 1,
       step: 0.01,
     },
     materialMetalness: {
-      value: 0.31,
+      value: 0.05,
       min: 0,
       max: 1,
       step: 0.01,
     },
     materialReflectivity: {
-      value: 0.2,
+      value: 0.18,
       min: 0,
       max: 1,
       step: 0.01,
     },
     materialClearcoat: {
-      value: 0.17,
+      value: 0.15,
       min: 0,
       max: 1,
       step: 0.01,
     },
     materialClearcoatRoughness: {
-      value: 0.72,
+      value: 0.48,
       min: 0,
       max: 1,
       step: 0.01,
@@ -98,11 +98,16 @@ export default function ThreeFloor() {
     uniforms.uTime.value = uTimeRef.current;
   });
 
+  useEffect(() => {
+    console.log("ThreeFloor mounted", Date.now());
+  }, []);
+
   return (
     <mesh
       ref={floorRef}
       geometry={floorGeometry}
       receiveShadow
+      castShadow
       position={[0, -2, 0]}
     >
       <CustomShaderMaterial

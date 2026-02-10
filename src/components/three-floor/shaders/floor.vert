@@ -16,12 +16,12 @@ varying float vDistanceToCenter;
 
 float getWobble(vec3 pos) {
   vec3 adjustedPos = pos + vec3(0.0, 0.0, uTime * 0.015);
-  float wobble = simplexNoise4d(vec4(adjustedPos * uBasePosFreq, // XYZ
+  float wobble = simplexNoise4d(vec4(adjustedPos * uBasePosFreq * 0.01, // XYZ
   uTime * uBaseTimeFreq // W
   )) *
     uBaseStrength;
 
-  float finalWobble = wobble * smoothstep(2.0, 20.0, distance(pos, vec3(0.0)));
+  float finalWobble = (wobble + 0.5) * smoothstep(100.0, 200.0, distance(pos.xz, vec2(0.0)));
   return finalWobble;
 }
 
@@ -29,7 +29,7 @@ void main() {
   vec3 biTangent = cross(normal, tangent.xyz);
 
   // Neighbors positions
-  float shift = 0.05;
+  float shift = 0.06;
   vec3 positionA = csm_Position + tangent.xyz * shift;
   vec3 positionB = csm_Position + biTangent * shift;
 

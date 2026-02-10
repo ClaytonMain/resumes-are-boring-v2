@@ -10,13 +10,13 @@ import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
 import {
   DEFAULT_CAMERA_FOV,
-  DEFAULT_CAMERA_LOOK_AT,
   DEFAULT_CAMERA_POSITION,
   SCENE_BACKGROUND_COLORS,
 } from "../constants/constants";
 import useAppStore from "../stores/useAppStore";
 // import CameraController from "./CameraController";
-import ThreeBackground from "./three-background/ThreeBackground";
+// import ThreeBackground from "./three-background/ThreeBackground";
+import FogController from "./FogController";
 import ThreeFloor from "./three-floor/ThreeFloor";
 
 export default function ThreeCanvas() {
@@ -64,11 +64,13 @@ export default function ThreeCanvas() {
             {/* <ThreeBackground /> */}
             <ThreeFloor />
           </Bounds>
-          <Environment preset="city" />
+          <Environment preset="apartment" />
           {/* <ambientLight intensity={0.5} /> */}
           <Stats />
+          <directionalLight position={[5, 2, 5]} castShadow />
           {/* <CameraController /> */}
           <OrbitControls makeDefault autoRotate autoRotateSpeed={0.1} />
+          <FogController />
         </Suspense>
       </Canvas>
       <Loader />
