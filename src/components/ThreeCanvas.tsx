@@ -1,4 +1,10 @@
-import { Bounds, Loader, OrbitControls, Stats } from "@react-three/drei";
+import {
+  Bounds,
+  Environment,
+  Loader,
+  OrbitControls,
+  Stats,
+} from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
 import * as THREE from "three";
@@ -11,6 +17,7 @@ import {
 import useAppStore from "../stores/useAppStore";
 // import CameraController from "./CameraController";
 import ThreeBackground from "./three-background/ThreeBackground";
+import ThreeFloor from "./three-floor/ThreeFloor";
 
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -54,12 +61,14 @@ export default function ThreeCanvas() {
       >
         <Suspense fallback={null}>
           <Bounds>
-            <ThreeBackground />
+            {/* <ThreeBackground /> */}
+            <ThreeFloor />
           </Bounds>
+          <Environment preset="city" />
           {/* <ambientLight intensity={0.5} /> */}
           <Stats />
           {/* <CameraController /> */}
-          <OrbitControls makeDefault />
+          <OrbitControls makeDefault autoRotate autoRotateSpeed={0.1} />
         </Suspense>
       </Canvas>
       <Loader />

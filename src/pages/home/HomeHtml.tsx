@@ -10,7 +10,7 @@ export default function HomeHtml() {
   return (
     <motion.div
       key="enter-html-content-div"
-      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border border-rose-500 p-2"
+      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border border-rose-500 bg-rose-500/10 p-2 backdrop-blur-sm"
     >
       <motion.div
         key="enter-html-content-resumes-are-boring-div"
