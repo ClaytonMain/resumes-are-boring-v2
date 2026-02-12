@@ -32,6 +32,8 @@ export interface AppStore {
 
   threeFloorReady: boolean;
   initialComponentsReady: boolean;
+
+  enterSuzanne: boolean;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;

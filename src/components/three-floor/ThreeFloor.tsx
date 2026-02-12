@@ -1,10 +1,12 @@
 import { useFrame } from "@react-three/fiber";
 import { useControls } from "leva";
+import { useSpring } from "motion/react";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
 import useAppStore from "../../stores/useAppStore";
+import { Suzanne } from "../Suzanne";
 import floorFragmentShader from "./shaders/floor.frag";
 import floorVertexShader from "./shaders/floor.vert";
 
@@ -29,9 +31,17 @@ const uniforms = {
 
 export default function ThreeFloor() {
   const floorRef = useRef<THREE.Mesh>(null!);
+  const suzanneRef = useRef<THREE.Group>(null!);
+  const suzanneTargetRef = useRef<THREE.Object3D>(null!);
   const displayThreeBackgroundRef = useRef(
     useAppStore.getState().displayThreeBackground,
   );
+  const enterSuzanneRef = useRef(useAppStore.getState().enterSuzanne);
+  const suzanneYSpring = useSpring(-150, {
+    mass: 100,
+    stiffness: 20,
+    damping: 20,
+  });
 
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
@@ -133,8 +143,8 @@ export default function ThreeFloor() {
       onChange: (value) => (uniforms.uSmallIterations.value = value),
     },
     materialColor: {
-      // value: "#a0183a",
-      value: "#1a0409",
+      value: "#a0183a",
+      // value: "#1a0409",
     },
     materialRoughness: {
       value: 0.75,
@@ -197,39 +207,53 @@ export default function ThreeFloor() {
         1,
       );
     }
+    if (uniforms.uVisibility.value >= 0.25 && !enterSuzanneRef.current) {
+      useAppStore.setState({ enterSuzanne: true });
+      enterSuzanneRef.current = true;
+      suzanneYSpring.set(100);
+      console.log("Suzanne cometh...");
+    }
+    if (enterSuzanneRef.current && suzanneRef.current) {
+      suzanneRef.current.position.y = suzanneYSpring.get();
+      suzanneRef.current.lookAt(suzanneTargetRef.current.position);
+    }
   });
 
   return (
-    <mesh
-      ref={floorRef}
-      geometry={floorGeometry}
-      receiveShadow
-      castShadow
-      position={[0, -2, 0]}
-    >
-      <CustomShaderMaterial
-        transparent
-        flatShading
-        attach="material"
-        baseMaterial={THREE.MeshPhysicalMaterial}
-        vertexShader={floorVertexShader}
-        fragmentShader={floorFragmentShader}
-        uniforms={uniforms}
-        color={controls.materialColor}
-        roughness={controls.materialRoughness}
-        metalness={controls.materialMetalness}
-        reflectivity={controls.materialReflectivity}
-        clearcoat={controls.materialClearcoat}
-        clearcoatRoughness={controls.materialClearcoatRoughness}
-      />
-      <CustomShaderMaterial
-        attach="customDepthMaterial"
-        baseMaterial={THREE.MeshDepthMaterial}
-        vertexShader={floorVertexShader}
-        fragmentShader={floorFragmentShader}
-        uniforms={uniforms}
-        depthPacking={THREE.RGBADepthPacking}
-      />
-    </mesh>
+    <>
+      <mesh
+        ref={floorRef}
+        geometry={floorGeometry}
+        receiveShadow
+        castShadow
+        position={[0, -2, 0]}
+      >
+        <CustomShaderMaterial
+          transparent
+          flatShading
+          attach="material"
+          baseMaterial={THREE.MeshPhysicalMaterial}
+          vertexShader={floorVertexShader}
+          fragmentShader={floorFragmentShader}
+          uniforms={uniforms}
+          color={controls.materialColor}
+          roughness={controls.materialRoughness}
+          metalness={controls.materialMetalness}
+          reflectivity={controls.materialReflectivity}
+          clearcoat={controls.materialClearcoat}
+          clearcoatRoughness={controls.materialClearcoatRoughness}
+        />
+        <CustomShaderMaterial
+          attach="customDepthMaterial"
+          baseMaterial={THREE.MeshDepthMaterial}
+          vertexShader={floorVertexShader}
+          fragmentShader={floorFragmentShader}
+          uniforms={uniforms}
+          depthPacking={THREE.RGBADepthPacking}
+        />
+      </mesh>
+      <Suzanne ref={suzanneRef} position={[-200, -200, -500]} scale={90} />
+      <object3D ref={suzanneTargetRef} />
+    </>
   );
 }

@@ -18,6 +18,7 @@ import useAppStore from "../stores/useAppStore";
 // import ThreeBackground from "./three-background/ThreeBackground";
 import FogController from "./FogController";
 import ThreeFloor from "./three-floor/ThreeFloor";
+import ThreeEffects from "./ThreeEffects";
 
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -69,8 +70,9 @@ export default function ThreeCanvas() {
           <Stats />
           <directionalLight position={[5, 2, 5]} castShadow />
           {/* <CameraController /> */}
-          <OrbitControls makeDefault autoRotate autoRotateSpeed={0.1} />
+          <OrbitControls makeDefault autoRotate autoRotateSpeed={0.0} />
           <FogController />
+          <ThreeEffects />
         </Suspense>
       </Canvas>
       <Loader />
