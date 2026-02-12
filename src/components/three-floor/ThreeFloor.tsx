@@ -4,22 +4,48 @@ import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import useAppStore from "../../stores/useAppStore";
 import floorFragmentShader from "./shaders/floor.frag";
 import floorVertexShader from "./shaders/floor.vert";
 
 const FLOOR_SIZE = 1000;
-const FLOOR_SEGMENTS = 50;
+const FLOOR_SEGMENTS = 100;
 
 const uniforms = {
   uTime: { value: 0 },
-  uBasePosFreq: { value: 0.5 },
-  uBaseTimeFreq: { value: 0.05 },
-  uBaseStrength: { value: 25.0 },
-  uVisibility: { value: 0 },
+  uShift: { value: 0.01 },
+
+  uBigElevation: { value: 40.0 },
+  uBigFrequency: { value: 1.3 },
+  uBigSpeed: { value: 0.03 },
+
+  uSmallElevation: { value: 11.2 },
+  uSmallFrequency: { value: 6.5 },
+  uSmallSpeed: { value: 0.02 },
+  uSmallIterations: { value: 3 },
+
+  uVisibility: { value: 0.0 },
 };
 
 export default function ThreeFloor() {
   const floorRef = useRef<THREE.Mesh>(null!);
+  const displayThreeBackgroundRef = useRef(
+    useAppStore.getState().displayThreeBackground,
+  );
+
+  useEffect(() => {
+    const unsubDisplayThreeBackground = useAppStore.subscribe(
+      (state) => state.displayThreeBackground,
+      (displayThreeBackground) => {
+        displayThreeBackgroundRef.current = displayThreeBackground;
+      },
+    );
+    return () => unsubDisplayThreeBackground();
+  }, []);
+
+  useEffect(() => {
+    useAppStore.setState({ threeFloorReady: true });
+  }, []);
 
   const floorGeometry = useMemo(() => {
     const geometry = mergeVertices(
@@ -36,29 +62,79 @@ export default function ThreeFloor() {
   }, []);
 
   const controls = useControls({
-    basePosFreq: {
-      value: uniforms.uBasePosFreq.value,
-      min: 0.01,
-      max: 1,
-      step: 0.01,
-      onChange: (value) => (uniforms.uBasePosFreq.value = value),
-    },
-    baseTimeFreq: {
-      value: uniforms.uBaseTimeFreq.value,
-      min: 0.01,
-      max: 1,
-      step: 0.01,
-      onChange: (value) => (uniforms.uBaseTimeFreq.value = value),
-    },
-    baseStrength: {
-      value: uniforms.uBaseStrength.value,
+    // basePosFreq: {
+    //   value: uniforms.uBasePosFreq.value,
+    //   min: 0.01,
+    //   max: 1,
+    //   step: 0.01,
+    //   onChange: (value) => (uniforms.uBasePosFreq.value = value),
+    // },
+    // baseTimeFreq: {
+    //   value: uniforms.uBaseTimeFreq.value,
+    //   min: 0.01,
+    //   max: 1,
+    //   step: 0.01,
+    //   onChange: (value) => (uniforms.uBaseTimeFreq.value = value),
+    // },
+    // baseStrength: {
+    //   value: uniforms.uBaseStrength.value,
+    //   min: 0,
+    //   max: 100,
+    //   step: 0.01,
+    //   onChange: (value) => (uniforms.uBaseStrength.value = value),
+    // },
+    bigElevation: {
+      value: uniforms.uBigElevation.value,
       min: 0,
-      max: 100,
+      max: 80,
+      step: 0.1,
+      onChange: (value) => (uniforms.uBigElevation.value = value),
+    },
+    bigFrequency: {
+      value: uniforms.uBigFrequency.value,
+      min: 0,
+      max: 10,
+      step: 0.1,
+      onChange: (value) => (uniforms.uBigFrequency.value = value),
+    },
+    bigSpeed: {
+      value: uniforms.uBigSpeed.value,
+      min: 0,
+      max: 5,
       step: 0.01,
-      onChange: (value) => (uniforms.uBaseStrength.value = value),
+      onChange: (value) => (uniforms.uBigSpeed.value = value),
+    },
+    smallElevation: {
+      value: uniforms.uSmallElevation.value,
+      min: 0,
+      max: 20,
+      step: 0.1,
+      onChange: (value) => (uniforms.uSmallElevation.value = value),
+    },
+    smallFrequency: {
+      value: uniforms.uSmallFrequency.value,
+      min: 0,
+      max: 10,
+      step: 0.1,
+      onChange: (value) => (uniforms.uSmallFrequency.value = value),
+    },
+    smallSpeed: {
+      value: uniforms.uSmallSpeed.value,
+      min: 0,
+      max: 5,
+      step: 0.01,
+      onChange: (value) => (uniforms.uSmallSpeed.value = value),
+    },
+    smallIterations: {
+      value: uniforms.uSmallIterations.value,
+      min: 0,
+      max: 10,
+      step: 1,
+      onChange: (value) => (uniforms.uSmallIterations.value = value),
     },
     materialColor: {
-      value: "#691f31",
+      // value: "#a0183a",
+      value: "#1a0409",
     },
     materialRoughness: {
       value: 0.75,
@@ -73,13 +149,13 @@ export default function ThreeFloor() {
       step: 0.01,
     },
     materialReflectivity: {
-      value: 0.18,
+      value: 0.0,
       min: 0,
       max: 1,
       step: 0.01,
     },
     materialClearcoat: {
-      value: 0.15,
+      value: 0.0,
       min: 0,
       max: 1,
       step: 0.01,
@@ -90,17 +166,38 @@ export default function ThreeFloor() {
       max: 1,
       step: 0.01,
     },
+    // uVisibility: {
+    //   value: 0.1,
+    //   min: 0,
+    //   max: 1,
+    //   step: 0.01,
+    //   onChange: (value) => (uniforms.uVisibility.value = value),
+    // },
+    uShift: {
+      value: uniforms.uShift.value,
+      min: 0,
+      max: 1,
+      step: 0.01,
+      onChange: (value) => (uniforms.uShift.value = value),
+    },
   });
 
+  const uDeltaRef = useRef(0);
   const uTimeRef = useRef(0);
   useFrame((_, delta) => {
-    uTimeRef.current = (uTimeRef.current + Math.min(delta, 0.01)) % 100000;
+    uDeltaRef.current = Math.min(delta, 0.01);
+    uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
     uniforms.uTime.value = uTimeRef.current;
-  });
 
-  useEffect(() => {
-    console.log("ThreeFloor mounted", Date.now());
-  }, []);
+    if (displayThreeBackgroundRef.current && uniforms.uVisibility.value < 1) {
+      uniforms.uVisibility.value = Math.min(
+        uniforms.uVisibility.value +
+          uDeltaRef.current *
+            ((0.25 * 1) / Math.pow(uniforms.uVisibility.value + 1.3, 4)),
+        1,
+      );
+    }
+  });
 
   return (
     <mesh
@@ -111,6 +208,8 @@ export default function ThreeFloor() {
       position={[0, -2, 0]}
     >
       <CustomShaderMaterial
+        transparent
+        flatShading
         attach="material"
         baseMaterial={THREE.MeshPhysicalMaterial}
         vertexShader={floorVertexShader}

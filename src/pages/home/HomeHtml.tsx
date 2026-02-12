@@ -1,16 +1,45 @@
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import useAppStore from "../../stores/useAppStore";
 
+const CONTAINER_VARIANTS = {
+  hide: { opacity: 0, color: "#0000001a", borderColor: "#ffffff1a" },
+  showBoring: {
+    opacity: 1,
+    transition: { duration: 0.5, delay: 0.5, when: "beforeChildren" },
+    backgroundColor: "#0000001a",
+    borderColor: "#ffffff1a",
+  },
+  showFun: {
+    opacity: 1,
+    transition: { duration: 0.5 },
+    backgroundColor: "#f43f5e1a",
+    borderColor: "#f43f5eff",
+  },
+};
+
 export default function HomeHtml() {
-  const baseDelay = 0.5;
-  const delayFactor = 0.5;
+  const [variant, setVariant] = useState("hide");
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      setVariant("showBoring");
+    }, 500);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  const baseDelay = 1.0;
+  const delayFactor = 0.75;
   const animateDuration = 0.35;
   const animateEase = "easeIn";
 
   return (
     <motion.div
       key="enter-html-content-div"
-      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border border-rose-500 bg-rose-500/10 p-2 backdrop-blur-sm"
+      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-2 backdrop-blur-sm"
+      variants={CONTAINER_VARIANTS}
+      initial="hide"
+      animate={variant}
     >
       <motion.div
         key="enter-html-content-resumes-are-boring-div"
@@ -78,9 +107,10 @@ export default function HomeHtml() {
               ease: animateEase,
             },
           }}
-          onAnimationComplete={() =>
-            useAppStore.setState({ displayThreeBackground: true })
-          }
+          onAnimationComplete={() => {
+            useAppStore.setState({ displayThreeBackground: true });
+            setVariant("showFun");
+          }}
           exit={{
             opacity: 0,
             transition: { duration: 0.25, delay: 0.1 },
@@ -95,7 +125,7 @@ export default function HomeHtml() {
       >
         <motion.p
           key="enter-subtitle-p"
-          className="text-sm tracking-wide"
+          className="text-sm tracking-wide text-white"
           initial={{ opacity: 0 }}
           animate={{
             opacity: 1,

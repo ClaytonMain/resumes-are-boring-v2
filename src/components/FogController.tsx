@@ -13,7 +13,7 @@ export default function FogController() {
       },
     },
     fogNearFar: {
-      value: [100, 500],
+      value: [20, 400],
       min: 1,
       max: 2000,
       step: 1,

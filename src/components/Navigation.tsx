@@ -23,7 +23,11 @@ export default function Navigation() {
   }, []);
 
   return (
-    <nav className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch px-8">
+    <motion.nav
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.5 } }}
+      className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch px-8"
+    >
       <h2 className="my-4 flex text-2xl font-light tracking-tight">
         CLAYTON MAIN
       </h2>
@@ -49,6 +53,6 @@ export default function Navigation() {
           </motion.div>
         ))}
       </div>
-    </nav>
+    </motion.nav>
   );
 }

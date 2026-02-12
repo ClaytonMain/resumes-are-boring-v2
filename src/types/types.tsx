@@ -29,6 +29,9 @@ export interface AppStore {
   cameraAtFovTarget: boolean;
 
   displayThreeBackground: boolean;
+
+  threeFloorReady: boolean;
+  initialComponentsReady: boolean;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;

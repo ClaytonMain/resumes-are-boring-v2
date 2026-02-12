@@ -41,6 +41,9 @@ const useAppStore = create<AppStore>()(
         cameraAtFovTarget: false,
 
         displayThreeBackground: false,
+
+        threeFloorReady: false,
+        initialComponentsReady: false,
       }),
       {
         name: "resumes-are-boring-app-store",
