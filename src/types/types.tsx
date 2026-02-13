@@ -30,7 +30,7 @@ export interface AppStore {
 
   displayThreeBackground: boolean;
 
-  threeFloorReady: boolean;
+  threeBackgroundComponentReady: boolean;
   initialComponentsReady: boolean;
 
   enterSuzanne: boolean;

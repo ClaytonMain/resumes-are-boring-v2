@@ -4,7 +4,7 @@ import type { AppStore } from "../types/types";
 
 export default function ComponentStateListener() {
   useEffect(() => {
-    const expectedKeys: (keyof AppStore)[] = ["threeFloorReady"];
+    const expectedKeys: (keyof AppStore)[] = ["threeBackgroundComponentReady"];
     const intervalId = setInterval(() => {
       const state = useAppStore.getState();
       const allKeysReady = expectedKeys.every((key) => state[key]);

@@ -1,40 +1,27 @@
+uniform float uTime;
 uniform vec3 uCameraPosition;
 uniform vec2 uResolution;
 uniform float uGlZ;
 uniform float uVisibility;
-// uniform sampler2D uPerlinNoiseTexture; // 256 x 256
+uniform mat3 uCenterRotation;
 
 varying mat4 vViewMatrix;
 
 const int MAX_STEPS = 128;
-const float MAX_TRAVEL_DIST = 100.0;
-
-// https://gamedev.stackexchange.com/questions/123739/simple-coherent-noise-function-to-use-in-a-glsl-shader
-// Pseudo random number generator.
-float hash(vec2 a) {
-  return fract(sin(a.x * 3433.8 + a.y * 3843.98) * 45933.8);
-}
-
-// Value noise courtesy of BigWingz
-// check his youtube channel he has
-// a video of this one.
-// Succint version by FabriceNeyret
-float noise(vec2 U) {
-  vec2 id = floor(U);
-  U = fract(U);
-  U *= U * (3.0 - 2.0 * U);
-
-  vec2 A = vec2(hash(id), hash(id + vec2(0, 1))),
-    B = vec2(hash(id + vec2(1, 0)), hash(id + vec2(1, 1))),
-    C = mix(A, B, U.x);
-
-  return mix(C.x, C.y, U.y);
-}
+const float MAX_TRAVEL_DIST = 500.0;
 
 mat2 rotate2D(float angle) {
   float s = sin(angle);
   float c = cos(angle);
   return mat2(c, -s, s, c);
+}
+
+vec4 sdgTorus(vec3 p, float ra, float rb) {
+  float h = length(p.xz);
+  return vec4(
+    length(vec2(h - ra, p.y)) - rb,
+    normalize(p * vec3(h - ra, h, h - ra))
+  );
 }
 
 vec4 sdgSphere(vec3 p, float r) {
@@ -43,13 +30,14 @@ vec4 sdgSphere(vec3 p, float r) {
 }
 
 vec4 getMap(vec3 pos) {
-  // return sdgSphere(pos, 0.5);
-  float h = mix(
-    0.0,
-    noise(pos.xz * 0.5) * 2.0 + noise(pos.xz * 2.0) * 0.25,
-    smoothstep(2.0, 20.0, distance(pos.xz, vec2(0.0)))
-  );
-  return vec4(pos.y - h, 0.0, 0.0, 0.0);
+  if (distance(pos, vec3(0.0)) < 2.0) {
+    return sdgTorus(uCenterRotation * pos, 0.5, 0.2);
+  }
+  vec3 usePos = pos;
+  usePos.xy =
+    rotate2D(sin(uTime + floor((usePos.z + 2.0) / 4.0) * 4.0) * 0.01) *
+    usePos.xy;
+  return sdgSphere(mod(usePos + 2.0, 4.0) - 2.0, 0.5);
 }
 
 // vec3 palette(float t) {
@@ -102,14 +90,14 @@ vec3 render(vec3 rayOrigin, vec3 rayDirection) {
   vec3 color;
   if (isHit) {
     // color = vec3(hitInfo.t * 0.25 / float(MAX_TRAVEL_DIST));
-    color = vec3(float(hitInfo.steps) / float(MAX_STEPS));
+    color = hitInfo.normal * float(hitInfo.steps) / float(MAX_STEPS);
   } else {
-    color = vec3(0.8);
+    color = vec3(0.0);
   }
 
-  // Tone mapping. Why tho?
+  // // Tone mapping. Why tho?
   // color = 2.0 * color / (0.8 + 2.5 * color);
-  // Gamma correction. Also why tho?
+  // // Gamma correction. Also why tho?
   // color = pow(color, vec3(0.4545));
 
   return color;

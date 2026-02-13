@@ -15,10 +15,9 @@ import {
 } from "../constants/constants";
 import useAppStore from "../stores/useAppStore";
 // import CameraController from "./CameraController";
-// import ThreeBackground from "./three-background/ThreeBackground";
 import FogController from "./FogController";
-import ThreeFloor from "./three-floor/ThreeFloor";
 import ThreeEffects from "./ThreeEffects";
+import ThreeBackground from "./three-background/ThreeBackground";
 
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
@@ -62,8 +61,8 @@ export default function ThreeCanvas() {
       >
         <Suspense fallback={null}>
           <Bounds>
-            {/* <ThreeBackground /> */}
-            <ThreeFloor />
+            <ThreeBackground />
+            {/* <ThreeFloor /> */}
           </Bounds>
           <Environment preset="apartment" />
           {/* <ambientLight intensity={0.5} /> */}

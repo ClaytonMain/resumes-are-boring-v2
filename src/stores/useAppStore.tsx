@@ -42,7 +42,7 @@ const useAppStore = create<AppStore>()(
 
         displayThreeBackground: false,
 
-        threeFloorReady: false,
+        threeBackgroundComponentReady: false,
         initialComponentsReady: false,
 
         enterSuzanne: false,

@@ -6,4 +6,5 @@ export type ThreeBackgroundUniforms = {
   uResolution: { value: THREE.Vector2 };
   uGlZ: { value: number };
   uVisibility: { value: number };
+  uCenterRotation: { value: THREE.Matrix3 };
 };

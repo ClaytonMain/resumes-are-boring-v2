@@ -1,4 +1,5 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import useAppStore from "../../stores/useAppStore";
 import threeBackgroundFragmentShader from "./shaders/threebackground.frag";
 import threeBackgroundVertexShader from "./shaders/threebackground.vert";
 import type { ThreeBackgroundUniforms } from "./types/types";
@@ -19,6 +20,10 @@ export default function ThreeBackgroundComponent({
     () => new Float32Array([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1]),
     [],
   );
+
+  useEffect(() => {
+    useAppStore.setState({ threeBackgroundComponentReady: true });
+  });
 
   return (
     <mesh>
