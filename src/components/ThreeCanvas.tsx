@@ -40,10 +40,10 @@ export default function ThreeCanvas() {
     <>
       <Canvas
         ref={canvasRef}
-        shadows={{
-          enabled: true,
-          type: THREE.PCFShadowMap,
-        }}
+        // shadows={{
+        //   enabled: true,
+        //   type: THREE.PCFShadowMap,
+        // }}
         camera={{
           position: DEFAULT_CAMERA_POSITION,
           fov: DEFAULT_CAMERA_FOV,
@@ -64,14 +64,14 @@ export default function ThreeCanvas() {
             <ThreeBackground />
             {/* <ThreeFloor /> */}
           </Bounds>
-          <Environment preset="apartment" />
+          {/* <Environment preset="apartment" /> */}
           {/* <ambientLight intensity={0.5} /> */}
           <Stats />
-          <directionalLight position={[5, 2, 5]} castShadow />
+          {/* <directionalLight position={[5, 2, 5]} castShadow /> */}
           {/* <CameraController /> */}
           <OrbitControls makeDefault autoRotate autoRotateSpeed={0.0} />
-          <FogController />
-          <ThreeEffects />
+          {/* <FogController /> */}
+          {/* <ThreeEffects /> */}
         </Suspense>
       </Canvas>
       <Loader />
