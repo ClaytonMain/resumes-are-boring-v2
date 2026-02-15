@@ -11,6 +11,7 @@ export default function ThreeBackground() {
   const displayThreeBackgroundRef = useRef(
     useAppStore.getState().displayThreeBackground,
   );
+  const kickItUpANotchRef = useRef(useAppStore.getState().kickItUpANotch);
 
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
@@ -41,11 +42,11 @@ export default function ThreeBackground() {
       uZRotationFrequency: { value: 0.2 },
       uZRotationSpeed: { value: 0.1 },
       uLightColor: { value: new THREE.Color("#ffffff") },
-      uDiffuseColor: { value: new THREE.Color("#ffffff") },
-      uSubsurfaceColor: { value: new THREE.Color("#ff3000") },
-      uSubsurfaceRadius: { value: 0.3 },
-      uRoughness: { value: 0.5 },
-      uRefractionIndex: { value: 1.5 },
+      uDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      uSubsurfaceColor: { value: new THREE.Color("#ef0717") },
+      uSubsurfaceRadius: { value: 0.8 },
+      uRoughness: { value: 1.0 },
+      uRefractionIndex: { value: 1.57 },
     };
   }, []);
 
@@ -87,21 +88,21 @@ export default function ThreeBackground() {
       onChange: (value) => (uniforms.uZRotationFrequency.value = value),
     },
     uLightColor: {
-      value: "#ffffff",
+      value: `#${uniforms.uLightColor.value.getHexString()}`,
       onChange: (value) => {
         const color = new THREE.Color(value);
         uniforms.uLightColor.value.copy(color);
       },
     },
     uDiffuseColor: {
-      value: "#ffffff",
+      value: `#${uniforms.uDiffuseColor.value.getHexString()}`,
       onChange: (value) => {
         const color = new THREE.Color(value);
         uniforms.uDiffuseColor.value.copy(color);
       },
     },
     uSubsurfaceColor: {
-      value: "#ff3000",
+      value: `#${uniforms.uSubsurfaceColor.value.getHexString()}`,
       onChange: (value) => {
         const color = new THREE.Color(value);
         uniforms.uSubsurfaceColor.value.copy(color);
@@ -135,29 +136,37 @@ export default function ThreeBackground() {
   const uTimeRef = useRef(0);
   // const centerEuler = new THREE.Euler();
   // const centerMatrix4 = new THREE.Matrix4();
+  const mouseVector = new THREE.Vector3();
 
-  useFrame(({ camera }, delta) => {
+  useFrame(({ camera, pointer }, delta) => {
     uDeltaRef.current = Math.min(delta, 0.1);
     uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
 
     camera.getWorldPosition(cameraPosition);
+    mouseVector.lerp(
+      new THREE.Vector3(-pointer.x * 0.1, -pointer.y * 0.1, 0),
+      0.01,
+    );
+
+    cameraPosition.copy(cameraPosition.clone().add(mouseVector));
 
     uniforms.uTime.value = uTimeRef.current;
     uniforms.uCameraPosition.value.copy(cameraPosition);
     uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
 
-    // centerEuler.x += uDeltaRef.current * 0.3;
-    // centerEuler.y += uDeltaRef.current * 0.5;
-    // centerEuler.z += uDeltaRef.current * 0.1;
-
-    // centerMatrix4.makeRotationFromEuler(centerEuler);
-    // uniforms.uCenterRotation.value.setFromMatrix4(centerMatrix4);
-
     if (displayThreeBackgroundRef.current && uniforms.uVisibility.value < 1) {
       uniforms.uVisibility.value = Math.min(
-        uniforms.uVisibility.value + uDeltaRef.current,
+        uniforms.uVisibility.value + uDeltaRef.current * 0.07,
         1,
       );
+    }
+
+    if (
+      uniforms.uVisibility.value > 0.3 &&
+      kickItUpANotchRef.current !== "BAM!"
+    ) {
+      useAppStore.setState({ kickItUpANotch: "BAM!" });
+      kickItUpANotchRef.current = "BAM!";
     }
   });
 

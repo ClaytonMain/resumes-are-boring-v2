@@ -45,7 +45,7 @@ const useAppStore = create<AppStore>()(
         threeBackgroundComponentReady: false,
         initialComponentsReady: false,
 
-        enterSuzanne: false,
+        kickItUpANotch: "",
       }),
       {
         name: "resumes-are-boring-app-store",

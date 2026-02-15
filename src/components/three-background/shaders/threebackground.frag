@@ -21,7 +21,8 @@ varying mat4 vViewMatrix;
 
 const int MAX_STEPS = 64;
 const float MAX_TRAVEL_DIST = 200.0;
-const vec3 LIGHT_DIR = normalize(vec3(-0.5, 0.0, -1.0));
+// const vec3 LIGHT_DIR = normalize(vec3(-0.5, 0.0, -1.0));
+const vec3 LIGHT_DIR = normalize(vec3(0.0, 0.0, -1.0));
 
 #define PI2 6.2831853
 
@@ -91,6 +92,15 @@ vec4 sdgSphere(vec3 p, float r) {
   return vec4(l - r, p / l);
 }
 
+vec4 sdgSegment(in vec3 p, in vec3 a, in vec3 b, in float r) {
+  vec3 ba = b - a;
+  vec3 pa = p - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  vec3 q = pa - h * ba;
+  float d = length(q);
+  return vec4(d - r, q / d);
+}
+
 vec4 sdgMin(vec4 a, vec4 b, float k) {
   k *= 4.0;
   float h = max(k - abs(a.x - b.x), 0.0);
@@ -104,6 +114,8 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad) {
   float angle = atan(p.y, p.x);
   float angleId = floor(angle / sp);
 
+  float zId = round(p.z / uZSpacing);
+
   float a1 = sp * (angleId + 0.0);
   float a2 = sp * (angleId + 1.0);
 
@@ -116,8 +128,8 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad) {
   r1 = r1 - vec3(rad, 0.0, 0.0);
   r2 = r2 - vec3(rad, 0.0, 0.0);
 
-  float zId = round(p.z / uZSpacing);
-  mat3 animationRotation = rotate3dX(uTime * 0.3 + zId * 0.13) * rotate3dZ(uTime * 0.3 + zId * 0.13);
+  mat3 animationRotation = rotate3dX(uTime * 0.1 + zId * 0.13) * rotate3dZ(uTime * 0.2 - zId * 0.6);
+  // mat3 animationRotation = rotate3dX(uTime * 0.1 - zId * 0.9);
 
   r1 *= animationRotation;
   r2 *= animationRotation;
@@ -128,8 +140,14 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad) {
   // r1 = inverse(rotate3dZ(uTime * 0.3 + zId * 0.13)) * r1;
   // r2 = inverse(rotate3dZ(uTime * 0.3 + zId * 0.13)) * r2;
 
-  vec4 d1 = sdgBox(r1, vec3(0.2, 0.2, 0.4), 0.1);
-  vec4 d2 = sdgBox(r2, vec3(0.2, 0.2, 0.4), 0.1);
+  mat3 inverseAnimationRotation = inverse(animationRotation);
+  vec4 d1 = sdgBox(r1, vec3(0.2, 0.2, 0.2), 0.1);
+  d1.yzw *= inverseAnimationRotation * inverse(rotate3dZ(a1));
+  vec4 d2 = sdgBox(r2, vec3(0.2, 0.2, 0.2), 0.1);
+  d2.yzw *= inverseAnimationRotation * inverse(rotate3dZ(a2));
+
+  // vec4 d1 = sdgSegment(r1, animationRotation * SEGMENT_A, animationRotation * SEGMENT_B, 0.15);
+  // vec4 d2 = sdgSegment(r2, animationRotation * SEGMENT_A, animationRotation * SEGMENT_B, 0.15);
 
   // vec4 d1 = sdgTorus(r1, 0.4, 0.1);
   // vec4 d2 = sdgTorus(r2, 0.4, 0.1);
@@ -140,7 +158,7 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad) {
   // d2.yzw *= inverse(animationRotation);
 
   vec4 d = sdgMin(d1, d2, 0.1);
-  d.yzw *= inverse(animationRotation);
+  // d.yzw *= inverse(animationRotation);
 
   // vec4 d = d1.x < d2.x ? d1 : d2;
 
@@ -150,9 +168,9 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad) {
 vec4 getMap(vec3 pos) {
   vec4 d = vec4(1e20, 0.0, 0.0, 0.0);
   float zId = round(pos.z / uZSpacing);
-  for (float i = -1.0; i <= 1.0; i++) {
+  for (float i = 0.0; i <= 1.0; i++) {
     vec3 p = pos - vec3(0.0, 0.0, zId * uZSpacing + i * uZSpacing);
-    d = sdgMin(d, sdgRepetitionRotational(p, 13, sin(uTime + zId * 1.3) * 0.25 + 2.0), 0.1);
+    d = sdgMin(d, sdgRepetitionRotational(p, 16, sin(uTime * 0.4 + zId * 1.3) * 0.25 + 2.0), 0.1);
   }
   return d;
 }
@@ -266,7 +284,7 @@ vec3 lighting(
   // returnColor *= ao * 0.7 + 0.3;
 
   // Apply fog.
-  float fogAmount = 1.0 - exp(-0.006 * hitInfo.t * hitInfo.t);
+  float fogAmount = (1.0 - exp(-0.005 * hitInfo.t * hitInfo.t));
   returnColor = mix(returnColor, vec3(0.0), fogAmount);
 
   // return normal;
@@ -276,7 +294,7 @@ vec3 lighting(
 
 vec3 render(vec3 rayOrigin, vec3 rayDirection) {
   HitInfo hitInfo;
-  bool isHit = raycast(rayOrigin, rayDirection, hitInfo, MAX_TRAVEL_DIST);
+  bool isHit = raycast(rayOrigin, rayDirection, hitInfo, MAX_TRAVEL_DIST * uVisibility);
 
   vec3 color;
   if (isHit) {

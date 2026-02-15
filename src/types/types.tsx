@@ -33,7 +33,9 @@ export interface AppStore {
   threeBackgroundComponentReady: boolean;
   initialComponentsReady: boolean;
 
-  enterSuzanne: boolean;
+  kickItUpANotch: "" | "BAM!";
 }
 
 export type SceneBackgroundColors = Record<Page, string>;
+
+export type StatsPosition = "tl" | "tr" | "bl" | "br";

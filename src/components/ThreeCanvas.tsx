@@ -1,26 +1,18 @@
-import {
-  Bounds,
-  Environment,
-  Loader,
-  OrbitControls,
-  Stats,
-} from "@react-three/drei";
+import { Bounds, Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useRef } from "react";
-import * as THREE from "three";
 import {
   DEFAULT_CAMERA_FOV,
   DEFAULT_CAMERA_POSITION,
   SCENE_BACKGROUND_COLORS,
 } from "../constants/constants";
 import useAppStore from "../stores/useAppStore";
-// import CameraController from "./CameraController";
-import FogController from "./FogController";
-import ThreeEffects from "./ThreeEffects";
+import CustomStatsComponent from "./CustomStatsComponent";
 import ThreeBackground from "./three-background/ThreeBackground";
 
 export default function ThreeCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null!);
+  const debug = useAppStore((state) => state.debug);
 
   useEffect(() => {
     const unsubCurrentPage = useAppStore.subscribe(
@@ -66,7 +58,7 @@ export default function ThreeCanvas() {
           </Bounds>
           {/* <Environment preset="apartment" /> */}
           {/* <ambientLight intensity={0.5} /> */}
-          <Stats />
+          {debug && <CustomStatsComponent />}
           {/* <directionalLight position={[5, 2, 5]} castShadow /> */}
           {/* <CameraController /> */}
           <OrbitControls makeDefault autoRotate autoRotateSpeed={0.0} />

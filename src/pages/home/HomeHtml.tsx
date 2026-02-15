@@ -1,7 +1,12 @@
-import { motion } from "motion/react";
+import { motion, type Easing } from "motion/react";
 import { useEffect, useState } from "react";
 import useAppStore from "../../stores/useAppStore";
 
+const VARIANT_EASE_IN: Easing = "easeIn";
+// const baseDelay = 1.0;
+// const delayFactor = 0.75;
+// const animateDuration = 0.35;
+// const animateEase = "easeIn";
 const CONTAINER_VARIANTS = {
   hide: { opacity: 0, color: "#0000001a", borderColor: "#ffffff1a" },
   showBoring: {
@@ -12,33 +17,73 @@ const CONTAINER_VARIANTS = {
   },
   showFun: {
     opacity: 1,
-    transition: { duration: 0.5 },
+    transition: {
+      duration: 1.5,
+      ease: VARIANT_EASE_IN,
+    },
     backgroundColor: "#f43f5e1a",
     borderColor: "#f43f5eff",
   },
 };
+const RESUMES_ARE_BORING_VARIANTS = {
+  hide: { opacity: 0 },
+  showBoring: (custom: number) => ({
+    opacity: 1,
+    transition: {
+      duration: 0.35,
+      delay: 0.5 + 0.75 * custom,
+      ease: VARIANT_EASE_IN,
+    },
+  }),
+  showFun: {
+    opacity: 1,
+  },
+};
+const SUBTEXT_VARIANTS = {
+  hide: { opacity: 0 },
+  showBoring: {
+    opacity: 0,
+  },
+  showFun: {
+    opacity: 1,
+    transition: { duration: 1.5, ease: VARIANT_EASE_IN },
+  },
+};
 
 export default function HomeHtml() {
-  const [variant, setVariant] = useState("hide");
+  const [variant, setVariant] = useState(
+    useAppStore.getState().kickItUpANotch === "BAM!" ? "showFun" : "hide",
+  );
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setVariant("showBoring");
+      if (useAppStore.getState().kickItUpANotch !== "BAM!") {
+        setVariant("showBoring");
+      }
     }, 500);
     return () => clearTimeout(timeoutId);
   }, []);
 
-  const baseDelay = 1.0;
-  const delayFactor = 0.75;
-  const animateDuration = 0.35;
-  const animateEase = "easeIn";
+  useEffect(() => {
+    const unsubKickItUpANotch = useAppStore.subscribe(
+      (state) => state.kickItUpANotch,
+      (value, previousValue) => {
+        if (value === "BAM!" && previousValue !== "BAM!") {
+          setVariant("showFun");
+        }
+      },
+    );
+    return () => {
+      unsubKickItUpANotch();
+    };
+  }, []);
 
   return (
     <motion.div
       key="enter-html-content-div"
       className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-2 backdrop-blur-sm"
       variants={CONTAINER_VARIANTS}
-      initial="hide"
+      initial={{ opacity: 0 }}
       animate={variant}
     >
       <motion.div
@@ -52,20 +97,10 @@ export default function HomeHtml() {
             WebkitTextStroke: "1px white",
             color: "transparent",
           }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: {
-              duration: animateDuration,
-              delay: baseDelay + delayFactor * 0,
-              ease: animateEase,
-            },
-          }}
-          exit={{
-            opacity: 0,
-            y: 20,
-            transition: { duration: 0.25, delay: 0.3 },
-          }}
+          custom={0}
+          variants={RESUMES_ARE_BORING_VARIANTS}
+          initial={variant}
+          animate={variant}
         >
           RÉSUMÉS
         </motion.h1>
@@ -76,19 +111,10 @@ export default function HomeHtml() {
             WebkitTextStroke: "1px white",
             color: "transparent",
           }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: {
-              duration: animateDuration,
-              delay: baseDelay + delayFactor * 1,
-              ease: animateEase,
-            },
-          }}
-          exit={{
-            opacity: 0,
-            transition: { duration: 0.25, delay: 0.2 },
-          }}
+          custom={1}
+          variants={RESUMES_ARE_BORING_VARIANTS}
+          initial={variant}
+          animate={variant}
         >
           ARE
         </motion.h1>
@@ -98,22 +124,14 @@ export default function HomeHtml() {
           style={{
             WebkitTextStroke: "1px white",
           }}
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: {
-              duration: animateDuration,
-              delay: baseDelay + delayFactor * 2,
-              ease: animateEase,
-            },
-          }}
-          onAnimationComplete={() => {
-            useAppStore.setState({ displayThreeBackground: true });
-            setVariant("showFun");
-          }}
-          exit={{
-            opacity: 0,
-            transition: { duration: 0.25, delay: 0.1 },
+          custom={2}
+          variants={RESUMES_ARE_BORING_VARIANTS}
+          initial={variant}
+          animate={variant}
+          onAnimationComplete={(a) => {
+            if (a === "showBoring") {
+              useAppStore.setState({ displayThreeBackground: true });
+            }
           }}
         >
           BORING.
@@ -121,26 +139,15 @@ export default function HomeHtml() {
       </motion.div>
       <motion.div
         key="enter-html-content-subtitle-div"
-        className="m-2 flex italic"
+        className="m-2 flex justify-end italic"
       >
         <motion.p
           key="enter-subtitle-p"
           className="text-sm tracking-wide text-white"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: {
-              duration: animateDuration,
-              delay: baseDelay + delayFactor * 10,
-              ease: animateEase,
-            },
-          }}
-          exit={{
-            opacity: 0,
-            transition: { duration: 0.25, delay: 0.0 },
-          }}
+          variants={SUBTEXT_VARIANTS}
+          animate={variant}
         >
-          But my website isn't.
+          But at least I've got a neat website.
         </motion.p>
       </motion.div>
     </motion.div>
