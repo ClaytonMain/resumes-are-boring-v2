@@ -34,8 +34,13 @@ export interface AppStore {
   initialComponentsReady: boolean;
 
   kickItUpANotch: "" | "BAM!";
+
+  flavorTextIndex: number;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;
 
 export type StatsPosition = "tl" | "tr" | "bl" | "br";
+
+type PageThreeColorConfig = Record<"diffuse" | "subsurface", THREE.Color>;
+export type PageThreeColor = Record<Page, PageThreeColorConfig>;

@@ -1,5 +1,9 @@
 import { motion, type Easing } from "motion/react";
 import { useEffect, useState } from "react";
+import {
+  CONTENT_CONTAINER_CLASS_NAME,
+  FLAVOR_TEXT_VALUES,
+} from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
 
 const VARIANT_EASE_IN: Easing = "easeIn";
@@ -39,7 +43,7 @@ const RESUMES_ARE_BORING_VARIANTS = {
     opacity: 1,
   },
 };
-const SUBTEXT_VARIANTS = {
+const FLAVOR_TEXT_VARIANTS = {
   hide: { opacity: 0 },
   showBoring: {
     opacity: 0,
@@ -54,6 +58,14 @@ export default function HomeHtml() {
   const [variant, setVariant] = useState(
     useAppStore.getState().kickItUpANotch === "BAM!" ? "showFun" : "hide",
   );
+  const [flavorTextIndex] = useState(useAppStore.getState().flavorTextIndex);
+
+  useEffect(() => {
+    useAppStore.setState({
+      flavorTextIndex: (flavorTextIndex + 1) % FLAVOR_TEXT_VALUES.length,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -81,7 +93,7 @@ export default function HomeHtml() {
   return (
     <motion.div
       key="enter-html-content-div"
-      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-2 backdrop-blur-sm"
+      className={CONTENT_CONTAINER_CLASS_NAME}
       variants={CONTAINER_VARIANTS}
       initial={{ opacity: 0 }}
       animate={variant}
@@ -144,10 +156,10 @@ export default function HomeHtml() {
         <motion.p
           key="enter-subtitle-p"
           className="text-sm tracking-wide text-white"
-          variants={SUBTEXT_VARIANTS}
+          variants={FLAVOR_TEXT_VARIANTS}
           animate={variant}
         >
-          But at least I've got a neat website.
+          {FLAVOR_TEXT_VALUES[flavorTextIndex]}
         </motion.p>
       </motion.div>
     </motion.div>

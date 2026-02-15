@@ -36,7 +36,7 @@ export default function HtmlElementsContainer() {
   return (
     <>
       {initialComponentsReady && (
-        <motion.div className="pointer-events-none fixed top-0 left-0 z-1 flex h-screen w-screen items-center justify-start bg-slate-950/30">
+        <motion.div className="pointer-events-none fixed top-0 left-0 z-1 flex h-screen w-screen items-center justify-start">
           <Navigation />
           <AnimatePresence mode="wait">
             {currentPage === "home" && <HomeHtml />}

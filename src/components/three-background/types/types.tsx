@@ -19,4 +19,9 @@ export type ThreeBackgroundUniforms = {
   uSubsurfaceRadius: { value: number };
   uRoughness: { value: number };
   uRefractionIndex: { value: number };
+
+  uNearDiffuseColor: { value: THREE.Color };
+  uFarDiffuseColor: { value: THREE.Color };
+  uNearSubsurfaceColor: { value: THREE.Color };
+  uFarSubsurfaceColor: { value: THREE.Color };
 };

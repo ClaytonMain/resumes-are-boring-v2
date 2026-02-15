@@ -1,8 +1,12 @@
+import { useSpringValue } from "@react-spring/three";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
-import { DEFAULT_CAMERA_FOV } from "../../constants/constants";
+import {
+  DEFAULT_CAMERA_FOV,
+  PAGE_THREE_COLORS,
+} from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
 import ThreeBackgroundComponent from "./ThreeBackgroundComponent";
 import type { ThreeBackgroundUniforms } from "./types/types";
@@ -13,6 +17,19 @@ export default function ThreeBackground() {
   );
   const kickItUpANotchRef = useRef(useAppStore.getState().kickItUpANotch);
 
+  const nearDiffuseSpring = useSpringValue("#ffa9a9", {
+    config: { duration: 400 },
+  });
+  const farDiffuseSpring = useSpringValue("#ffa9a9", {
+    config: { duration: 2000 },
+  });
+  const nearSubsurfaceSpring = useSpringValue("#ef0717", {
+    config: { duration: 400 },
+  });
+  const farSubsurfaceSpring = useSpringValue("#ef0717", {
+    config: { duration: 2000 },
+  });
+
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
       (state) => state.displayThreeBackground,
@@ -20,9 +37,31 @@ export default function ThreeBackground() {
         displayThreeBackgroundRef.current = value;
       },
     );
+    const unsubCurrentPage = useAppStore.subscribe(
+      (state) => state.currentPage,
+      (value, previousValue) => {
+        if (value !== previousValue) {
+          // console.log(`#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`);
+          nearDiffuseSpring.start(
+            `#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`,
+          );
+          farDiffuseSpring.start(
+            `#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`,
+          );
+          nearSubsurfaceSpring.start(
+            `#${PAGE_THREE_COLORS[value].subsurface.getHexString()}`,
+          );
+          farSubsurfaceSpring.start(
+            `#${PAGE_THREE_COLORS[value].subsurface.getHexString()}`,
+          );
+        }
+      },
+    );
     return () => {
       unsubDisplayThreeBackground();
+      unsubCurrentPage();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const uniforms: ThreeBackgroundUniforms = useMemo(() => {
@@ -47,6 +86,11 @@ export default function ThreeBackground() {
       uSubsurfaceRadius: { value: 0.8 },
       uRoughness: { value: 1.0 },
       uRefractionIndex: { value: 1.57 },
+
+      uNearDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      uFarDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      uNearSubsurfaceColor: { value: new THREE.Color("#ef0717") },
+      uFarSubsurfaceColor: { value: new THREE.Color("#ef0717") },
     };
   }, []);
 
@@ -138,6 +182,11 @@ export default function ThreeBackground() {
   // const centerMatrix4 = new THREE.Matrix4();
   const mouseVector = new THREE.Vector3();
 
+  const nearDiffuseColor = new THREE.Color();
+  const farDiffuseColor = new THREE.Color();
+  const nearSubsurfaceColor = new THREE.Color();
+  const farSubsurfaceColor = new THREE.Color();
+
   useFrame(({ camera, pointer }, delta) => {
     uDeltaRef.current = Math.min(delta, 0.1);
     uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
@@ -156,18 +205,30 @@ export default function ThreeBackground() {
 
     if (displayThreeBackgroundRef.current && uniforms.uVisibility.value < 1) {
       uniforms.uVisibility.value = Math.min(
-        uniforms.uVisibility.value + uDeltaRef.current * 0.07,
+        uniforms.uVisibility.value + uDeltaRef.current * 0.1,
         1,
       );
     }
 
     if (
-      uniforms.uVisibility.value > 0.3 &&
+      uniforms.uVisibility.value > 0.35 &&
       kickItUpANotchRef.current !== "BAM!"
     ) {
       useAppStore.setState({ kickItUpANotch: "BAM!" });
       kickItUpANotchRef.current = "BAM!";
     }
+
+    // console.log(nearDiffuseSpring.get());
+    nearDiffuseColor.set(nearDiffuseSpring.get());
+    // console.log(nearDiffuseColor);
+    farDiffuseColor.set(farDiffuseSpring.get());
+    nearSubsurfaceColor.set(nearSubsurfaceSpring.get());
+    farSubsurfaceColor.set(farSubsurfaceSpring.get());
+
+    uniforms.uNearDiffuseColor.value.setHex(nearDiffuseColor.getHex());
+    uniforms.uFarDiffuseColor.value.setHex(farDiffuseColor.getHex());
+    uniforms.uNearSubsurfaceColor.value.setHex(nearSubsurfaceColor.getHex());
+    uniforms.uFarSubsurfaceColor.value.setHex(farSubsurfaceColor.getHex());
   });
 
   return <ThreeBackgroundComponent uniforms={uniforms} />;
