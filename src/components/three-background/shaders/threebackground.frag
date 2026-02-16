@@ -1,5 +1,6 @@
 uniform float uTime;
 uniform vec3 uCameraPosition;
+uniform mat4 uInverseViewMatrix;
 uniform vec2 uResolution;
 uniform float uGlZ;
 uniform float uVisibility;
@@ -9,12 +10,8 @@ uniform float uSubsurfaceRadius;
 uniform float uRoughness;
 uniform float uRefractionIndex;
 
-uniform vec3 uNearDiffuseColor;
-uniform vec3 uFarDiffuseColor;
-uniform vec3 uNearSubsurfaceColor;
-uniform vec3 uFarSubsurfaceColor;
-
-varying mat4 vViewMatrix;
+uniform vec3[10] uDiffuseColors;
+uniform vec3[10] uSubsurfaceColors;
 
 const int MAX_STEPS = 64;
 const float MAX_TRAVEL_DIST = 200.0;
@@ -60,12 +57,26 @@ float easeOutBack(float x) {
 //   return min(sdf(r1, id + 0.0), sdf(r2, id + 1.0));
 // }
 
-vec4 sdgBox(in vec3 p, in vec3 b, in float r) {
+vec4 sdgBox(vec3 p, vec3 b, float r) {
   vec3 w = abs(p) - (b - r);
   float g = max(w.x, max(w.y, w.z));
   vec3 q = max(w, 0.0);
   float l = length(q);
-  vec4 f = (g > 0.0) ? vec4(l, q / l) : vec4(g, w.x == g ? 1.0 : 0.0, w.y == g ? 1.0 : 0.0, w.z == g ? 1.0 : 0.0);
+  vec4 f =
+    g > 0.0
+      ? vec4(l, q / l)
+      : vec4(
+        g,
+        w.x == g
+          ? 1.0
+          : 0.0,
+        w.y == g
+          ? 1.0
+          : 0.0,
+        w.z == g
+          ? 1.0
+          : 0.0
+      );
   return vec4(f.x - r, f.yzw * sign(p));
 }
 
@@ -83,7 +94,10 @@ mat3 rotate3dZ(float angle) {
 
 vec4 sdgTorus(vec3 p, float ra, float rb) {
   float h = length(p.xz);
-  return vec4(length(vec2(h - ra, p.y)) - rb, normalize(p * vec3(h - ra, h, h - ra)));
+  return vec4(
+    length(vec2(h - ra, p.y)) - rb,
+    normalize(p * vec3(h - ra, h, h - ra))
+  );
 }
 
 vec4 sdgSphere(vec3 p, float r) {
@@ -91,7 +105,7 @@ vec4 sdgSphere(vec3 p, float r) {
   return vec4(l - r, p / l);
 }
 
-vec4 sdgSegment(in vec3 p, in vec3 a, in vec3 b, in float r) {
+vec4 sdgSegment(vec3 p, vec3 a, vec3 b, float r) {
   vec3 ba = b - a;
   vec3 pa = p - a;
   float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
@@ -104,8 +118,8 @@ vec4 sdgMin(vec4 a, vec4 b, float k) {
   k *= 4.0;
   float h = max(k - abs(a.x - b.x), 0.0);
   float m = 0.25 * h * h / k;
-  float n = 0.50 * h / k;
-  return vec4(min(a.x, b.x) - m, mix(a.yzw, b.yzw, (a.x < b.x) ? n : 1.0 - n));
+  float n = 0.5 * h / k;
+  return vec4(min(a.x, b.x) - m, mix(a.yzw, b.yzw, a.x < b.x ? n : 1.0 - n));
 }
 
 vec4 sdgRepetitionRotational(vec3 p, int n, float rad, float zId) {
@@ -126,21 +140,29 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad, float zId) {
   r1 = r1 - radialOffset;
   r2 = r2 - radialOffset;
 
-  mat3 animationRotation1 = rotate3dX(uTime * 0.1 + zId * 0.13 + a1) * rotate3dZ(uTime * 0.2 - zId * 0.6 + a1);
-  mat3 animationRotation2 = rotate3dX(uTime * 0.1 + zId * 0.13 + a2) * rotate3dZ(uTime * 0.2 - zId * 0.6 + a2);
+  mat3 animationRotation1 =
+    rotate3dX(uTime * 0.1 + zId * 0.13 + a1) *
+    rotate3dZ(uTime * 0.2 - zId * 0.6 + a1);
+  mat3 animationRotation2 =
+    rotate3dX(uTime * 0.1 + zId * 0.13 + a2) *
+    rotate3dZ(uTime * 0.2 - zId * 0.6 + a2);
 
   r1 *= animationRotation1;
   r2 *= animationRotation2;
 
   vec3 boxB = vec3(0.2, 0.2, 0.2);
   if (uVisibility < 1.0) {
-    boxB *= easeOutBack(smoothstep(-zId * 0.02, -zId * 0.02 + 0.1, uVisibility));
+    boxB *= easeOutBack(
+      smoothstep(-zId * 0.02, -zId * 0.02 + 0.1, uVisibility)
+    );
   }
   // boxB *= p.z;
   vec4 d1 = sdgBox(r1, boxB, 0.1);
-  d1.yzw *= inverse(animationRotation1) * inverse(rot1);
+  // d1.yzw *= transpose(animationRotation1) * transpose(rot1);
+  d1.yzw *= transpose(rot1 * animationRotation1);
   vec4 d2 = sdgBox(r2, boxB, 0.1);
-  d2.yzw *= inverse(animationRotation2) * inverse(rot2);
+  // d2.yzw *= transpose(animationRotation2) * transpose(rot2);
+  d2.yzw *= transpose(rot2 * animationRotation2);
 
   vec4 d = sdgMin(d1, d2, 0.1);
 
@@ -152,7 +174,16 @@ vec4 getMap(vec3 pos, out float oZId) {
   float zId = round(pos.z / uZSpacing);
   for (float i = 0.0; i <= 1.0; i++) {
     vec3 p = pos - vec3(0.0, 0.0, zId * uZSpacing + i * uZSpacing);
-    d = sdgMin(d, sdgRepetitionRotational(p, 16, sin(uTime * 0.4 + zId * 1.3) * 0.25 + 2.0, zId), 0.1);
+    d = sdgMin(
+      d,
+      sdgRepetitionRotational(
+        p,
+        16,
+        sin(uTime * 0.4 + zId * 1.3) * 0.25 + 2.0,
+        zId
+      ),
+      0.1
+    );
   }
   oZId = zId;
   return d;
@@ -225,7 +256,9 @@ vec3 lighting(
   vec3 ssRadiusVec3 = vec3(subsurfaceRadius);
   if (sssType == 0) {
     // Exponential
-    sss = 0.2 * pow(vec3(1.0 - posNormalDotLight), 3.0 / (ssRadiusVec3 + 0.001)) *
+    sss =
+      0.2 *
+      pow(vec3(1.0 - posNormalDotLight), 3.0 / (ssRadiusVec3 + 0.001)) *
       pow(vec3(1.0 - negNormalDotLight), 3.0 / (ssRadiusVec3 + 0.001));
   } else {
     // Gaussian
@@ -238,7 +271,7 @@ vec3 lighting(
   // ggx / Trowbridge and Reitz specular model approximation.
   // TODO: Learn what this ^ is.
   float g = normalDotHalf * normalDotHalf * (roughness * roughness - 1.0) + 1.0;
-  float ggx = (roughness * roughness) / (PI2 * 0.5 * g * g);
+  float ggx = roughness * roughness / (PI2 * 0.5 * g * g);
 
   // Shlick approximation.
   // TODO: Learn what this ^ is.
@@ -247,20 +280,34 @@ vec3 lighting(
   float f0 = (refractionIndex - 1.0) / (refractionIndex + 1.0);
   f0 = f0 * f0;
   // float f0 = 0.04;
-  float reflectivity = f0 + (1.0 - f0) * (1.0 - roughness) * (1.0 - roughness) * pow(fresnel, 5.0);
+  float reflectivity =
+    f0 + (1.0 - f0) * (1.0 - roughness) * (1.0 - roughness) * pow(fresnel, 5.0);
 
   vec3 returnColor = vec3(0.0);
 
-  vec3 diffuseColor = mix(uNearDiffuseColor, uFarDiffuseColor, -hitInfo.zId * 0.1);
-  vec3 subsurfaceColor = mix(uNearSubsurfaceColor, uFarSubsurfaceColor, -hitInfo.zId * 0.1);
+  // vec3 diffuseColor = mix(
+  //   uNearDiffuseColor,
+  //   uFarDiffuseColor,
+  //   -hitInfo.zId * 0.1
+  // );
+  // vec3 subsurfaceColor = mix(
+  //   uNearSubsurfaceColor,
+  //   uFarSubsurfaceColor,
+  //   -hitInfo.zId * 0.1
+  // );
+  vec3 diffuseColor = uDiffuseColors[clamp(int(-hitInfo.zId), 0, 9)];
+  vec3 subsurfaceColor = uSubsurfaceColors[clamp(int(-hitInfo.zId), 0, 9)];
   // Diffuse + sss + specular.
-  returnColor = lightColor * (posNormalDotLight * (diffuseColor + reflectivity * ggx) + diffuseColor * subsurfaceColor * ssRadiusVec3 * sss);
+  returnColor =
+    lightColor *
+    (posNormalDotLight * (diffuseColor + reflectivity * ggx) +
+      diffuseColor * subsurfaceColor * ssRadiusVec3 * sss);
 
   // float ao = smoothstep(-0.08, 0.04, getMap(hitInfo.pos).x / length(grad(hitInfo.pos)));
   // returnColor *= ao * 0.7 + 0.3;
 
   // Apply fog.
-  float fogAmount = (1.0 - exp(-0.005 * hitInfo.t * hitInfo.t));
+  float fogAmount = 1.0 - exp(-0.005 * hitInfo.t * hitInfo.t);
   returnColor = mix(returnColor, vec3(0.0), fogAmount);
 
   return returnColor;
@@ -273,7 +320,16 @@ vec3 render(vec3 rayOrigin, vec3 rayDirection) {
   vec3 color;
   if (isHit) {
     // color = vec3(hitInfo.t * 0.25 / float(MAX_TRAVEL_DIST));
-    color = lighting(0, hitInfo, LIGHT_DIR, rayDirection, uLightColor, uSubsurfaceRadius, uRoughness, uRefractionIndex);
+    color = lighting(
+      0,
+      hitInfo,
+      LIGHT_DIR,
+      rayDirection,
+      uLightColor,
+      uSubsurfaceRadius,
+      uRoughness,
+      uRefractionIndex
+    );
   } else {
     color = vec3(0.0);
   }
@@ -292,7 +348,7 @@ void main() {
   uv.x *= uResolution.x / uResolution.y;
 
   vec3 rayOrigin = uCameraPosition;
-  vec4 directionOffset = inverse(vViewMatrix) * vec4(uv.x, uv.y, uGlZ, 1.0);
+  vec4 directionOffset = uInverseViewMatrix * vec4(uv.x, uv.y, uGlZ, 1.0);
   vec3 rayDirection = normalize(directionOffset.xyz - rayOrigin);
 
   vec3 color = render(rayOrigin, rayDirection);

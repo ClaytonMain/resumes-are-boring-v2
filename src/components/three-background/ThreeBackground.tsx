@@ -1,4 +1,4 @@
-import { useSpringValue } from "@react-spring/three";
+import { useSprings } from "@react-spring/three";
 import { useFrame } from "@react-three/fiber";
 import { button, useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
@@ -17,18 +17,25 @@ export default function ThreeBackground() {
   );
   const kickItUpANotchRef = useRef(useAppStore.getState().kickItUpANotch);
 
-  const nearDiffuseSpring = useSpringValue("#ffa9a9", {
-    config: { duration: 400 },
-  });
-  const farDiffuseSpring = useSpringValue("#ffa9a9", {
-    config: { duration: 2000 },
-  });
-  const nearSubsurfaceSpring = useSpringValue("#ef0717", {
-    config: { duration: 400 },
-  });
-  const farSubsurfaceSpring = useSpringValue("#ef0717", {
-    config: { duration: 2000 },
-  });
+  // const nearDiffuseSpring = useSpringValue("#ffa9a9", {
+  //   config: { duration: 400 },
+  // });
+  // const farDiffuseSpring = useSpringValue("#ffa9a9", {
+  //   config: { duration: 2000 },
+  // });
+  // const nearSubsurfaceSpring = useSpringValue("#ef0717", {
+  //   config: { duration: 400, del },
+  // });
+  // const farSubsurfaceSpring = useSpringValue("#ef0717", {
+  //   config: { duration: 2000 },
+  // });
+
+  const [diffuseSprings, diffuseApi] = useSprings(10, () => ({
+    value: "#ffa9a9",
+  }));
+  const [subsurfaceSprings, subsurfaceApi] = useSprings(10, () => ({
+    value: "#ef0717",
+  }));
 
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
@@ -41,19 +48,14 @@ export default function ThreeBackground() {
       (state) => state.currentPage,
       (value, previousValue) => {
         if (value !== previousValue) {
-          // console.log(`#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`);
-          nearDiffuseSpring.start(
-            `#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`,
-          );
-          farDiffuseSpring.start(
-            `#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`,
-          );
-          nearSubsurfaceSpring.start(
-            `#${PAGE_THREE_COLORS[value].subsurface.getHexString()}`,
-          );
-          farSubsurfaceSpring.start(
-            `#${PAGE_THREE_COLORS[value].subsurface.getHexString()}`,
-          );
+          diffuseApi.start((i) => ({
+            value: `#${PAGE_THREE_COLORS[value].diffuse.getHexString()}`,
+            delay: i * 200,
+          }));
+          subsurfaceApi.start((i) => ({
+            value: `#${PAGE_THREE_COLORS[value].subsurface.getHexString()}`,
+            delay: i * 200,
+          }));
         }
       },
     );
@@ -68,6 +70,7 @@ export default function ThreeBackground() {
     return {
       uTime: { value: 0 },
       uCameraPosition: { value: new THREE.Vector3() },
+      uInverseViewMatrix: { value: new THREE.Matrix4() },
       uResolution: { value: new THREE.Vector2() },
       uGlZ: {
         value: -1 / (2 * Math.tan(DEFAULT_CAMERA_FOV * (Math.PI / 180) * 0.5)),
@@ -79,10 +82,17 @@ export default function ThreeBackground() {
       uRoughness: { value: 1.0 },
       uRefractionIndex: { value: 1.57 },
 
-      uNearDiffuseColor: { value: new THREE.Color("#ffa9a9") },
-      uFarDiffuseColor: { value: new THREE.Color("#ffa9a9") },
-      uNearSubsurfaceColor: { value: new THREE.Color("#ef0717") },
-      uFarSubsurfaceColor: { value: new THREE.Color("#ef0717") },
+      // uNearDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      // uFarDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      // uNearSubsurfaceColor: { value: new THREE.Color("#ef0717") },
+      // uFarSubsurfaceColor: { value: new THREE.Color("#ef0717") },
+
+      uDiffuseColors: {
+        value: Array.from({ length: 10 }, () => new THREE.Color("#ffa9a9")),
+      },
+      uSubsurfaceColors: {
+        value: Array.from({ length: 10 }, () => new THREE.Color("#ef0717")),
+      },
     };
   }, []);
 
@@ -126,14 +136,15 @@ export default function ThreeBackground() {
   });
 
   const cameraPosition = new THREE.Vector3();
+  // const cameraInverseViewMatrix = new THREE.Matrix4();
   const uDeltaRef = useRef(0);
   const uTimeRef = useRef(0);
   const mouseVector = new THREE.Vector3();
 
-  const nearDiffuseColor = new THREE.Color();
-  const farDiffuseColor = new THREE.Color();
-  const nearSubsurfaceColor = new THREE.Color();
-  const farSubsurfaceColor = new THREE.Color();
+  // const nearDiffuseColor = new THREE.Color();
+  // const farDiffuseColor = new THREE.Color();
+  // const nearSubsurfaceColor = new THREE.Color();
+  // const farSubsurfaceColor = new THREE.Color();
 
   useFrame(({ camera, pointer }, delta) => {
     uDeltaRef.current = Math.min(delta, 0.1);
@@ -146,6 +157,9 @@ export default function ThreeBackground() {
     );
 
     cameraPosition.copy(cameraPosition.clone().add(mouseVector));
+
+    // cameraInverseViewMatrix.copy(camera.matrixWorld);
+    uniforms.uInverseViewMatrix.value.copy(camera.matrixWorld);
 
     uniforms.uTime.value = uTimeRef.current;
     uniforms.uCameraPosition.value.copy(cameraPosition);
@@ -166,15 +180,29 @@ export default function ThreeBackground() {
       kickItUpANotchRef.current = "BAM!";
     }
 
-    nearDiffuseColor.set(nearDiffuseSpring.get());
-    farDiffuseColor.set(farDiffuseSpring.get());
-    nearSubsurfaceColor.set(nearSubsurfaceSpring.get());
-    farSubsurfaceColor.set(farSubsurfaceSpring.get());
+    // nearDiffuseColor.set(nearDiffuseSpring.get());
+    // farDiffuseColor.set(farDiffuseSpring.get());
+    // nearSubsurfaceColor.set(nearSubsurfaceSpring.get());
+    // farSubsurfaceColor.set(farSubsurfaceSpring.get());
 
-    uniforms.uNearDiffuseColor.value.setHex(nearDiffuseColor.getHex());
-    uniforms.uFarDiffuseColor.value.setHex(farDiffuseColor.getHex());
-    uniforms.uNearSubsurfaceColor.value.setHex(nearSubsurfaceColor.getHex());
-    uniforms.uFarSubsurfaceColor.value.setHex(farSubsurfaceColor.getHex());
+    // uniforms.uNearDiffuseColor.value.setHex(nearDiffuseColor.getHex());
+    // uniforms.uFarDiffuseColor.value.setHex(farDiffuseColor.getHex());
+    // uniforms.uNearSubsurfaceColor.value.setHex(nearSubsurfaceColor.getHex());
+    // uniforms.uFarSubsurfaceColor.value.setHex(farSubsurfaceColor.getHex());
+
+    // uniforms.uDiffuseColors.value.forEach((value, i) =>
+    //   value.set(diffuseSprings[i].value.get()),
+    // );
+    // console.log(diffuseSprings[0].value.get());
+    // console.log(diffuseSprings);
+    // console.log(diffuseSprings.map((spring) => spring.value.get()));
+    // console.log(uniforms.uDiffuseColors.value);
+    // uniforms.uSubsurfaceColors.value = subsurfaceSprings.map(
+    //   (spring) => new THREE.Color(spring.value.get()),
+    // );
+    // uniforms.uSubsurfaceColors.value.forEach((value, i) =>
+    //   value.set(subsurfaceSprings[i].value.get()),
+    // );
   });
 
   return <ThreeBackgroundComponent uniforms={uniforms} />;

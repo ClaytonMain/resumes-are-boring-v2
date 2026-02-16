@@ -3,6 +3,7 @@ import * as THREE from "three";
 export type ThreeBackgroundUniforms = {
   uTime: { value: number };
   uCameraPosition: { value: THREE.Vector3 };
+  uInverseViewMatrix: { value: THREE.Matrix4 };
   uResolution: { value: THREE.Vector2 };
   uGlZ: { value: number };
   uVisibility: { value: number };
@@ -12,8 +13,6 @@ export type ThreeBackgroundUniforms = {
   uRoughness: { value: number };
   uRefractionIndex: { value: number };
 
-  uNearDiffuseColor: { value: THREE.Color };
-  uFarDiffuseColor: { value: THREE.Color };
-  uNearSubsurfaceColor: { value: THREE.Color };
-  uFarSubsurfaceColor: { value: THREE.Color };
+  uDiffuseColors: { value: THREE.Color[] };
+  uSubsurfaceColors: { value: THREE.Color[] };
 };
