@@ -6,16 +6,8 @@ export type ThreeBackgroundUniforms = {
   uResolution: { value: THREE.Vector2 };
   uGlZ: { value: number };
   uVisibility: { value: number };
-  uCenterRotation: { value: THREE.Matrix3 };
-  uXSpacing: { value: number };
-  uYSpacing: { value: number };
   uZSpacing: { value: number };
-  uZRotationAmplitude: { value: number };
-  uZRotationFrequency: { value: number };
-  uZRotationSpeed: { value: number };
   uLightColor: { value: THREE.Color };
-  uDiffuseColor: { value: THREE.Color };
-  uSubsurfaceColor: { value: THREE.Color };
   uSubsurfaceRadius: { value: number };
   uRoughness: { value: number };
   uRefractionIndex: { value: number };

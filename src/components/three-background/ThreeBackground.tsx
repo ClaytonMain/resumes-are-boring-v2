@@ -73,16 +73,8 @@ export default function ThreeBackground() {
         value: -1 / (2 * Math.tan(DEFAULT_CAMERA_FOV * (Math.PI / 180) * 0.5)),
       },
       uVisibility: { value: 0 },
-      uCenterRotation: { value: new THREE.Matrix3() },
-      uXSpacing: { value: 4 },
-      uYSpacing: { value: 4 },
       uZSpacing: { value: 4 },
-      uZRotationAmplitude: { value: 0.3 },
-      uZRotationFrequency: { value: 0.2 },
-      uZRotationSpeed: { value: 0.1 },
       uLightColor: { value: new THREE.Color("#ffffff") },
-      uDiffuseColor: { value: new THREE.Color("#ffa9a9") },
-      uSubsurfaceColor: { value: new THREE.Color("#ef0717") },
       uSubsurfaceRadius: { value: 0.8 },
       uRoughness: { value: 1.0 },
       uRefractionIndex: { value: 1.57 },
@@ -96,20 +88,6 @@ export default function ThreeBackground() {
 
   useControls({
     resetBackgroundVisibility: button(() => (uniforms.uVisibility.value = 0)),
-    uXSpacing: {
-      value: uniforms.uXSpacing.value,
-      min: 0.1,
-      max: 20,
-      step: 0.1,
-      onChange: (value) => (uniforms.uXSpacing.value = value),
-    },
-    uYSpacing: {
-      value: uniforms.uYSpacing.value,
-      min: 0.1,
-      max: 20,
-      step: 0.1,
-      onChange: (value) => (uniforms.uYSpacing.value = value),
-    },
     uZSpacing: {
       value: uniforms.uZSpacing.value,
       min: 0.1,
@@ -117,39 +95,11 @@ export default function ThreeBackground() {
       step: 0.1,
       onChange: (value) => (uniforms.uZSpacing.value = value),
     },
-    uZRotationAmplitude: {
-      value: uniforms.uZRotationAmplitude.value,
-      min: 0,
-      max: Math.PI,
-      step: 0.01,
-      onChange: (value) => (uniforms.uZRotationAmplitude.value = value),
-    },
-    uZRotationFrequency: {
-      value: uniforms.uZRotationFrequency.value,
-      min: 0,
-      max: 5,
-      step: 0.01,
-      onChange: (value) => (uniforms.uZRotationFrequency.value = value),
-    },
     uLightColor: {
       value: `#${uniforms.uLightColor.value.getHexString()}`,
       onChange: (value) => {
         const color = new THREE.Color(value);
         uniforms.uLightColor.value.copy(color);
-      },
-    },
-    uDiffuseColor: {
-      value: `#${uniforms.uDiffuseColor.value.getHexString()}`,
-      onChange: (value) => {
-        const color = new THREE.Color(value);
-        uniforms.uDiffuseColor.value.copy(color);
-      },
-    },
-    uSubsurfaceColor: {
-      value: `#${uniforms.uSubsurfaceColor.value.getHexString()}`,
-      onChange: (value) => {
-        const color = new THREE.Color(value);
-        uniforms.uSubsurfaceColor.value.copy(color);
       },
     },
     uSubsurfaceRadius: {
@@ -178,8 +128,6 @@ export default function ThreeBackground() {
   const cameraPosition = new THREE.Vector3();
   const uDeltaRef = useRef(0);
   const uTimeRef = useRef(0);
-  // const centerEuler = new THREE.Euler();
-  // const centerMatrix4 = new THREE.Matrix4();
   const mouseVector = new THREE.Vector3();
 
   const nearDiffuseColor = new THREE.Color();
@@ -218,9 +166,7 @@ export default function ThreeBackground() {
       kickItUpANotchRef.current = "BAM!";
     }
 
-    // console.log(nearDiffuseSpring.get());
     nearDiffuseColor.set(nearDiffuseSpring.get());
-    // console.log(nearDiffuseColor);
     farDiffuseColor.set(farDiffuseSpring.get());
     nearSubsurfaceColor.set(nearSubsurfaceSpring.get());
     farSubsurfaceColor.set(farSubsurfaceSpring.get());

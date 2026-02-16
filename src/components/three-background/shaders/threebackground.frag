@@ -3,16 +3,8 @@ uniform vec3 uCameraPosition;
 uniform vec2 uResolution;
 uniform float uGlZ;
 uniform float uVisibility;
-uniform mat3 uCenterRotation;
-uniform float uXSpacing;
-uniform float uYSpacing;
 uniform float uZSpacing;
-uniform float uZRotationAmplitude;
-uniform float uZRotationFrequency;
-uniform float uZRotationSpeed;
 uniform vec3 uLightColor;
-uniform vec3 uDiffuseColor;
-uniform vec3 uSubsurfaceColor;
 uniform float uSubsurfaceRadius;
 uniform float uRoughness;
 uniform float uRefractionIndex;
@@ -77,12 +69,6 @@ vec4 sdgBox(in vec3 p, in vec3 b, in float r) {
   return vec4(f.x - r, f.yzw * sign(p));
 }
 
-mat2 rotate2D(float angle) {
-  float s = sin(angle);
-  float c = cos(angle);
-  return mat2(c, -s, s, c);
-}
-
 mat3 rotate3dX(float angle) {
   float s = sin(angle);
   float c = cos(angle);
@@ -127,8 +113,6 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad, float zId) {
   float angle = atan(p.y, p.x);
   float angleId = floor(angle / sp);
 
-  // float zId = round(p.z / uZSpacing);
-
   float a1 = sp * (angleId + 0.0);
   float a2 = sp * (angleId + 1.0);
 
@@ -144,19 +128,11 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad, float zId) {
 
   mat3 animationRotation1 = rotate3dX(uTime * 0.1 + zId * 0.13 + a1) * rotate3dZ(uTime * 0.2 - zId * 0.6 + a1);
   mat3 animationRotation2 = rotate3dX(uTime * 0.1 + zId * 0.13 + a2) * rotate3dZ(uTime * 0.2 - zId * 0.6 + a2);
-  // mat3 animationRotation = rotate3dX(uTime * 0.1 - zId * 0.9);
 
   r1 *= animationRotation1;
   r2 *= animationRotation2;
 
-  // r1 = transpose(rotate3dX(uTime * 0.3 + zId * 0.13)) * transpose(rotate3dZ(uTime * 0.3 + zId * 0.13)) * r1;
-  // r2 = transpose(rotate3dX(uTime * 0.3 + zId * 0.13)) * transpose(rotate3dZ(uTime * 0.3 + zId * 0.13)) * r2;
-
-  // r1 = inverse(rotate3dZ(uTime * 0.3 + zId * 0.13)) * r1;
-  // r2 = inverse(rotate3dZ(uTime * 0.3 + zId * 0.13)) * r2;
-
   vec3 boxB = vec3(0.2, 0.2, 0.2);
-  // boxB *= uVisibility < 0.5 ? easeOutBack(uVisibility) : 1.0;
   if (uVisibility < 1.0) {
     boxB *= easeOutBack(smoothstep(-zId * 0.02, -zId * 0.02 + 0.1, uVisibility));
   }
@@ -166,21 +142,7 @@ vec4 sdgRepetitionRotational(vec3 p, int n, float rad, float zId) {
   vec4 d2 = sdgBox(r2, boxB, 0.1);
   d2.yzw *= inverse(animationRotation2) * inverse(rot2);
 
-  // vec4 d1 = sdgSegment(r1, animationRotation * SEGMENT_A, animationRotation * SEGMENT_B, 0.15);
-  // vec4 d2 = sdgSegment(r2, animationRotation * SEGMENT_A, animationRotation * SEGMENT_B, 0.15);
-
-  // vec4 d1 = sdgTorus(r1, 0.4, 0.1);
-  // vec4 d2 = sdgTorus(r2, 0.4, 0.1);
-
-  // vec4 d1 = sdgBox(r1, vec3(0.2), 0.2);
-  // d1.yzw *= inverse(animationRotation);
-  // vec4 d2 = sdgBox(r2, vec3(0.2), 0.2);
-  // d2.yzw *= inverse(animationRotation);
-
   vec4 d = sdgMin(d1, d2, 0.1);
-  // d.yzw *= inverse(animationRotation);
-
-  // vec4 d = d1.x < d2.x ? d1 : d2;
 
   return d;
 }
@@ -253,8 +215,6 @@ vec3 lighting(
   float refractionIndex
 ) {
   vec3 normal = hitInfo.normal;
-  // normal = inverse(rotate3dZ(uTime * 0.3 + hitInfo.zId * 0.13)) * normal;
-  // normal = inverse(rotate3dX(uTime * 0.3 + hitInfo.zId * 0.13)) * normal;
 
   float normalDotLight = dot(normal, lightDir); // Lambertian diffuse.
   float posNormalDotLight = clamp(normalDotLight, 0.0, 1.0);
@@ -271,14 +231,6 @@ vec3 lighting(
     // Gaussian
     sss = 0.2 * exp(-3.0 * abs(normalDotLight) / (ssRadiusVec3 + 0.001));
   }
-
-  // if (normalDotLight > 0.0) {
-  //   vec3 offsetPos = hitInfo.pos + normal * 0.001;
-  //   HitInfo hitLight;
-  //   bool isHitLight = raycast(offsetPos, lightDir, hitLight, 12.0);
-  //   normalDotLight *= float(!isHitLight);
-  //   posNormalDotLight = clamp(normalDotLight, 0.0, 1.0);
-  // }
 
   vec3 halfVector = normalize(lightDir - rayDirection);
   float normalDotHalf = dot(normal, halfVector);
@@ -299,8 +251,8 @@ vec3 lighting(
 
   vec3 returnColor = vec3(0.0);
 
-  vec3 diffuseColor = mix(uNearDiffuseColor, uFarDiffuseColor, -hitInfo.zId * 0.2);
-  vec3 subsurfaceColor = mix(uNearSubsurfaceColor, uFarSubsurfaceColor, -hitInfo.zId * 0.2);
+  vec3 diffuseColor = mix(uNearDiffuseColor, uFarDiffuseColor, -hitInfo.zId * 0.1);
+  vec3 subsurfaceColor = mix(uNearSubsurfaceColor, uFarSubsurfaceColor, -hitInfo.zId * 0.1);
   // Diffuse + sss + specular.
   returnColor = lightColor * (posNormalDotLight * (diffuseColor + reflectivity * ggx) + diffuseColor * subsurfaceColor * ssRadiusVec3 * sss);
 
@@ -310,8 +262,6 @@ vec3 lighting(
   // Apply fog.
   float fogAmount = (1.0 - exp(-0.005 * hitInfo.t * hitInfo.t));
   returnColor = mix(returnColor, vec3(0.0), fogAmount);
-
-  // return normal;
 
   return returnColor;
 }
