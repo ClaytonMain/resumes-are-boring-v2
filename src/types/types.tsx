@@ -36,6 +36,11 @@ export interface AppStore {
   kickItUpANotch: "" | "BAM!";
 
   flavorTextIndex: number;
+
+  targetBackgroundDiffuse: THREE.Color;
+  targetBackgroundDiffuseUpdatedAt: number;
+  targetBackgroundSubsurface: THREE.Color;
+  targetBackgroundSubsurfaceUpdatedAt: number;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;

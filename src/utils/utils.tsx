@@ -44,3 +44,23 @@ export function requestCameraUpdate({
     }),
   );
 }
+
+// // Thanks to Freya Holmér for the framerate-independent lerp smoothing function
+// // https://mastodon.social/@acegikmo/111931613710775864
+// export function lerpSmooth(
+//   a: number,
+//   b: number,
+//   dt: number,
+//   h: number,
+// ): number {
+//   return b + (a - b) * Math.pow(2, -dt / h);
+// }
+
+// // "Calculating half-life (`h`) given a duration `t` until precision `p`"
+// // h = -t/log2(p)
+// // For example, if `p` = 1 / 100, then `h` is calculated such that the
+// // lerp smooth is nominally within 1% distance to the target remaining,
+// // after `t` seconds.
+// export function getHalfLife(t: number, p: number): number {
+//   return -t / Math.log2(p);
+// }

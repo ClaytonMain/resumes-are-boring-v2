@@ -1,4 +1,3 @@
-import * as THREE from "three";
 import { create } from "zustand";
 import {
   createJSONStorage,
@@ -49,11 +48,6 @@ const useAppStore = create<AppStore>()(
         kickItUpANotch: "",
 
         flavorTextIndex: 0,
-
-        targetBackgroundDiffuse: new THREE.Color("#ffa9a9"),
-        targetBackgroundDiffuseUpdatedAt: Date.now(),
-        targetBackgroundSubsurface: new THREE.Color("#ef0717"),
-        targetBackgroundSubsurfaceUpdatedAt: Date.now(),
       }),
       {
         name: "resumes-are-boring-app-store",

@@ -97,6 +97,7 @@ export default function HomeHtml() {
       variants={CONTAINER_VARIANTS}
       initial={{ opacity: 0 }}
       animate={variant}
+      exit={{ opacity: 0 }}
     >
       <motion.div
         key="enter-html-content-resumes-are-boring-div"

@@ -1,6 +1,4 @@
-import { useSpringValue } from "@react-spring/three";
 import { useFrame } from "@react-three/fiber";
-import { produce } from "immer";
 import { button, useControls } from "leva";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
@@ -11,60 +9,6 @@ import {
 import useAppStore from "../../stores/useAppStore";
 import ThreeBackgroundComponent from "./ThreeBackgroundComponent";
 import type { ThreeBackgroundUniforms } from "./types/types";
-
-const COLOR_SPRING_COUNT = 10;
-const COLOR_SPRING_CONFIG = { config: { duration: 400 } };
-const COLOR_SPRING_DELAY_FACTOR = 200;
-
-function ColorSpringComponent({
-  index,
-  colors,
-  colorType,
-}: {
-  index: number;
-  colors: Array<THREE.Color>;
-  colorType: "diffuse" | "subsurface";
-}) {
-  const colorSpring = useSpringValue(
-    colors[index].getHexString(),
-    COLOR_SPRING_CONFIG,
-  );
-
-  useEffect(() => {
-    const unsubDiffuse = useAppStore.subscribe(
-      (state) => state.targetBackgroundDiffuseUpdatedAt,
-      () => {
-        if (colorType !== "diffuse") return;
-        const targetColor = useAppStore.getState().targetBackgroundDiffuse;
-        colorSpring.start(targetColor.getHexString(), {
-          delay: index * COLOR_SPRING_DELAY_FACTOR,
-        });
-      },
-    );
-    const unsubSubsurface = useAppStore.subscribe(
-      (state) => state.targetBackgroundSubsurfaceUpdatedAt,
-      () => {
-        if (colorType !== "subsurface") return;
-        const targetColor = useAppStore.getState().targetBackgroundSubsurface;
-        colorSpring.start(targetColor.getHexString(), {
-          delay: index * COLOR_SPRING_DELAY_FACTOR,
-        });
-      },
-    );
-    return () => {
-      unsubDiffuse();
-      unsubSubsurface();
-    };
-  }, [colorType, colorSpring, index]);
-
-  useFrame(() => {
-    if (colorSpring.idle) return;
-    console.log(colorSpring.get);
-    colors[index].set(colorSpring.get());
-  });
-
-  return null;
-}
 
 export default function ThreeBackground() {
   const displayThreeBackgroundRef = useRef(
@@ -83,17 +27,18 @@ export default function ThreeBackground() {
       (state) => state.currentPage,
       (value, previousValue) => {
         if (value !== previousValue) {
-          useAppStore.setState(
-            produce((state) => {
-              state.targetBackgroundDiffuse.set(
-                PAGE_THREE_COLORS[value].diffuse,
-              );
-              state.targetBackgroundDiffuseUpdatedAt = Date.now();
-              state.targetBackgroundSubsurface.set(
-                PAGE_THREE_COLORS[value].subsurface,
-              );
-              state.targetBackgroundSubsurfaceUpdatedAt = Date.now();
-            }),
+          uniforms.uColorProgress.value = 0;
+          uniforms.uPreviousDiffuseColor.value.copy(
+            uniforms.uCurrentDiffuseColor.value,
+          );
+          uniforms.uPreviousSubsurfaceColor.value.copy(
+            uniforms.uCurrentSubsurfaceColor.value,
+          );
+          uniforms.uCurrentDiffuseColor.value.copy(
+            PAGE_THREE_COLORS[value].diffuse,
+          );
+          uniforms.uCurrentSubsurfaceColor.value.copy(
+            PAGE_THREE_COLORS[value].subsurface,
           );
         }
       },
@@ -102,16 +47,8 @@ export default function ThreeBackground() {
       unsubDisplayThreeBackground();
       unsubCurrentPage();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const diffuseColors = Array.from(
-    { length: COLOR_SPRING_COUNT },
-    () => new THREE.Color("#ffa9a9"),
-  );
-  const subsurfaceColors = Array.from(
-    { length: COLOR_SPRING_COUNT },
-    () => new THREE.Color("#ef0717"),
-  );
 
   const uniforms: ThreeBackgroundUniforms = useMemo(() => {
     return {
@@ -129,10 +66,13 @@ export default function ThreeBackground() {
       uRoughness: { value: 1.0 },
       uRefractionIndex: { value: 1.57 },
 
-      uDiffuseColors: { value: diffuseColors },
-      uSubsurfaceColors: { value: subsurfaceColors },
+      uColorProgress: { value: 1 },
+      uCurrentDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      uPreviousDiffuseColor: { value: new THREE.Color("#ffa9a9") },
+      uCurrentSubsurfaceColor: { value: new THREE.Color("#ef0717") },
+      uPreviousSubsurfaceColor: { value: new THREE.Color("#ef0717") },
     };
-  }, [diffuseColors, subsurfaceColors]);
+  }, []);
 
   useControls({
     resetBackgroundVisibility: button(() => (uniforms.uVisibility.value = 0)),
@@ -210,31 +150,17 @@ export default function ThreeBackground() {
       kickItUpANotchRef.current = "BAM!";
     }
 
-    // Array.from({length: 10}).forEach()
-
-    uniforms.uDiffuseColors.value = diffuseColors;
-    uniforms.uSubsurfaceColors.value = subsurfaceColors;
+    if (uniforms.uColorProgress.value < 1) {
+      uniforms.uColorProgress.value = Math.min(
+        uniforms.uColorProgress.value + uDeltaRef.current * 0.1,
+        1,
+      );
+    }
   });
 
   return (
     <>
       <ThreeBackgroundComponent uniforms={uniforms} />
-      {Array.from({ length: COLOR_SPRING_COUNT }).map((_, index) => (
-        <>
-          <ColorSpringComponent
-            key={`color-spring-diffuse-${index}`}
-            index={index}
-            colors={diffuseColors}
-            colorType="diffuse"
-          />
-          <ColorSpringComponent
-            key={`color-spring-subsurface-${index}`}
-            index={index}
-            colors={subsurfaceColors}
-            colorType="subsurface"
-          />
-        </>
-      ))}
     </>
   );
 }
