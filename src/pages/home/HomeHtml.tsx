@@ -92,7 +92,7 @@ export default function HomeHtml() {
 
   return (
     <motion.div
-      key="enter-html-content-div"
+      key="home-html-content-div"
       className={CONTENT_CONTAINER_CLASS_NAME}
       variants={CONTAINER_VARIANTS}
       initial={{ opacity: 0 }}

@@ -15,6 +15,12 @@ export default function Navigation() {
       (value, previousValue) => {
         if (value !== previousValue) {
           setCurrentPage(value);
+          if (!useAppStore.getState().displayThreeBackground) {
+            useAppStore.setState({ displayThreeBackground: true });
+          }
+          if (useAppStore.getState().kickItUpANotch !== "BAM!") {
+            useAppStore.setState({ kickItUpANotch: "BAM!" });
+          }
         }
       },
     );

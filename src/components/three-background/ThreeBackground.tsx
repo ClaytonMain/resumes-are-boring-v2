@@ -26,7 +26,7 @@ function ColorSpringComponent({
   colorType: "diffuse" | "subsurface";
 }) {
   const colorSpring = useSpringValue(
-    colors[index].getHexString(),
+    `#${colors[index].getHexString()}`,
     COLOR_SPRING_CONFIG,
   );
 
@@ -36,7 +36,7 @@ function ColorSpringComponent({
       () => {
         if (colorType !== "diffuse") return;
         const targetColor = useAppStore.getState().targetBackgroundDiffuse;
-        colorSpring.start(targetColor.getHexString(), {
+        colorSpring.start(`#${targetColor.getHexString()}`, {
           delay: index * COLOR_SPRING_DELAY_FACTOR,
         });
       },
@@ -46,7 +46,7 @@ function ColorSpringComponent({
       () => {
         if (colorType !== "subsurface") return;
         const targetColor = useAppStore.getState().targetBackgroundSubsurface;
-        colorSpring.start(targetColor.getHexString(), {
+        colorSpring.start(`#${targetColor.getHexString()}`, {
           delay: index * COLOR_SPRING_DELAY_FACTOR,
         });
       },
@@ -59,7 +59,7 @@ function ColorSpringComponent({
 
   useFrame(() => {
     if (colorSpring.idle) return;
-    console.log(colorSpring.get);
+
     colors[index].set(colorSpring.get());
   });
 
@@ -220,20 +220,20 @@ export default function ThreeBackground() {
     <>
       <ThreeBackgroundComponent uniforms={uniforms} />
       {Array.from({ length: COLOR_SPRING_COUNT }).map((_, index) => (
-        <>
-          <ColorSpringComponent
-            key={`color-spring-diffuse-${index}`}
-            index={index}
-            colors={diffuseColors}
-            colorType="diffuse"
-          />
-          <ColorSpringComponent
-            key={`color-spring-subsurface-${index}`}
-            index={index}
-            colors={subsurfaceColors}
-            colorType="subsurface"
-          />
-        </>
+        <ColorSpringComponent
+          key={`color-spring-diffuse-${index}`}
+          index={index}
+          colors={diffuseColors}
+          colorType="diffuse"
+        />
+      ))}
+      {Array.from({ length: COLOR_SPRING_COUNT }).map((_, index) => (
+        <ColorSpringComponent
+          key={`color-spring-subsurface-${index}`}
+          index={index}
+          colors={subsurfaceColors}
+          colorType="subsurface"
+        />
       ))}
     </>
   );

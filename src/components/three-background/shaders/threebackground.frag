@@ -14,7 +14,7 @@ uniform vec3[10] uDiffuseColors;
 uniform vec3[10] uSubsurfaceColors;
 
 const int MAX_STEPS = 64;
-const float MAX_TRAVEL_DIST = 200.0;
+const float MAX_TRAVEL_DIST = 50.0;
 // const vec3 LIGHT_DIR = normalize(vec3(-0.5, 0.0, -1.0));
 const vec3 LIGHT_DIR = normalize(vec3(0.0, 0.0, -1.0));
 
@@ -114,9 +114,20 @@ vec4 sdgSegment(vec3 p, vec3 a, vec3 b, float r) {
   return vec4(d - r, q / d);
 }
 
+vec4 sdgMinSimple(vec4 a, vec4 b) {
+  return a.x < b.x
+    ? a
+    : b;
+}
+
 vec4 sdgMin(vec4 a, vec4 b, float k) {
   k *= 4.0;
-  float h = max(k - abs(a.x - b.x), 0.0);
+  // float h = max(k - abs(a.x - b.x), 0.0);
+  float h = k - abs(a.x - b.x);
+  if (h < 0.0 || a.x > k && b.x > k) {
+    return sdgMinSimple(a, b);
+  }
+  h = max(h, 0.0);
   float m = 0.25 * h * h / k;
   float n = 0.5 * h / k;
   return vec4(min(a.x, b.x) - m, mix(a.yzw, b.yzw, a.x < b.x ? n : 1.0 - n));
@@ -219,7 +230,7 @@ bool raycast(
     if (d.x < 0.01) {
       oHitInfo.t = t;
       oHitInfo.pos = pos;
-      oHitInfo.normal = normalize(d.yzw);
+      oHitInfo.normal = d.yzw;
       oHitInfo.steps = i;
       oHitInfo.zId = zId;
       return true;
@@ -227,7 +238,7 @@ bool raycast(
       t += d.x;
     }
 
-    if (t >= tMax) {
+    if (t >= tMax || zId < -10.0) {
       return false;
     }
   }
