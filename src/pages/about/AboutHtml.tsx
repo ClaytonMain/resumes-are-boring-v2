@@ -4,11 +4,27 @@ import { CONTENT_CONTAINER_CLASS_NAME } from "../../constants/constants";
 
 const WHO_AM_I = [
   "Data Person",
-  "Frontend Developer",
+  "Frontend Dev.",
   "Math Nerd",
-  "Lorem Ipsum",
-  "Something Dolores",
-  "Quasi Something Something idk",
+  "Shader Maker",
+  "Tinkerer",
+  "Problem Solver",
+  "Lifelong Learner",
+  "Creative Coder",
+  "3D Artist",
+  "Code Poet",
+  "Pixel Pusher",
+  "Performance Optimizer",
+  "Bug Squasher",
+  "Framework Explorer",
+  "Tech Storyteller",
+  "Continuous Improver",
+  "Curious Mind",
+  "Passionate Coder",
+  "Innovator",
+  "Collaborator",
+  "Mentor",
+  "Creative Thinker",
 ];
 
 export default function AboutHtml() {
@@ -35,10 +51,10 @@ export default function AboutHtml() {
       <div className="flex gap-2">
         <h1 className="text-4xl font-bold tracking-tight text-white">I am a</h1>
         <div className="overflow-hidden">
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="wait" initial={false}>
             <motion.h1
               key={whoAmIIndex}
-              className="w-[700px] text-4xl font-bold tracking-tight text-amber-100"
+              className="w-[400px] text-4xl font-bold tracking-tight text-amber-100"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
