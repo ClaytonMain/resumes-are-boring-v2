@@ -48,19 +48,17 @@ const ABOUT_CONFIGS: Record<string, AboutConfig> = {
     content: "This should be displayed for 'About'",
   },
   coder: {
-    displayValues: ["I am a", "Coder"],
-    content: <div>"This should be displayed for 'I am a Coder'"</div>,
+    displayValues: ["I am a", "Data Person"],
+    content: <div>"This should be displayed for 'I am a Data Person'"</div>,
   },
 };
 
 function AboutComponent({
   viewportRef,
-  containerRef,
   setWhoAmI,
   configKey,
 }: {
   viewportRef: RefObject<HTMLDivElement>;
-  containerRef: RefObject<HTMLDivElement>;
   setWhoAmI: Dispatch<SetStateAction<WhoAmI>>;
   configKey: keyof typeof ABOUT_CONFIGS;
 }) {
@@ -72,7 +70,8 @@ function AboutComponent({
   // }
   const idk = useScroll({
     target: divRef,
-    container: containerRef,
+    container: viewportRef,
+    offset: ["start start", "end start"],
   });
 
   useEffect(() => {
@@ -154,14 +153,12 @@ export default function AboutHtml() {
           <AboutComponent
             key="about"
             viewportRef={viewportRef}
-            containerRef={containerRef}
             setWhoAmI={setWhoAmI}
             configKey="about"
           />
           <AboutComponent
             key="coder"
             viewportRef={viewportRef}
-            containerRef={containerRef}
             setWhoAmI={setWhoAmI}
             configKey="coder"
           />
