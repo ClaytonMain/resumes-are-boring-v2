@@ -1,5 +1,6 @@
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useScroll } from "motion/react";
 import {
+  useEffect,
   useRef,
   useState,
   type Dispatch,
@@ -53,26 +54,43 @@ const ABOUT_CONFIGS: Record<string, AboutConfig> = {
 };
 
 function AboutComponent({
-  scrollRef,
+  viewportRef,
+  containerRef,
   setWhoAmI,
   configKey,
 }: {
-  scrollRef: RefObject<HTMLDivElement>;
+  viewportRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement>;
   setWhoAmI: Dispatch<SetStateAction<WhoAmI>>;
   configKey: keyof typeof ABOUT_CONFIGS;
 }) {
+  const divRef = useRef<HTMLDivElement>(null!);
   const config = ABOUT_CONFIGS[configKey];
-  function handleViewportEnter() {
-    setWhoAmI(config.displayValues);
-  }
+  // function handleViewportEnter(e) {
+  //   console.log(e);
+  //   setWhoAmI(config.displayValues);
+  // }
+  const idk = useScroll({
+    target: divRef,
+    container: containerRef,
+  });
+
+  useEffect(() => {
+    if (configKey !== "about") return;
+    const intervalId = setInterval(() => {
+      console.log(idk.scrollYProgress);
+    }, 1000);
+    return () => clearInterval(intervalId);
+  }, [idk, configKey]);
 
   return (
     <motion.div
-      className="h-full bg-amber-900/40"
+      ref={divRef}
+      className="relative h-64 items-center justify-center"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1 }}
-      viewport={{ root: scrollRef }}
-      onViewportEnter={handleViewportEnter}
+      viewport={{ root: viewportRef }}
+      // onViewportEnter={handleViewportEnter}
     >
       {config.content}
     </motion.div>
@@ -82,7 +100,8 @@ function AboutComponent({
 export default function AboutHtml() {
   const [whoAmI, setWhoAmI] = useState<WhoAmI>(["", "About"]);
 
-  const scrollRef = useRef<HTMLDivElement>(null!);
+  const viewportRef = useRef<HTMLDivElement>(null!);
+  const containerRef = useRef<HTMLDivElement>(null!);
 
   return (
     <motion.div
@@ -122,21 +141,31 @@ export default function AboutHtml() {
       </div>
       <span className="w-full border-b border-amber-400" />
       <div
-        ref={scrollRef}
-        className="absolute top-0 right-0 bottom-0 left-0 my-2 flex h-64 max-h-64 w-150 flex-col gap-5 overflow-x-hidden overflow-y-auto bg-amber-500 [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:rounded-none [&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 [&::-webkit-scrollbar-track]:rounded-none [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-700"
+        ref={viewportRef}
+        className="relative mt-1 h-64 max-h-64 w-150 grow flex-col items-stretch overflow-y-auto"
+        style={{
+          scrollbarColor: "#fffbeb #f59e0b1a",
+        }}
       >
-        <AboutComponent
-          key="about"
-          configKey="about"
-          scrollRef={scrollRef}
-          setWhoAmI={setWhoAmI}
-        />
-        <AboutComponent
-          key="coder"
-          configKey="coder"
-          scrollRef={scrollRef}
-          setWhoAmI={setWhoAmI}
-        />
+        <div
+          ref={containerRef}
+          className="relative my-2 flex-col items-stretch justify-center gap-4"
+        >
+          <AboutComponent
+            key="about"
+            viewportRef={viewportRef}
+            containerRef={containerRef}
+            setWhoAmI={setWhoAmI}
+            configKey="about"
+          />
+          <AboutComponent
+            key="coder"
+            viewportRef={viewportRef}
+            containerRef={containerRef}
+            setWhoAmI={setWhoAmI}
+            configKey="coder"
+          />
+        </div>
       </div>
     </motion.div>
   );

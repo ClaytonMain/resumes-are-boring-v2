@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  position: relative;
+}
+
 html,
 body,
 #root {
