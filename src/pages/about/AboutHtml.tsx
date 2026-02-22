@@ -56,11 +56,7 @@ function AboutComponentDataPersonContent() {
         printed reports with highlighters inefficient).
       </div>
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME + " " + "text-center"}>
-        <span
-          className={
-            "font-semibold text-amber-200 italic underline decoration-2"
-          }
-        >
+        <span className={"font-semibold text-amber-100"}>
           I could not allow this.
         </span>
         <br />
@@ -96,9 +92,9 @@ function AboutComponentGraphicsContent() {
       for fun. I really enjoyed the process and kept learning and building more
       projects in my free time. Eventually, I came to realize how much overlap
       there is between graphics programming and many of my past and present
-      hobbies and interests (programming, math, art, games, etc.). Plus, it's
-      been nice to finally have something to which I can apply my (somewhat
-      rusty) linear algebra skills.
+      hobbies and interests (programming, math, art, animation, games, etc.).
+      Plus, it's been nice to finally have something to which I can apply my
+      (somewhat rusty) linear algebra skills.
     </div>
   );
 }
