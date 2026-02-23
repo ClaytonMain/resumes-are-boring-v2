@@ -1,4 +1,31 @@
-import type { AxisOption, Skill, SkillCategory, TypeCategory } from "./types";
+import type {
+  AxisOption,
+  Skill,
+  SkillCategory,
+  SkillName,
+  TypeCategory,
+} from "./types";
+
+export const SKILL_NAMES: SkillName[] = [
+  "Python",
+  "SQL",
+  "TypeScript",
+  "GLSL",
+  "Git",
+  "Communication",
+  "Problem Solving",
+  "Time Management",
+  "Creativity",
+  "Snowflake",
+  "dbt Cloud",
+  "Airbyte",
+  "Fivetran",
+  "Hex",
+  "VS Code",
+  "Jira",
+  "Google Sheets",
+  "Shell",
+];
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
   "Data Vis.",
@@ -86,7 +113,7 @@ export const SKILLS: Skill[] = [
     skillCategories: ["Data Eng.", "Data An.", "Data Wrang.", "Backend"],
   },
   {
-    name: "Typescript",
+    name: "TypeScript",
     typeCategory: "Language",
     proficiency: 7,
     personalEnjoyment: 8,
@@ -154,7 +181,7 @@ export const SKILLS: Skill[] = [
     skillCategories: ["Softskill"],
   },
   {
-    name: "Problem-solving",
+    name: "Problem Solving",
     typeCategory: "Softskill",
     proficiency: 9,
     personalEnjoyment: 10,
@@ -165,7 +192,7 @@ export const SKILLS: Skill[] = [
     skillCategories: ["Softskill"],
   },
   {
-    name: "Time management",
+    name: "Time Management",
     typeCategory: "Softskill",
     proficiency: 7,
     personalEnjoyment: 6,

@@ -1,3 +1,36 @@
+export type SkillName =
+  | "Python"
+  | "SQL"
+  | "TypeScript"
+  | "GLSL"
+  | "Git"
+  | "Communication"
+  | "Problem Solving"
+  | "Time Management"
+  | "Creativity"
+  | "Snowflake"
+  | "dbt Cloud"
+  | "Airbyte"
+  | "Fivetran"
+  | "Hex"
+  | "VS Code"
+  | "Jira"
+  | "Google Sheets"
+  | "Shell";
+
+export type TypeCategory = "Language" | "Tool" | "Softskill";
+
+type YearsExperience = {
+  professional: number; // -1 if display as 10+
+  personal: number;
+};
+
+type LibEtAl = {
+  name: string;
+  proficiency: number; // 1-10 scale
+  skillCategories: SkillCategory[];
+};
+
 export type SkillCategory =
   | "Data Vis."
   | "Data Eng."
@@ -9,27 +42,8 @@ export type SkillCategory =
   | "General Prog."
   | "Softskill";
 
-export type TypeCategory = "Language" | "Tool" | "Softskill";
-
-export type AxisOption =
-  | "Proficiency"
-  | "Years Professional"
-  | "Years Personal"
-  | "Personal Enjoyment";
-
-type LibEtAl = {
-  name: string;
-  proficiency: number; // 1-10 scale
-  skillCategories: SkillCategory[];
-};
-
-type YearsExperience = {
-  professional: number; // -1 if display as 10+
-  personal: number;
-};
-
 export type Skill = {
-  name: string;
+  name: SkillName;
   typeCategory: TypeCategory;
   proficiency: number; // 1-10 scale
   personalEnjoyment: number; // 1-10 scale
@@ -38,3 +52,9 @@ export type Skill = {
   skillCategories: SkillCategory[] | "auto";
   miscTags?: string[];
 };
+
+export type AxisOption =
+  | "Proficiency"
+  | "Years Professional"
+  | "Years Personal"
+  | "Personal Enjoyment";
