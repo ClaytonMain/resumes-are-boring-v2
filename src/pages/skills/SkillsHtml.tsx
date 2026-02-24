@@ -33,7 +33,7 @@ function AccordionMultiSelectComponent({
   return (
     <div className="flex flex-col text-sm">
       <motion.div
-        className="flex cursor-pointer items-center gap-1 p-1 font-thin"
+        className="flex cursor-pointer gap-1 p-1 font-light"
         onClick={onTitleClick}
         whileHover={{ backgroundColor: "#365314" }}
         style={{ backgroundColor: "#1a2e05" }}
@@ -49,16 +49,22 @@ function AccordionMultiSelectComponent({
       <AnimatePresence>
         {isActive && (
           <motion.div
-            className="flex max-h-32 flex-col gap-0.5 overflow-y-auto pl-2 text-sm font-thin"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+            className="flex w-full flex-wrap items-start gap-0.5 overflow-y-auto pl-2 text-sm font-light"
+            initial={{ maxHeight: 0, opacity: 0 }}
+            animate={{ maxHeight: 100, opacity: 1 }}
+            exit={{ maxHeight: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
             {allItems.map((item) => (
               <motion.div
                 key={item}
-                className={`cursor-pointer rounded px-1 ${
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: 1,
+                  transition: { duration: 0.2, delay: 0.2 },
+                }}
+                exit={{ opacity: 0 }}
+                className={`cursor-pointer rounded-sm border border-lime-400/20 px-1 ${
                   selectedItems.includes(item)
                     ? "bg-lime-400 text-black"
                     : "text-lime-400"
@@ -132,7 +138,7 @@ function ControlsComponent({
   }
 
   return (
-    <div className="flex w-56 flex-col justify-center bg-lime-400/10">
+    <div className="flex w-56 flex-col bg-lime-400/10">
       <AccordionMultiSelectComponent
         isActive={activeAccordion === "type"}
         title="Type Categories"
@@ -215,12 +221,13 @@ function ScatterplotDotComponent({
   const y = getAxisValue(selectedYAxisOption);
 
   return (
-    <div
-      className="absolute aspect-square h-4 -translate-x-1/2 translate-y-1/2 rounded-full bg-lime-400"
-      style={{
-        left: `${(x / 10) * 100}%`,
-        bottom: `${(y / 10) * 100}%`,
-      }}
+    <motion.div
+      className="absolute aspect-square h-2 -translate-x-1/2 translate-y-1/2 rounded-full bg-lime-400"
+      initial={{ left: 0, top: 0 }}
+      animate={{ left: `${(x / 10) * 100}%`, top: `${100 - (y / 10) * 100}%` }}
+      transition={{ type: "spring" }}
+      onHoverStart={() => setActiveSkillName(skill.name)}
+      onHoverEnd={() => setActiveSkillName(null)}
       onClick={() => setActiveSkillName(skill.name)}
       title={skill.name}
     />
@@ -243,38 +250,40 @@ function ScatterplotComponent({
   setActiveSkillName: Dispatch<SetStateAction<SkillName | null>>;
 }) {
   return (
-    <div className="relative h-full w-full flex-col gap-1 rounded border border-lime-400">
+    <div className="h-full w-full flex-col gap-1 rounded border border-lime-400">
       <div
         key="vertical-axis-and-dots-container"
-        className="absolute top-0 right-0 bottom-0 left-0"
+        className="flex grow items-center border border-red-500"
       >
         <div
           key="vertical-axis"
-          className="absolute top-0 bottom-0 left-0 w-8"
+          className="h-52 w-auto border border-orange-400 text-center text-sm font-light"
           style={{
-            writingMode: "vertical-lr",
+            writingMode: "sideways-lr",
             textOrientation: "sideways",
           }}
         >
           {selectedYAxisOption}
         </div>
-        <div className="relative top-0 right-0 bottom-0 left-8 aspect-square bg-lime-400/10">
-          {SKILLS.map((skill) => (
-            <ScatterplotDotComponent
-              key={skill.name}
-              skillName={skill.name}
-              selectedTypeCategories={selectedTypeCategories}
-              selectedSkillCategories={selectedSkillCategories}
-              selectedXAxisOption={selectedXAxisOption}
-              selectedYAxisOption={selectedYAxisOption}
-              setActiveSkillName={setActiveSkillName}
-            />
-          ))}
+        <div className="h-full w-full border border-blue-400">
+          <div className="relative top-0 right-0 bottom-0 left-0 m-3 aspect-square h-52 border border-yellow-400 bg-lime-400/10">
+            {SKILLS.map((skill) => (
+              <ScatterplotDotComponent
+                key={skill.name}
+                skillName={skill.name}
+                selectedTypeCategories={selectedTypeCategories}
+                selectedSkillCategories={selectedSkillCategories}
+                selectedXAxisOption={selectedXAxisOption}
+                selectedYAxisOption={selectedYAxisOption}
+                setActiveSkillName={setActiveSkillName}
+              />
+            ))}
+          </div>
         </div>
       </div>
       <div
         key="empty-space-and-horizontal-axis-container"
-        className="absolute right-0 bottom-0 left-0 flex h-8 items-center gap-2"
+        className="flex h-8 items-center gap-2"
       >
         <div className="w-8" />
         <div key="horizontal-axis" className="flex-1">
