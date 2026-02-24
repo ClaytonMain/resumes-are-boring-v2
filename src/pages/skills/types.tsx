@@ -58,3 +58,9 @@ export type AxisOption =
   | "Years Professional"
   | "Years Personal"
   | "Personal Enjoyment";
+
+export type ScatterplotAccordionLabel =
+  | "Type Categories"
+  | "Skill Categories"
+  | "X Axis"
+  | "Y Axis";

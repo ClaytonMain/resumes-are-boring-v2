@@ -1,5 +1,12 @@
 import type { SpringConfig } from "@react-spring/three";
 import * as THREE from "three";
+import type {
+  AxisOption,
+  ScatterplotAccordionLabel,
+  SkillCategory,
+  SkillName,
+  TypeCategory,
+} from "../pages/skills/types";
 
 export type Page =
   | "about"
@@ -49,3 +56,12 @@ export type StatsPosition = "tl" | "tr" | "bl" | "br";
 
 type PageThreeColorConfig = Record<"diffuse" | "subsurface", THREE.Color>;
 export type PageThreeColor = Record<Page, PageThreeColorConfig>;
+
+export interface ScatterplotStore {
+  selectedTypeCategories: TypeCategory[];
+  selectedSkillCategories: SkillCategory[];
+  selectedXAxisOption: AxisOption;
+  selectedYAxisOption: AxisOption;
+  activeSkillName: SkillName | null;
+  activeAccordion: ScatterplotAccordionLabel | null;
+}

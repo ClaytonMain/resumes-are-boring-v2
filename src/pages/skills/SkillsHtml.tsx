@@ -1,7 +1,8 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, motion } from "motion/react";
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { type Dispatch, type MouseEvent, type SetStateAction } from "react";
 import { CONTENT_CONTAINER_CLASS_NAME } from "../../constants/constants";
+import useScatterplotStore from "../../stores/useScatterplotStore";
 import {
   AXIS_OPTIONS,
   SKILL_CATEGORIES,
@@ -10,26 +11,60 @@ import {
 } from "./constants";
 import type {
   AxisOption,
+  ScatterplotAccordionLabel,
   SkillCategory,
   SkillName,
   TypeCategory,
 } from "./types";
 
-function AccordionMultiSelectComponent({
-  isActive,
-  title,
+function AccordionSelectComponent({
+  accordionLabel,
   allItems,
-  selectedItems,
-  onItemSelect,
-  onTitleClick,
+  storePath,
 }: {
-  isActive: boolean;
-  title: string;
+  accordionLabel: ScatterplotAccordionLabel;
   allItems: string[];
-  selectedItems: string[];
-  onItemSelect: (item: string) => void;
-  onTitleClick: () => void;
+  storePath:
+    | "selectedTypeCategories"
+    | "selectedSkillCategories"
+    | "selectedXAxisOption"
+    | "selectedYAxisOption";
 }) {
+  const activeAccordion = useScatterplotStore((state) => state.activeAccordion);
+  const selectedItems = useScatterplotStore((state) => state[storePath]);
+
+  function onTitleClick() {
+    useScatterplotStore.setState({
+      activeAccordion:
+        activeAccordion === accordionLabel ? null : accordionLabel,
+    });
+  }
+
+  function onItemSelect(e: MouseEvent<HTMLDivElement>, item: string) {
+    if (typeof selectedItems === "string") {
+      useScatterplotStore.setState({ [storePath]: item });
+    } else {
+      const metaKey = e.metaKey || e.ctrlKey;
+      if (metaKey) {
+        if (selectedItems.includes(item as never)) {
+          useScatterplotStore.setState({
+            [storePath]: selectedItems.filter((i) => i !== item) as never,
+          });
+        } else {
+          useScatterplotStore.setState({
+            [storePath]: [...selectedItems, item] as never,
+          });
+        }
+      } else {
+        if (selectedItems.includes(item as never)) {
+          useScatterplotStore.setState({ [storePath]: [] as never });
+        } else {
+          useScatterplotStore.setState({ [storePath]: [item] as never });
+        }
+      }
+    }
+  }
+
   return (
     <div className="flex flex-col text-sm">
       <motion.div
@@ -38,16 +73,16 @@ function AccordionMultiSelectComponent({
         whileHover={{ backgroundColor: "#365314" }}
         style={{ backgroundColor: "#1a2e05" }}
       >
-        <span className="grow">{title}</span>
+        <span className="grow">{accordionLabel}</span>
         <motion.div
-          animate={{ rotate: isActive ? 180 : 0 }}
+          animate={{ rotate: activeAccordion === accordionLabel ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
           <ChevronDownIcon className="h-4 w-4 text-lime-400" />
         </motion.div>
       </motion.div>
       <AnimatePresence>
-        {isActive && (
+        {activeAccordion === accordionLabel && (
           <motion.div
             className="flex w-full flex-wrap items-start gap-0.5 overflow-y-auto pl-2 text-sm font-light"
             initial={{ maxHeight: 0, opacity: 0 }}
@@ -69,7 +104,7 @@ function AccordionMultiSelectComponent({
                     ? "bg-lime-400 text-black"
                     : "text-lime-400"
                 }`}
-                onClick={() => onItemSelect(item)}
+                onClick={(e) => onItemSelect(e, item)}
                 whileHover={{ backgroundColor: "#365314" }}
                 style={{
                   backgroundColor: selectedItems.includes(item)
@@ -87,89 +122,28 @@ function AccordionMultiSelectComponent({
   );
 }
 
-function ControlsComponent({
-  selectedTypeCategories,
-  setSelectedTypeCategories,
-  selectedSkillCategories,
-  setSelectedSkillCategories,
-  selectedXAxisOption,
-  setSelectedXAxisOption,
-  selectedYAxisOption,
-  setSelectedYAxisOption,
-}: {
-  selectedTypeCategories: TypeCategory[];
-  setSelectedTypeCategories: Dispatch<SetStateAction<TypeCategory[]>>;
-  selectedSkillCategories: SkillCategory[];
-  setSelectedSkillCategories: Dispatch<SetStateAction<SkillCategory[]>>;
-  selectedXAxisOption: AxisOption;
-  setSelectedXAxisOption: Dispatch<SetStateAction<AxisOption>>;
-  selectedYAxisOption: AxisOption;
-  setSelectedYAxisOption: Dispatch<SetStateAction<AxisOption>>;
-}) {
-  const [activeAccordion, setActiveAccordion] = useState<
-    "type" | "skill" | "xAxis" | "yAxis" | null
-  >(null);
-
-  function onTypeCategorySelect(item: string) {
-    setSelectedTypeCategories((prev) =>
-      prev.includes(item as TypeCategory)
-        ? prev.filter((i) => i !== item)
-        : [...prev, item as TypeCategory],
-    );
-  }
-  function onSkillCategorySelect(item: string) {
-    setSelectedSkillCategories((prev) =>
-      prev.includes(item as SkillCategory)
-        ? prev.filter((i) => i !== item)
-        : [...prev, item as SkillCategory],
-    );
-  }
-  function onXAxisOptionSelect(item: string) {
-    setSelectedXAxisOption(item as AxisOption);
-  }
-  function onYAxisOptionSelect(item: string) {
-    setSelectedYAxisOption(item as AxisOption);
-  }
-
-  function onTitleClick(
-    accordion: "type" | "skill" | "xAxis" | "yAxis" | null,
-  ) {
-    setActiveAccordion((prev) => (prev === accordion ? null : accordion));
-  }
-
+function ControlsComponent() {
   return (
     <div className="flex w-56 flex-col bg-lime-400/10">
-      <AccordionMultiSelectComponent
-        isActive={activeAccordion === "type"}
-        title="Type Categories"
+      <AccordionSelectComponent
+        accordionLabel="Type Categories"
         allItems={TYPE_CATEGORIES}
-        selectedItems={selectedTypeCategories}
-        onItemSelect={onTypeCategorySelect}
-        onTitleClick={() => onTitleClick("type")}
+        storePath="selectedTypeCategories"
       />
-      <AccordionMultiSelectComponent
-        isActive={activeAccordion === "skill"}
-        title="Skill Categories"
+      <AccordionSelectComponent
+        accordionLabel="Skill Categories"
         allItems={SKILL_CATEGORIES}
-        selectedItems={selectedSkillCategories}
-        onItemSelect={onSkillCategorySelect}
-        onTitleClick={() => onTitleClick("skill")}
+        storePath="selectedSkillCategories"
       />
-      <AccordionMultiSelectComponent
-        isActive={activeAccordion === "xAxis"}
-        title="X-Axis"
+      <AccordionSelectComponent
+        accordionLabel="X Axis"
         allItems={AXIS_OPTIONS}
-        selectedItems={[selectedXAxisOption]}
-        onItemSelect={onXAxisOptionSelect}
-        onTitleClick={() => onTitleClick("xAxis")}
+        storePath="selectedXAxisOption"
       />
-      <AccordionMultiSelectComponent
-        isActive={activeAccordion === "yAxis"}
-        title="Y-Axis"
+      <AccordionSelectComponent
+        accordionLabel="Y Axis"
         allItems={AXIS_OPTIONS}
-        selectedItems={[selectedYAxisOption]}
-        onItemSelect={onYAxisOptionSelect}
-        onTitleClick={() => onTitleClick("yAxis")}
+        storePath="selectedYAxisOption"
       />
     </div>
   );
@@ -250,14 +224,14 @@ function ScatterplotComponent({
   setActiveSkillName: Dispatch<SetStateAction<SkillName | null>>;
 }) {
   return (
-    <div className="h-full w-full flex-col gap-1 rounded border border-lime-400">
+    <div className="h-full w-full flex-col items-center justify-center gap-1 rounded border border-lime-400">
       <div
         key="vertical-axis-and-dots-container"
         className="flex grow items-center border border-red-500"
       >
         <div
           key="vertical-axis"
-          className="h-52 w-auto border border-orange-400 text-center text-sm font-light"
+          className="h-48 w-6 border border-orange-400 text-center text-sm font-light"
           style={{
             writingMode: "sideways-lr",
             textOrientation: "sideways",
@@ -266,7 +240,7 @@ function ScatterplotComponent({
           {selectedYAxisOption}
         </div>
         <div className="h-full w-full border border-blue-400">
-          <div className="relative top-0 right-0 bottom-0 left-0 m-3 aspect-square h-52 border border-yellow-400 bg-lime-400/10">
+          <div className="relative top-0 right-0 bottom-0 left-0 m-2 h-48 w-48 border border-yellow-400 bg-lime-400/10">
             {SKILLS.map((skill) => (
               <ScatterplotDotComponent
                 key={skill.name}
@@ -283,10 +257,13 @@ function ScatterplotComponent({
       </div>
       <div
         key="empty-space-and-horizontal-axis-container"
-        className="flex h-8 items-center gap-2"
+        className="flex h-6 items-center border border-purple-400"
       >
-        <div className="w-8" />
-        <div key="horizontal-axis" className="flex-1">
+        <div className="flex h-6 w-6 border border-pink-400" />
+        <div
+          key="horizontal-axis"
+          className="mx-2 h-6 w-48 border border-rose-400 text-center text-sm font-light"
+        >
           {selectedXAxisOption}
         </div>
       </div>
@@ -295,41 +272,10 @@ function ScatterplotComponent({
 }
 
 function SkillsComponent() {
-  const [selectedTypeCategories, setSelectedTypeCategories] = useState<
-    TypeCategory[]
-  >([]);
-  const [selectedSkillCategories, setSelectedSkillCategories] = useState<
-    SkillCategory[]
-  >([]);
-  const [selectedXAxisOption, setSelectedXAxisOption] =
-    useState<AxisOption>("Proficiency");
-  const [selectedYAxisOption, setSelectedYAxisOption] =
-    useState<AxisOption>("Years Professional");
-  const [activeSkillName, setActiveSkillName] = useState<SkillName | null>(
-    null,
-  );
-
   return (
     <div className="flex h-full w-full gap-1">
-      <ControlsComponent
-        selectedTypeCategories={selectedTypeCategories}
-        setSelectedTypeCategories={setSelectedTypeCategories}
-        selectedSkillCategories={selectedSkillCategories}
-        setSelectedSkillCategories={setSelectedSkillCategories}
-        selectedXAxisOption={selectedXAxisOption}
-        setSelectedXAxisOption={setSelectedXAxisOption}
-        selectedYAxisOption={selectedYAxisOption}
-        setSelectedYAxisOption={setSelectedYAxisOption}
-      />
-      {/* Scatterplot display square */}
-      <ScatterplotComponent
-        selectedTypeCategories={selectedTypeCategories}
-        selectedSkillCategories={selectedSkillCategories}
-        selectedXAxisOption={selectedXAxisOption}
-        selectedYAxisOption={selectedYAxisOption}
-        activeSkillName={activeSkillName}
-        setActiveSkillName={setActiveSkillName}
-      />
+      <ControlsComponent />
+      {/* <ScatterplotComponent /> */}
       {/* Area to display skill details */}
     </div>
   );
