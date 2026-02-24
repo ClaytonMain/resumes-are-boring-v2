@@ -1,6 +1,13 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { AnimatePresence, motion } from "motion/react";
-import { type Dispatch, type MouseEvent, type SetStateAction } from "react";
+import { AnimatePresence, motion, useMotionValue } from "motion/react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type Dispatch,
+  type MouseEvent,
+  type SetStateAction,
+} from "react";
 import { CONTENT_CONTAINER_CLASS_NAME } from "../../constants/constants";
 import useScatterplotStore from "../../stores/useScatterplotStore";
 import {
@@ -42,24 +49,35 @@ function AccordionSelectComponent({
 
   function onItemSelect(e: MouseEvent<HTMLDivElement>, item: string) {
     if (typeof selectedItems === "string") {
-      useScatterplotStore.setState({ [storePath]: item });
+      useScatterplotStore.setState({
+        [storePath]: item,
+        updatedAt: e.timeStamp,
+      } as never);
     } else {
       const metaKey = e.metaKey || e.ctrlKey;
       if (metaKey) {
         if (selectedItems.includes(item as never)) {
           useScatterplotStore.setState({
             [storePath]: selectedItems.filter((i) => i !== item) as never,
+            updatedAt: e.timeStamp,
           });
         } else {
           useScatterplotStore.setState({
             [storePath]: [...selectedItems, item] as never,
+            updatedAt: e.timeStamp,
           });
         }
       } else {
         if (selectedItems.includes(item as never)) {
-          useScatterplotStore.setState({ [storePath]: [] as never });
+          useScatterplotStore.setState({
+            [storePath]: [] as never,
+            updatedAt: e.timeStamp,
+          });
         } else {
-          useScatterplotStore.setState({ [storePath]: [item] as never });
+          useScatterplotStore.setState({
+            [storePath]: [item] as never,
+            updatedAt: e.timeStamp,
+          });
         }
       }
     }
@@ -149,34 +167,31 @@ function ControlsComponent() {
   );
 }
 
-function ScatterplotDotComponent({
-  skillName,
-  selectedTypeCategories,
-  selectedSkillCategories,
-  selectedXAxisOption,
-  selectedYAxisOption,
-  setActiveSkillName,
-}: {
-  skillName: SkillName;
-  selectedTypeCategories: TypeCategory[];
-  selectedSkillCategories: SkillCategory[];
-  selectedXAxisOption: AxisOption;
-  selectedYAxisOption: AxisOption;
-  setActiveSkillName: Dispatch<SetStateAction<SkillName | null>>;
-}) {
-  const skill = SKILLS.find((s) => s.name === skillName)!;
+function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
+  const skill = useMemo(
+    () => SKILLS.find((s) => s.name === skillName)!,
+    [skillName],
+  );
 
-  const typeCategoryMatch =
-    selectedTypeCategories.length === 0 ||
-    selectedTypeCategories.includes(skill.typeCategory);
-  const skillCategoryMatch =
-    selectedSkillCategories.length === 0 ||
-    skill.skillCategories === "auto" ||
-    skill.skillCategories.some((sc) => selectedSkillCategories.includes(sc));
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-  if (!typeCategoryMatch || !skillCategoryMatch) {
-    return null;
-  }
+  const [isActiveSkill, setIsActiveSkill] = useState(
+    useScatterplotStore.getState().activeSkillName === skillName,
+  );
+
+  useEffect(() => {
+    const unsubUpdatedAt = useScatterplotStore.subscribe(
+      (state) => state.updatedAt,
+      () => {
+        const activeSkillName = useScatterplotStore.getState().activeSkillName;
+        setIsActiveSkill(activeSkillName === skillName);
+      },
+    );
+    return () => {
+      unsubUpdatedAt();
+    };
+  }, [skillName]);
 
   function getAxisValue(option: AxisOption) {
     switch (option) {
@@ -197,8 +212,7 @@ function ScatterplotDotComponent({
   return (
     <motion.div
       className="absolute aspect-square h-2 -translate-x-1/2 translate-y-1/2 rounded-full bg-lime-400"
-      initial={{ left: 0, top: 0 }}
-      animate={{ left: `${(x / 10) * 100}%`, top: `${100 - (y / 10) * 100}%` }}
+      animate={{ x: x, y: y, scale: isActiveSkill ? 2 : 1 }}
       transition={{ type: "spring" }}
       onHoverStart={() => setActiveSkillName(skill.name)}
       onHoverEnd={() => setActiveSkillName(null)}
@@ -208,21 +222,14 @@ function ScatterplotDotComponent({
   );
 }
 
-function ScatterplotComponent({
-  selectedTypeCategories,
-  selectedSkillCategories,
-  selectedXAxisOption,
-  selectedYAxisOption,
-  activeSkillName,
-  setActiveSkillName,
-}: {
-  selectedTypeCategories: TypeCategory[];
-  selectedSkillCategories: SkillCategory[];
-  selectedXAxisOption: AxisOption;
-  selectedYAxisOption: AxisOption;
-  activeSkillName: SkillName | null;
-  setActiveSkillName: Dispatch<SetStateAction<SkillName | null>>;
-}) {
+function ScatterplotComponent() {
+  const selectedXAxisOption = useScatterplotStore(
+    (state) => state.selectedXAxisOption,
+  );
+  const selectedYAxisOption = useScatterplotStore(
+    (state) => state.selectedYAxisOption,
+  );
+
   return (
     <div className="h-full w-full flex-col items-center justify-center gap-1 rounded border border-lime-400">
       <div
@@ -245,11 +252,6 @@ function ScatterplotComponent({
               <ScatterplotDotComponent
                 key={skill.name}
                 skillName={skill.name}
-                selectedTypeCategories={selectedTypeCategories}
-                selectedSkillCategories={selectedSkillCategories}
-                selectedXAxisOption={selectedXAxisOption}
-                selectedYAxisOption={selectedYAxisOption}
-                setActiveSkillName={setActiveSkillName}
               />
             ))}
           </div>
@@ -275,7 +277,7 @@ function SkillsComponent() {
   return (
     <div className="flex h-full w-full gap-1">
       <ControlsComponent />
-      {/* <ScatterplotComponent /> */}
+      <ScatterplotComponent />
       {/* Area to display skill details */}
     </div>
   );

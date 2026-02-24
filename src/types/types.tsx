@@ -64,4 +64,5 @@ export interface ScatterplotStore {
   selectedYAxisOption: AxisOption;
   activeSkillName: SkillName | null;
   activeAccordion: ScatterplotAccordionLabel | null;
+  updatedAt: number;
 }

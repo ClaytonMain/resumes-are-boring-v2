@@ -19,6 +19,7 @@ const useScatterplotStore = create<ScatterplotStore>()(
         selectedYAxisOption: "Proficiency",
         activeSkillName: null,
         activeAccordion: null,
+        updatedAt: 0,
       }),
       {
         name: "resumes-are-boring-scatterplot-store",
