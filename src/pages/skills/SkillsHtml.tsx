@@ -1,13 +1,6 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { AnimatePresence, motion, useMotionValue } from "motion/react";
-import {
-  useEffect,
-  useMemo,
-  useState,
-  type Dispatch,
-  type MouseEvent,
-  type SetStateAction,
-} from "react";
+import { AnimatePresence, motion, useSpring } from "motion/react";
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { CONTENT_CONTAINER_CLASS_NAME } from "../../constants/constants";
 import useScatterplotStore from "../../stores/useScatterplotStore";
 import {
@@ -19,9 +12,8 @@ import {
 import type {
   AxisOption,
   ScatterplotAccordionLabel,
-  SkillCategory,
+  Skill,
   SkillName,
-  TypeCategory,
 } from "./types";
 
 function AccordionSelectComponent({
@@ -118,14 +110,14 @@ function AccordionSelectComponent({
                 }}
                 exit={{ opacity: 0 }}
                 className={`cursor-pointer rounded-sm border border-lime-400/20 px-1 ${
-                  selectedItems.includes(item)
+                  selectedItems.includes(item as never)
                     ? "bg-lime-400 text-black"
                     : "text-lime-400"
                 }`}
                 onClick={(e) => onItemSelect(e, item)}
                 whileHover={{ backgroundColor: "#365314" }}
                 style={{
-                  backgroundColor: selectedItems.includes(item)
+                  backgroundColor: selectedItems.includes(item as never)
                     ? "#84cc16"
                     : "transparent",
                 }}
@@ -167,16 +159,52 @@ function ControlsComponent() {
   );
 }
 
+function getAxisPercentValue(
+  skill: Skill,
+  option: AxisOption,
+  axis: "x" | "y",
+) {
+  let skillValue: number;
+  switch (option) {
+    case "Proficiency":
+      skillValue = skill.proficiency;
+      break;
+    case "Years Professional":
+      skillValue =
+        skill.years.professional === -1 ? 10 : skill.years.professional;
+      break;
+    case "Years Personal":
+      skillValue = skill.years.personal === -1 ? 10 : skill.years.personal;
+      break;
+    case "Personal Enjoyment":
+      skillValue = skill.personalEnjoyment;
+      break;
+  }
+  return `${(skillValue / 10) * 100}%`;
+}
+
 function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
   const skill = useMemo(
     () => SKILLS.find((s) => s.name === skillName)!,
     [skillName],
   );
 
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
+  const x = useSpring(
+    getAxisPercentValue(
+      skill,
+      useScatterplotStore.getState().selectedXAxisOption,
+      "x",
+    ),
+  );
+  const y = useSpring(
+    getAxisPercentValue(
+      skill,
+      useScatterplotStore.getState().selectedYAxisOption,
+      "y",
+    ),
+  );
 
-  const [isActiveSkill, setIsActiveSkill] = useState(
+  const [, setIsActiveSkill] = useState(
     useScatterplotStore.getState().activeSkillName === skillName,
   );
 
@@ -186,37 +214,31 @@ function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
       () => {
         const activeSkillName = useScatterplotStore.getState().activeSkillName;
         setIsActiveSkill(activeSkillName === skillName);
+        x.set(
+          getAxisPercentValue(
+            skill,
+            useScatterplotStore.getState().selectedXAxisOption,
+            "x",
+          ),
+        );
+        y.set(
+          getAxisPercentValue(
+            skill,
+            useScatterplotStore.getState().selectedYAxisOption,
+            "y",
+          ),
+        );
       },
     );
     return () => {
       unsubUpdatedAt();
     };
-  }, [skillName]);
-
-  function getAxisValue(option: AxisOption) {
-    switch (option) {
-      case "Proficiency":
-        return skill.proficiency;
-      case "Years Professional":
-        return skill.years.professional === -1 ? 10 : skill.years.professional;
-      case "Years Personal":
-        return skill.years.personal === -1 ? 10 : skill.years.personal;
-      case "Personal Enjoyment":
-        return skill.personalEnjoyment;
-    }
-  }
-
-  const x = getAxisValue(selectedXAxisOption);
-  const y = getAxisValue(selectedYAxisOption);
+  }, [skill, skillName, x, y]);
 
   return (
     <motion.div
-      className="absolute aspect-square h-2 -translate-x-1/2 translate-y-1/2 rounded-full bg-lime-400"
-      animate={{ x: x, y: y, scale: isActiveSkill ? 2 : 1 }}
-      transition={{ type: "spring" }}
-      onHoverStart={() => setActiveSkillName(skill.name)}
-      onHoverEnd={() => setActiveSkillName(null)}
-      onClick={() => setActiveSkillName(skill.name)}
+      className="relative h-2 w-2 rounded-full bg-lime-400"
+      style={{ top: y, left: x }}
       title={skill.name}
     />
   );
@@ -247,13 +269,17 @@ function ScatterplotComponent() {
           {selectedYAxisOption}
         </div>
         <div className="h-full w-full border border-blue-400">
-          <div className="relative top-0 right-0 bottom-0 left-0 m-2 h-48 w-48 border border-yellow-400 bg-lime-400/10">
+          <div className="relative m-2 h-48 w-48 border border-yellow-400 bg-lime-400/10">
             {SKILLS.map((skill) => (
               <ScatterplotDotComponent
                 key={skill.name}
                 skillName={skill.name}
               />
             ))}
+            <div
+              style={{ x: "0cqw", y: "100cqh" }}
+              className="absolute h-2 w-2 rounded-full bg-rose-500"
+            />
           </div>
         </div>
       </div>
