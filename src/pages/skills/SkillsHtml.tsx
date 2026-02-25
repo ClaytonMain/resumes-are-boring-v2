@@ -1,5 +1,11 @@
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { AnimatePresence, motion, useSpring } from "motion/react";
+import {
+  AnimatePresence,
+  motion,
+  useSpring,
+  useTime,
+  useTransform,
+} from "motion/react";
 import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { CONTENT_CONTAINER_CLASS_NAME } from "../../constants/constants";
 import useScatterplotStore from "../../stores/useScatterplotStore";
@@ -8,6 +14,7 @@ import {
   SKILL_CATEGORIES,
   SKILLS,
   TYPE_CATEGORIES,
+  TYPE_CATEGORY_COLORS,
 } from "./constants";
 import type {
   AxisOption,
@@ -60,7 +67,10 @@ function AccordionSelectComponent({
           });
         }
       } else {
-        if (selectedItems.includes(item as never)) {
+        if (
+          selectedItems.includes(item as never) &&
+          selectedItems.length === 1
+        ) {
           useScatterplotStore.setState({
             [storePath]: [] as never,
             updatedAt: e.timeStamp,
@@ -115,7 +125,11 @@ function AccordionSelectComponent({
                     : "text-lime-400"
                 }`}
                 onClick={(e) => onItemSelect(e, item)}
-                whileHover={{ backgroundColor: "#365314" }}
+                whileHover={{
+                  backgroundColor: selectedItems.includes(item as never)
+                    ? "#65a30d"
+                    : "#365314",
+                }}
                 style={{
                   backgroundColor: selectedItems.includes(item as never)
                     ? "#84cc16"
@@ -180,7 +194,11 @@ function getAxisPercentValue(
       skillValue = skill.personalEnjoyment;
       break;
   }
-  return `${(skillValue / 10) * 100}%`;
+  if (axis === "x") {
+    return (skillValue / 10) * 100;
+  } else {
+    return 100 - (skillValue / 10) * 100;
+  }
 }
 
 function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
@@ -189,19 +207,38 @@ function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
     [skillName],
   );
 
-  const x = useSpring(
+  const xBase = useSpring(
     getAxisPercentValue(
       skill,
       useScatterplotStore.getState().selectedXAxisOption,
       "x",
     ),
   );
-  const y = useSpring(
+  const yBase = useSpring(
     getAxisPercentValue(
       skill,
       useScatterplotStore.getState().selectedYAxisOption,
       "y",
     ),
+  );
+  const time = useTime();
+
+  const rand = useMemo(() => {
+    return {
+      tPhaseOffsetX: Math.random() * 1000,
+      tPhaseOffsetY: Math.random() * 1000,
+      tFreqOffsetX: Math.random() * 0.5 + 0.5 * Math.sign(Math.random() - 0.5),
+      tFreqOffsetY: Math.random() * 0.5 + 0.5 * Math.sign(Math.random() - 0.5),
+    };
+  }, []);
+
+  const x = useTransform(
+    () =>
+      `${xBase.get() + Math.cos((time.get() + rand.tPhaseOffsetX) * 0.001 * rand.tFreqOffsetX) * 0.5}%`,
+  );
+  const y = useTransform(
+    () =>
+      `${yBase.get() + Math.sin((time.get() + rand.tPhaseOffsetY) * 0.001 * rand.tFreqOffsetY) * 0.5}%`,
   );
 
   const [, setIsActiveSkill] = useState(
@@ -214,14 +251,14 @@ function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
       () => {
         const activeSkillName = useScatterplotStore.getState().activeSkillName;
         setIsActiveSkill(activeSkillName === skillName);
-        x.set(
+        xBase.set(
           getAxisPercentValue(
             skill,
             useScatterplotStore.getState().selectedXAxisOption,
             "x",
           ),
         );
-        y.set(
+        yBase.set(
           getAxisPercentValue(
             skill,
             useScatterplotStore.getState().selectedYAxisOption,
@@ -233,12 +270,16 @@ function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
     return () => {
       unsubUpdatedAt();
     };
-  }, [skill, skillName, x, y]);
+  }, [skill, skillName, xBase, yBase]);
 
   return (
     <motion.div
-      className="relative h-2 w-2 rounded-full bg-lime-400"
-      style={{ top: y, left: x }}
+      className="absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+      style={{
+        top: y,
+        left: x,
+        backgroundColor: TYPE_CATEGORY_COLORS[skill.typeCategory],
+      }}
       title={skill.name}
     />
   );
@@ -253,14 +294,14 @@ function ScatterplotComponent() {
   );
 
   return (
-    <div className="h-full w-full flex-col items-center justify-center gap-1 rounded border border-lime-400">
+    <div className="h-full w-full flex-col items-center justify-center gap-1 rounded">
       <div
         key="vertical-axis-and-dots-container"
-        className="flex grow items-center border border-red-500"
+        className="flex grow items-center"
       >
         <div
           key="vertical-axis"
-          className="h-48 w-6 border border-orange-400 text-center text-sm font-light"
+          className="h-48 w-6 text-center text-sm font-light"
           style={{
             writingMode: "sideways-lr",
             textOrientation: "sideways",
@@ -268,29 +309,27 @@ function ScatterplotComponent() {
         >
           {selectedYAxisOption}
         </div>
-        <div className="h-full w-full border border-blue-400">
-          <div className="relative m-2 h-48 w-48 border border-yellow-400 bg-lime-400/10">
-            {SKILLS.map((skill) => (
-              <ScatterplotDotComponent
-                key={skill.name}
-                skillName={skill.name}
-              />
-            ))}
-            <div
-              style={{ x: "0cqw", y: "100cqh" }}
-              className="absolute h-2 w-2 rounded-full bg-rose-500"
-            />
+        <div className="h-full w-full">
+          <div className="m-1 h-52 w-52 rounded-sm border border-lime-400 bg-lime-400/10">
+            <div className="relative m-1.75 h-48 w-48">
+              {SKILLS.map((skill) => (
+                <ScatterplotDotComponent
+                  key={skill.name}
+                  skillName={skill.name}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
       <div
         key="empty-space-and-horizontal-axis-container"
-        className="flex h-6 items-center border border-purple-400"
+        className="flex h-6 items-center"
       >
-        <div className="flex h-6 w-6 border border-pink-400" />
+        <div className="flex h-6 w-6" />
         <div
           key="horizontal-axis"
-          className="mx-2 h-6 w-48 border border-rose-400 text-center text-sm font-light"
+          className="mx-2 h-6 w-48 text-center text-sm font-light"
         >
           {selectedXAxisOption}
         </div>

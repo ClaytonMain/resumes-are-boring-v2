@@ -42,8 +42,16 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
 export const TYPE_CATEGORIES: TypeCategory[] = [
   "Language",
   "Tool",
+  "Framework",
   "Softskill",
 ];
+
+export const TYPE_CATEGORY_COLORS: Record<TypeCategory, string> = {
+  Language: "#84cc16",
+  Tool: "#facc15",
+  Framework: "#3b82f6",
+  Softskill: "#f87171",
+};
 
 export const AXIS_OPTIONS: AxisOption[] = [
   "Proficiency",

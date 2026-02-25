@@ -18,7 +18,7 @@ export type SkillName =
   | "Google Sheets"
   | "Shell";
 
-export type TypeCategory = "Language" | "Tool" | "Softskill";
+export type TypeCategory = "Language" | "Tool" | "Framework" | "Softskill";
 
 type YearsExperience = {
   professional: number; // -1 if display as 10+
