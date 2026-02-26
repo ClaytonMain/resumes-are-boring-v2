@@ -234,11 +234,11 @@ function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
 
   const x = useTransform(
     () =>
-      `${xBase.get() + Math.cos((time.get() + rand.tPhaseOffsetX) * 0.001 * rand.tFreqOffsetX) * 0.5}%`,
+      `${xBase.get() + Math.cos((time.get() + rand.tPhaseOffsetX) * 0.0001 * rand.tFreqOffsetX) * 0.75}%`,
   );
   const y = useTransform(
     () =>
-      `${yBase.get() + Math.sin((time.get() + rand.tPhaseOffsetY) * 0.001 * rand.tFreqOffsetY) * 0.5}%`,
+      `${yBase.get() + Math.sin((time.get() + rand.tPhaseOffsetY) * 0.0001 * rand.tFreqOffsetY) * 0.75}%`,
   );
 
   const [, setIsActiveSkill] = useState(
@@ -274,7 +274,7 @@ function ScatterplotDotComponent({ skillName }: { skillName: SkillName }) {
 
   return (
     <motion.div
-      className="absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+      className="absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border opacity-80"
       style={{
         top: y,
         left: x,
