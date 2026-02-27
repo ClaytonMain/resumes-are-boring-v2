@@ -338,11 +338,27 @@ function ScatterplotComponent() {
   );
 }
 
+function SkillListComponent() {
+  return (
+    <div className="flex h-auto w-full flex-col gap-1">
+      {SKILLS.map((skill) => (
+        <div
+          key={skill.name}
+          className="flex h-12 w-full items-center gap-1 rounded border border-lime-400/20 p-3 text-xl font-semibold"
+        >
+          <span className="grow">{skill.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function SkillsComponent() {
   return (
     <div className="flex h-full w-full gap-1">
-      <ControlsComponent />
-      <ScatterplotComponent />
+      <SkillListComponent />
+      {/* <ControlsComponent />
+      <ScatterplotComponent /> */}
       {/* Area to display skill details */}
     </div>
   );
@@ -387,7 +403,7 @@ export default function SkillsHtml() {
       </div>
       <span className="w-full border-b border-lime-400" />
       <div
-        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-64 w-150 snap-y snap-mandatory flex-col gap-2 overflow-y-scroll"
+        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-150 w-250 snap-y snap-mandatory flex-col gap-2 overflow-y-auto"
         style={{
           scrollbarColor: "#f7fee7 #84cc161a",
         }}
