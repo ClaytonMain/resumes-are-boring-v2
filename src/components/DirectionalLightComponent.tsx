@@ -2,13 +2,20 @@ import { useHelper } from "@react-three/drei";
 import { useControls } from "leva";
 import { useRef } from "react";
 import * as THREE from "three";
+import useAppStore from "../stores/useAppStore";
 
 export default function DirectionalLightComponent() {
   const directionalLightRef = useRef<THREE.DirectionalLight>(null!);
   const shadowCameraRef = useRef<THREE.OrthographicCamera>(null!);
+  const debug = useAppStore((state) => state.debug);
 
-  useHelper(directionalLightRef, THREE.DirectionalLightHelper, 1, "red");
-  useHelper(shadowCameraRef, THREE.CameraHelper);
+  useHelper(
+    debug && directionalLightRef,
+    THREE.DirectionalLightHelper,
+    1,
+    "red",
+  );
+  useHelper(debug && shadowCameraRef, THREE.CameraHelper);
 
   const shadowCameraControls = useControls("Shadow Camera", {
     left: {
@@ -78,8 +85,6 @@ export default function DirectionalLightComponent() {
       ref={directionalLightRef}
       position={[-5, 3, 5]}
       castShadow
-      // shadow-mapSize-height={1024}
-      // shadow-mapSize-width={1920}
       shadow-mapSize-height={1024}
       shadow-mapSize-width={1024}
     >

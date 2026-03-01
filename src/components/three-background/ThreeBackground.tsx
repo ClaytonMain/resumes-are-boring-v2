@@ -1,260 +1,42 @@
-import { useSpringValue } from "@react-spring/three";
 import {
   Bounds,
   Box,
   createInstances,
-  Instance,
   InstancedAttribute,
-  RoundedBoxGeometry,
-  useBounds,
+  Plane,
+  useFBO,
 } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
-import { produce } from "immer";
-import { button, useControls } from "leva";
+import { createPortal, useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
-import {
-  DEFAULT_CAMERA_FOV,
-  PAGE_THREE_COLORS,
-} from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
-import ThreeBackgroundComponent from "./ThreeBackgroundComponent";
-import type { ThreeBackgroundUniforms } from "./types/types";
+import mouseIntersectFragmentShader from "./shaders/mouse-intersect/mouseIntersect.frag";
+import mouseIntersectVertexShader from "./shaders/mouse-intersect/mouseIntersect.vert";
 
-const COLOR_SPRING_COUNT = 10;
-const COLOR_SPRING_CONFIG = { config: { duration: 400 } };
-const COLOR_SPRING_DELAY_FACTOR = 200;
+// ********
+// Hexagons
+// ********
 
-function ColorSpringComponent({
-  index,
-  colors,
-  colorType,
-}: {
-  index: number;
-  colors: Array<THREE.Color>;
-  colorType: "diffuse" | "subsurface";
-}) {
-  const colorSpring = useSpringValue(
-    `#${colors[index].getHexString()}`,
-    COLOR_SPRING_CONFIG,
-  );
+// Without rotating the hexagons, the default orientation of the cylinderGeometry
+// has us using the "pointy" orientation described here:
+// https://www.redblobgames.com/grids/hexagons/#spacing
 
-  useEffect(() => {
-    const unsubDiffuse = useAppStore.subscribe(
-      (state) => state.targetBackgroundDiffuseUpdatedAt,
-      () => {
-        if (colorType !== "diffuse") return;
-        const targetColor = useAppStore.getState().targetBackgroundDiffuse;
-        colorSpring.start(`#${targetColor.getHexString()}`, {
-          delay: index * COLOR_SPRING_DELAY_FACTOR,
-        });
-      },
-    );
-    const unsubSubsurface = useAppStore.subscribe(
-      (state) => state.targetBackgroundSubsurfaceUpdatedAt,
-      () => {
-        if (colorType !== "subsurface") return;
-        const targetColor = useAppStore.getState().targetBackgroundSubsurface;
-        colorSpring.start(`#${targetColor.getHexString()}`, {
-          delay: index * COLOR_SPRING_DELAY_FACTOR,
-        });
-      },
-    );
-    return () => {
-      unsubDiffuse();
-      unsubSubsurface();
-    };
-  }, [colorType, colorSpring, index]);
-
-  useFrame(() => {
-    if (colorSpring.idle) return;
-
-    colors[index].set(colorSpring.get());
-  });
-
-  return null;
-}
-
-// export default function ThreeBackground() {
-//   const displayThreeBackgroundRef = useRef(
-//     useAppStore.getState().displayThreeBackground,
-//   );
-//   const kickItUpANotchRef = useRef(useAppStore.getState().kickItUpANotch);
-
-//   useEffect(() => {
-//     const unsubDisplayThreeBackground = useAppStore.subscribe(
-//       (state) => state.displayThreeBackground,
-//       (value) => {
-//         displayThreeBackgroundRef.current = value;
-//       },
-//     );
-//     const unsubCurrentPage = useAppStore.subscribe(
-//       (state) => state.currentPage,
-//       (value, previousValue) => {
-//         if (value !== previousValue) {
-//           useAppStore.setState(
-//             produce((state) => {
-//               state.targetBackgroundDiffuse.set(
-//                 PAGE_THREE_COLORS[value].diffuse,
-//               );
-//               state.targetBackgroundDiffuseUpdatedAt = Date.now();
-//               state.targetBackgroundSubsurface.set(
-//                 PAGE_THREE_COLORS[value].subsurface,
-//               );
-//               state.targetBackgroundSubsurfaceUpdatedAt = Date.now();
-//             }),
-//           );
-//         }
-//       },
-//     );
-//     return () => {
-//       unsubDisplayThreeBackground();
-//       unsubCurrentPage();
-//     };
-//   }, []);
-
-//   const diffuseColors = Array.from(
-//     { length: COLOR_SPRING_COUNT },
-//     () => new THREE.Color("#ffa9a9"),
-//   );
-//   const subsurfaceColors = Array.from(
-//     { length: COLOR_SPRING_COUNT },
-//     () => new THREE.Color("#ef0717"),
-//   );
-
-//   const uniforms: ThreeBackgroundUniforms = useMemo(() => {
-//     return {
-//       uTime: { value: 0 },
-//       uCameraPosition: { value: new THREE.Vector3() },
-//       uInverseViewMatrix: { value: new THREE.Matrix4() },
-//       uResolution: { value: new THREE.Vector2() },
-//       uGlZ: {
-//         value: -1 / (2 * Math.tan(DEFAULT_CAMERA_FOV * (Math.PI / 180) * 0.5)),
-//       },
-//       uVisibility: { value: 0 },
-//       uZSpacing: { value: 4 },
-//       uLightColor: { value: new THREE.Color("#ffffff") },
-//       uSubsurfaceRadius: { value: 0.8 },
-//       uRoughness: { value: 1.0 },
-//       uRefractionIndex: { value: 1.57 },
-
-//       uDiffuseColors: { value: diffuseColors },
-//       uSubsurfaceColors: { value: subsurfaceColors },
-//     };
-//   }, [diffuseColors, subsurfaceColors]);
-
-//   useControls({
-//     resetBackgroundVisibility: button(() => (uniforms.uVisibility.value = 0)),
-//     uZSpacing: {
-//       value: uniforms.uZSpacing.value,
-//       min: 0.1,
-//       max: 20,
-//       step: 0.1,
-//       onChange: (value) => (uniforms.uZSpacing.value = value),
-//     },
-//     uLightColor: {
-//       value: `#${uniforms.uLightColor.value.getHexString()}`,
-//       onChange: (value) => {
-//         const color = new THREE.Color(value);
-//         uniforms.uLightColor.value.copy(color);
-//       },
-//     },
-//     uSubsurfaceRadius: {
-//       value: uniforms.uSubsurfaceRadius.value,
-//       min: 0,
-//       max: 5,
-//       step: 0.1,
-//       onChange: (value) => (uniforms.uSubsurfaceRadius.value = value),
-//     },
-//     uRoughness: {
-//       value: uniforms.uRoughness.value,
-//       min: 0,
-//       max: 1,
-//       step: 0.01,
-//       onChange: (value) => (uniforms.uRoughness.value = value),
-//     },
-//     uRefractionIndex: {
-//       value: uniforms.uRefractionIndex.value,
-//       min: 1,
-//       max: 3,
-//       step: 0.01,
-//       onChange: (value) => (uniforms.uRefractionIndex.value = value),
-//     },
-//   });
-
-//   const cameraPosition = new THREE.Vector3();
-//   const uDeltaRef = useRef(0);
-//   const uTimeRef = useRef(0);
-//   const mouseVector = new THREE.Vector3();
-
-//   useFrame(({ camera, pointer }, delta) => {
-//     uDeltaRef.current = Math.min(delta, 0.1);
-//     uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
-
-//     camera.getWorldPosition(cameraPosition);
-//     mouseVector.lerp(
-//       new THREE.Vector3(-pointer.x * 0.1, -pointer.y * 0.1, 0),
-//       0.01,
-//     );
-//     cameraPosition.copy(cameraPosition.clone().add(mouseVector));
-
-//     uniforms.uInverseViewMatrix.value.copy(camera.matrixWorld);
-
-//     uniforms.uTime.value = uTimeRef.current;
-//     uniforms.uCameraPosition.value.copy(cameraPosition);
-//     uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-
-//     if (displayThreeBackgroundRef.current && uniforms.uVisibility.value < 1) {
-//       uniforms.uVisibility.value = Math.min(
-//         uniforms.uVisibility.value + uDeltaRef.current * 0.1,
-//         1,
-//       );
-//     }
-
-//     if (
-//       uniforms.uVisibility.value > 0.35 &&
-//       kickItUpANotchRef.current !== "BAM!"
-//     ) {
-//       useAppStore.setState({ kickItUpANotch: "BAM!" });
-//       kickItUpANotchRef.current = "BAM!";
-//     }
-
-//     // Array.from({length: 10}).forEach()
-
-//     uniforms.uDiffuseColors.value = diffuseColors;
-//     uniforms.uSubsurfaceColors.value = subsurfaceColors;
-//   });
-
-//   return (
-//     <>
-//       <ThreeBackgroundComponent uniforms={uniforms} />
-//       {Array.from({ length: COLOR_SPRING_COUNT }).map((_, index) => (
-//         <ColorSpringComponent
-//           key={`color-spring-diffuse-${index}`}
-//           index={index}
-//           colors={diffuseColors}
-//           colorType="diffuse"
-//         />
-//       ))}
-//       {Array.from({ length: COLOR_SPRING_COUNT }).map((_, index) => (
-//         <ColorSpringComponent
-//           key={`color-spring-subsurface-${index}`}
-//           index={index}
-//           colors={subsurfaceColors}
-//           colorType="subsurface"
-//         />
-//       ))}
-//     </>
-//   );
-// }
-
-const GRID_SIZE = 15;
+// The size of the grid along the x axis in world units.
+const GRID_X_SIZE = 15;
+// How many hexagons along the x and z axes.
 const GRID_DIVISIONS = 80;
 const GRID_BLOCK_HEIGHT = 1;
 const BLOCK_SCALE_FACTOR = 1.0;
+
+const HEXAGON_X_SPACING = GRID_X_SIZE / GRID_DIVISIONS;
+// The radius of the hexagon from its center to any vertex.
+const HEXAGON_POINT_RADIUS =
+  (HEXAGON_X_SPACING / Math.sqrt(3)) * BLOCK_SCALE_FACTOR;
+const HEXAGON_Z_SPACING = (HEXAGON_POINT_RADIUS / BLOCK_SCALE_FACTOR) * 1.5;
+const GRID_Z_SIZE = GRID_DIVISIONS * HEXAGON_Z_SPACING;
 
 interface GridBlockInstanceAttributes {
   aDistanceFromCenter: number;
@@ -272,26 +54,250 @@ function GridBlock({ position }: { position: THREE.Vector3 }) {
   );
 }
 
+// *********************
+// Mouse Intersect Plane
+// *********************
+const MOUSE_INTERSECT_PIXELS = 256;
+function getMouseIntersectDataTextureData() {
+  const data = new Float32Array(
+    MOUSE_INTERSECT_PIXELS * MOUSE_INTERSECT_PIXELS * 4,
+  );
+  for (let i = 0; i < MOUSE_INTERSECT_PIXELS * MOUSE_INTERSECT_PIXELS; i++) {
+    const i4 = i * 4;
+    data[i4 + 0] = 0.0;
+    data[i4 + 1] = 0.0;
+    data[i4 + 2] = 0.0;
+    data[i4 + 3] = 1.0;
+  }
+  return data;
+}
+function getMouseIntersectDataTexture() {
+  const data = getMouseIntersectDataTextureData();
+  const texture = new THREE.DataTexture(
+    data,
+    MOUSE_INTERSECT_PIXELS,
+    MOUSE_INTERSECT_PIXELS,
+    THREE.RGBAFormat,
+    THREE.FloatType,
+  );
+  texture.needsUpdate = true;
+  return texture;
+}
+
+// *****
+// Final
+// *****
 export default function ThreeBackground() {
   const debug = useAppStore((state) => state.debug);
 
-  const uniforms = useMemo(() => {
+  // **********
+  // Background
+  // **********
+  const backgroundUniforms = useMemo(() => {
     return {
       uTime: { value: 0 },
+      uMouseTrailTexture: { value: new THREE.DataTexture() },
     };
   }, []);
 
+  // *********************
+  // Mouse intersect plane
+  // *********************
+  const mouseIntersectMaterialRef00 = useRef<THREE.ShaderMaterial>(null!);
+  const mouseIntersectMaterialRef01 = useRef<THREE.ShaderMaterial>(null!);
+  const mouseIntersectPlaneRef = useRef<THREE.Mesh>(null!);
+  const mouseIntersectScene00 = useMemo(() => new THREE.Scene(), []);
+  const mouseIntersectScene01 = useMemo(() => new THREE.Scene(), []);
+  const mouseIntersectCamera = useMemo(
+    () => new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1),
+    [],
+  );
+  const initialMouseIntersectTexture = getMouseIntersectDataTexture();
+  const mouseIntersectRenderTarget00 = useFBO(
+    MOUSE_INTERSECT_PIXELS,
+    MOUSE_INTERSECT_PIXELS,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const mouseIntersectRenderTarget01 = useFBO(
+    MOUSE_INTERSECT_PIXELS,
+    MOUSE_INTERSECT_PIXELS,
+    {
+      minFilter: THREE.NearestFilter,
+      magFilter: THREE.NearestFilter,
+      format: THREE.RGBAFormat,
+      stencilBuffer: false,
+      depthBuffer: false,
+      type: THREE.FloatType,
+    },
+  );
+  const mouseIntersectUniforms = useMemo(() => {
+    return {
+      uDelta: { value: 0 },
+      uMouseUv: { value: new THREE.Vector2() },
+      uMouseVelocity: { value: 0 },
+      uMouseTrailTexture: { value: initialMouseIntersectTexture },
+    };
+  }, [initialMouseIntersectTexture]);
+  const renderPlanePositions = useMemo(
+    () =>
+      new Float32Array([
+        -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, 1, 0, -1, 1, 0,
+      ]),
+    [],
+  );
+  const renderPlaneUvs = useMemo(
+    () => new Float32Array([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1]),
+    [],
+  );
+
   const uDeltaRef = useRef(0);
   const uTimeRef = useRef(0);
-  useFrame((_, delta) => {
+
+  const raycaster = new THREE.Raycaster();
+  const currentIntersectUv = new THREE.Vector2();
+
+  const prevPointer = new THREE.Vector2();
+  const currentPointer = new THREE.Vector2();
+  const deltaPointer = new THREE.Vector2();
+  const pointerVelocityRef = useRef(-1);
+
+  const pingPongRef = useRef(true);
+  useFrame(({ pointer, camera, gl }, delta) => {
     uDeltaRef.current = Math.min(delta, 0.1);
     uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
+
+    // Handle mouse intersection logic
+    raycaster.setFromCamera(pointer, camera);
+    const intersects = raycaster.intersectObject(
+      mouseIntersectPlaneRef.current,
+    );
+    if (intersects.length > 0 && intersects[0].uv !== undefined) {
+      const intersect = intersects[0];
+      if (pointerVelocityRef.current === -1) {
+        currentIntersectUv.copy(intersect.uv!);
+        prevPointer.set(pointer.x, pointer.y);
+        currentPointer.set(pointer.x, pointer.y);
+        deltaPointer.set(0, 0);
+        pointerVelocityRef.current = 0;
+      }
+      currentIntersectUv.lerp(intersect.uv!, 0.3);
+      currentPointer.set(pointer.x, pointer.y);
+      deltaPointer.subVectors(currentPointer, prevPointer);
+      prevPointer.copy(currentPointer);
+    } else {
+      pointerVelocityRef.current = -1;
+      currentIntersectUv.set(10, 10);
+      deltaPointer.set(0, 0);
+    }
     // eslint-disable-next-line react-hooks/immutability
-    uniforms.uTime.value = uTimeRef.current;
+    mouseIntersectUniforms.uMouseUv.value = currentIntersectUv;
+    pointerVelocityRef.current = THREE.MathUtils.lerp(
+      pointerVelocityRef.current,
+      deltaPointer.length() / uDeltaRef.current,
+      0.1,
+    );
+    mouseIntersectUniforms.uMouseVelocity.value = Math.max(
+      0,
+      pointerVelocityRef.current,
+    );
+
+    // Update shared mouse intersect uniforms
+    mouseIntersectUniforms.uDelta.value = uDeltaRef.current;
+
+    if (pingPongRef.current) {
+      gl.setRenderTarget(mouseIntersectRenderTarget00);
+      gl.clear();
+      gl.render(mouseIntersectScene00, mouseIntersectCamera);
+
+      // eslint-disable-next-line react-hooks/immutability
+      backgroundUniforms.uMouseTrailTexture.value =
+        mouseIntersectRenderTarget00.texture as THREE.DataTexture;
+      mouseIntersectUniforms.uMouseTrailTexture.value =
+        mouseIntersectRenderTarget00.texture as THREE.DataTexture;
+      // @ts-expect-error "map" exists.
+      mouseIntersectPlaneRef.current.material.map =
+        mouseIntersectRenderTarget00.texture;
+    } else {
+      gl.setRenderTarget(mouseIntersectRenderTarget01);
+      gl.clear();
+      gl.render(mouseIntersectScene01, mouseIntersectCamera);
+
+      backgroundUniforms.uMouseTrailTexture.value =
+        mouseIntersectRenderTarget01.texture as THREE.DataTexture;
+      mouseIntersectUniforms.uMouseTrailTexture.value =
+        mouseIntersectRenderTarget01.texture as THREE.DataTexture;
+    }
+    pingPongRef.current = !pingPongRef.current;
+
+    backgroundUniforms.uTime.value = uTimeRef.current;
+
+    gl.setRenderTarget(null);
   });
 
   return (
     <>
+      {createPortal(
+        <mesh>
+          <shaderMaterial
+            ref={mouseIntersectMaterialRef00}
+            uniforms={mouseIntersectUniforms}
+            vertexShader={mouseIntersectVertexShader}
+            fragmentShader={mouseIntersectFragmentShader}
+          />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[renderPlanePositions, 3]}
+              attach="attributes-position"
+              array={renderPlanePositions}
+              count={renderPlanePositions.length / 3}
+              itemSize={3}
+            />
+            <bufferAttribute
+              args={[renderPlaneUvs, 2]}
+              attach="attributes-uv"
+              array={renderPlaneUvs}
+              count={renderPlaneUvs.length / 2}
+              itemSize={2}
+            />
+          </bufferGeometry>
+        </mesh>,
+        mouseIntersectScene00,
+      )}
+      {createPortal(
+        <mesh>
+          <shaderMaterial
+            ref={mouseIntersectMaterialRef01}
+            uniforms={mouseIntersectUniforms}
+            vertexShader={mouseIntersectVertexShader}
+            fragmentShader={mouseIntersectFragmentShader}
+          />
+          <bufferGeometry>
+            <bufferAttribute
+              args={[renderPlanePositions, 3]}
+              attach="attributes-position"
+              array={renderPlanePositions}
+              count={renderPlanePositions.length / 3}
+              itemSize={3}
+            />
+            <bufferAttribute
+              args={[renderPlaneUvs, 2]}
+              attach="attributes-uv"
+              array={renderPlaneUvs}
+              count={renderPlaneUvs.length / 2}
+              itemSize={2}
+            />
+          </bufferGeometry>
+        </mesh>,
+        mouseIntersectScene01,
+      )}
+
       <Bounds fit clip margin={1.2} maxDuration={0}>
         <Box args={[1, 2, 1]} position={[0, 1, 0]} visible={debug}>
           <meshBasicMaterial wireframe />
@@ -304,19 +310,22 @@ export default function ThreeBackground() {
         receiveShadow
       >
         <InstancedAttribute name="aDistanceFromCenter" defaultValue={0} />
-        <boxGeometry
+        <cylinderGeometry
           args={[
-            (GRID_SIZE / GRID_DIVISIONS) * BLOCK_SCALE_FACTOR,
+            HEXAGON_POINT_RADIUS,
+            HEXAGON_POINT_RADIUS,
             GRID_BLOCK_HEIGHT,
-            (GRID_SIZE / GRID_DIVISIONS) * BLOCK_SCALE_FACTOR,
+            6,
+            1,
           ]}
         />
         <CustomShaderMaterial
           attach="material"
+          flatShading
           baseMaterial={THREE.MeshStandardMaterial}
           vertexShader={gridBlockVertexShader}
           fragmentShader={gridBlockFragmentShader}
-          uniforms={uniforms}
+          uniforms={backgroundUniforms}
           color={"#e27a0b"}
         />
         <CustomShaderMaterial
@@ -324,16 +333,26 @@ export default function ThreeBackground() {
           baseMaterial={THREE.MeshDepthMaterial}
           vertexShader={gridBlockVertexShader}
           fragmentShader={gridBlockFragmentShader}
-          uniforms={uniforms}
+          uniforms={backgroundUniforms}
         />
-
-        {Array.from({ length: GRID_DIVISIONS }).map((_, i) =>
-          Array.from({ length: GRID_DIVISIONS }).map((_, j) => {
-            const x = (i / GRID_DIVISIONS - 0.5) * GRID_SIZE;
-            const z = (j / GRID_DIVISIONS - 0.5) * GRID_SIZE;
+        <axesHelper args={[5]} visible={debug} position={[0, 1, 0]} />
+        <Plane
+          ref={mouseIntersectPlaneRef}
+          args={[GRID_X_SIZE, GRID_X_SIZE]}
+          position={[0, 0.3, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          visible={debug}
+        >
+          <meshBasicMaterial transparent />
+        </Plane>
+        {Array.from({ length: GRID_DIVISIONS }).map((_, xIndex) =>
+          Array.from({ length: GRID_DIVISIONS }).map((_, zIndex) => {
+            const xOffset = zIndex % 2 === 0 ? 0 : HEXAGON_X_SPACING / 2;
+            const x = xIndex * HEXAGON_X_SPACING + xOffset - GRID_X_SIZE / 2;
+            const z = zIndex * HEXAGON_Z_SPACING - GRID_Z_SIZE / 2;
             return (
               <GridBlock
-                key={`${i}-${j}`}
+                key={`${x}-${z}`}
                 position={new THREE.Vector3(x, -GRID_BLOCK_HEIGHT / 2, z)}
               />
             );
