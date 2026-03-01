@@ -26,7 +26,7 @@ export const SCENE_BACKGROUND_COLORS: SceneBackgroundColors = {
   skills: "#1a1817",
 };
 
-export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(-0.8, -0.5, 3.5);
+export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(5, 5, 5);
 export const DEFAULT_CAMERA_LOOK_AT = new THREE.Vector3(0.0, 0.0, 0.0);
 export const DEFAULT_CAMERA_FOV = 60;
 export const DEFAULT_SPRING_POSITION_CONFIG = {

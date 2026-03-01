@@ -25,29 +25,30 @@ export default function ThreeBackgroundComponent({
     useAppStore.setState({ threeBackgroundComponentReady: true });
   });
 
-  return (
-    <mesh>
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={threeBackgroundVertexShader}
-        fragmentShader={threeBackgroundFragmentShader}
-      />
-      <bufferGeometry>
-        <bufferAttribute
-          args={[renderPlanePositions, 3]}
-          attach="attributes-position"
-          array={renderPlanePositions}
-          count={renderPlanePositions.length / 3}
-          itemSize={3}
-        />
-        <bufferAttribute
-          args={[renderPlaneUvs, 2]}
-          attach="attributes-uv"
-          array={renderPlaneUvs}
-          count={renderPlaneUvs.length / 2}
-          itemSize={2}
-        />
-      </bufferGeometry>
-    </mesh>
-  );
+  // return (
+  //   <mesh>
+  //     <shaderMaterial
+  //       uniforms={uniforms}
+  //       vertexShader={threeBackgroundVertexShader}
+  //       fragmentShader={threeBackgroundFragmentShader}
+  //     />
+  //     <bufferGeometry>
+  //       <bufferAttribute
+  //         args={[renderPlanePositions, 3]}
+  //         attach="attributes-position"
+  //         array={renderPlanePositions}
+  //         count={renderPlanePositions.length / 3}
+  //         itemSize={3}
+  //       />
+  //       <bufferAttribute
+  //         args={[renderPlaneUvs, 2]}
+  //         attach="attributes-uv"
+  //         array={renderPlaneUvs}
+  //         count={renderPlaneUvs.length / 2}
+  //         itemSize={2}
+  //       />
+  //     </bufferGeometry>
+  //   </mesh>
+  // );
+  return null;
 }
