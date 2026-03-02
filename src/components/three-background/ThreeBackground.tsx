@@ -7,7 +7,7 @@ import {
   useFBO,
 } from "@react-three/drei";
 import { createPortal, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import useAppStore from "../../stores/useAppStore";
@@ -40,16 +40,21 @@ const GRID_Z_SIZE = GRID_DIVISIONS * HEXAGON_Z_SPACING;
 
 interface GridBlockInstanceAttributes {
   aDistanceFromCenter: number;
+  aMouseTrailUv: THREE.Vector2;
 }
 
 const [GridBlockInstances, GridBlockInstance] =
   createInstances<GridBlockInstanceAttributes>();
 
 function GridBlock({ position }: { position: THREE.Vector3 }) {
+  const uvX = (position.x + GRID_X_SIZE / 2) / GRID_X_SIZE;
+  const uvZ = (-position.z + GRID_X_SIZE / 2) / GRID_X_SIZE;
+  const uv = new THREE.Vector2(uvX, uvZ);
   return (
     <GridBlockInstance
       position={position}
       aDistanceFromCenter={position.length()}
+      aMouseTrailUv={uv}
     />
   );
 }
@@ -310,6 +315,11 @@ export default function ThreeBackground() {
         receiveShadow
       >
         <InstancedAttribute name="aDistanceFromCenter" defaultValue={0} />
+        <InstancedAttribute
+          name="aMouseTrailUv"
+          itemSize={2}
+          defaultValue={[0, 0]}
+        />
         <cylinderGeometry
           args={[
             HEXAGON_POINT_RADIUS,
@@ -339,9 +349,9 @@ export default function ThreeBackground() {
         <Plane
           ref={mouseIntersectPlaneRef}
           args={[GRID_X_SIZE, GRID_X_SIZE]}
-          position={[0, 0.3, 0]}
+          position={[0, 0.0, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
-          visible={debug}
+          visible={false}
         >
           <meshBasicMaterial transparent />
         </Plane>
