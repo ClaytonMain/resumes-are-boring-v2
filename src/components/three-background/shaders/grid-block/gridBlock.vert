@@ -1,15 +1,22 @@
 uniform float uTime;
-uniform sampler2D uMouseTrailTexture;
+uniform sampler2D uPointerTrailTexture;
 
-attribute float aDistanceFromCenter;
-attribute vec2 aMouseTrailUv;
+attribute float aDistPctFromCenter;
+attribute vec2 aPointerTrailUv;
+
+varying float vDistPctFromCenter;
 
 void main() {
+  vDistPctFromCenter = aDistPctFromCenter;
+
   float distanceFromCenterOffset =
-    smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistanceFromCenter * 3.0)) * 0.1;
-  float mouseTrailStrength = texture2D(uMouseTrailTexture, aMouseTrailUv).r;
-  float mouseTrailOffset = mouseTrailStrength * 0.25;
+    smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) * 0.1;
+  float pointerTrailStrength = texture2D(
+    uPointerTrailTexture,
+    aPointerTrailUv
+  ).r;
+  float pointerTrailOffset = pointerTrailStrength * 0.25;
   vec3 offset =
-    (distanceFromCenterOffset + mouseTrailOffset) * vec3(0.0, 1.0, 0.0);
+    (distanceFromCenterOffset + pointerTrailOffset) * vec3(0.0, 1.0, 0.0);
   csm_Position += offset;
 }

@@ -7,14 +7,15 @@ import {
   useFBO,
 } from "@react-three/drei";
 import { createPortal, useFrame } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import useAppStore from "../../stores/useAppStore";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
-import mouseIntersectFragmentShader from "./shaders/mouse-intersect/mouseIntersect.frag";
-import mouseIntersectVertexShader from "./shaders/mouse-intersect/mouseIntersect.vert";
+import pointerIntersectFragmentShader from "./shaders/pointer-intersect/pointerIntersect.frag";
+import pointerIntersectVertexShader from "./shaders/pointer-intersect/pointerIntersect.vert";
+import ThreeBackgroundReadyComponent from "./ThreeBackgroundReadyComponent";
 
 // ********
 // Hexagons
@@ -39,8 +40,8 @@ const HEXAGON_Z_SPACING = (HEXAGON_POINT_RADIUS / BLOCK_SCALE_FACTOR) * 1.5;
 const GRID_Z_SIZE = GRID_DIVISIONS * HEXAGON_Z_SPACING;
 
 interface GridBlockInstanceAttributes {
-  aDistanceFromCenter: number;
-  aMouseTrailUv: THREE.Vector2;
+  aDistPctFromCenter: number; // 0.0 at center, 1.0 at farthest point
+  aPointerTrailUv: THREE.Vector2;
 }
 
 const [GridBlockInstances, GridBlockInstance] =
@@ -53,21 +54,29 @@ function GridBlock({ position }: { position: THREE.Vector3 }) {
   return (
     <GridBlockInstance
       position={position}
-      aDistanceFromCenter={position.length()}
-      aMouseTrailUv={uv}
+      aDistPctFromCenter={uv
+        .clone()
+        .sub(new THREE.Vector2(0.5, 0.5))
+        .multiplyScalar(2 / Math.sqrt(2))
+        .length()}
+      aPointerTrailUv={uv}
     />
   );
 }
 
-// *********************
-// Mouse Intersect Plane
-// *********************
-const MOUSE_INTERSECT_PIXELS = 256;
-function getMouseIntersectDataTextureData() {
+// ***********************
+// Pointer Intersect Plane
+// ***********************
+const POINTER_INTERSECT_PIXELS = 256;
+function getPointerIntersectDataTextureData() {
   const data = new Float32Array(
-    MOUSE_INTERSECT_PIXELS * MOUSE_INTERSECT_PIXELS * 4,
+    POINTER_INTERSECT_PIXELS * POINTER_INTERSECT_PIXELS * 4,
   );
-  for (let i = 0; i < MOUSE_INTERSECT_PIXELS * MOUSE_INTERSECT_PIXELS; i++) {
+  for (
+    let i = 0;
+    i < POINTER_INTERSECT_PIXELS * POINTER_INTERSECT_PIXELS;
+    i++
+  ) {
     const i4 = i * 4;
     data[i4 + 0] = 0.0;
     data[i4 + 1] = 0.0;
@@ -76,12 +85,12 @@ function getMouseIntersectDataTextureData() {
   }
   return data;
 }
-function getMouseIntersectDataTexture() {
-  const data = getMouseIntersectDataTextureData();
+function getPointerIntersectDataTexture() {
+  const data = getPointerIntersectDataTextureData();
   const texture = new THREE.DataTexture(
     data,
-    MOUSE_INTERSECT_PIXELS,
-    MOUSE_INTERSECT_PIXELS,
+    POINTER_INTERSECT_PIXELS,
+    POINTER_INTERSECT_PIXELS,
     THREE.RGBAFormat,
     THREE.FloatType,
   );
@@ -98,29 +107,29 @@ export default function ThreeBackground() {
   // **********
   // Background
   // **********
-  const backgroundUniforms = useMemo(() => {
+  const gridBlockUniforms = useMemo(() => {
     return {
       uTime: { value: 0 },
-      uMouseTrailTexture: { value: new THREE.DataTexture() },
+      uPointerTrailTexture: { value: new THREE.DataTexture() },
     };
   }, []);
 
-  // *********************
-  // Mouse intersect plane
-  // *********************
-  const mouseIntersectMaterialRef00 = useRef<THREE.ShaderMaterial>(null!);
-  const mouseIntersectMaterialRef01 = useRef<THREE.ShaderMaterial>(null!);
-  const mouseIntersectPlaneRef = useRef<THREE.Mesh>(null!);
-  const mouseIntersectScene00 = useMemo(() => new THREE.Scene(), []);
-  const mouseIntersectScene01 = useMemo(() => new THREE.Scene(), []);
-  const mouseIntersectCamera = useMemo(
+  // ***********************
+  // Pointer intersect plane
+  // ***********************
+  const pointerIntersectMaterialRef00 = useRef<THREE.ShaderMaterial>(null!);
+  const pointerIntersectMaterialRef01 = useRef<THREE.ShaderMaterial>(null!);
+  const pointerIntersectPlaneRef = useRef<THREE.Mesh>(null!);
+  const pointerIntersectScene00 = useMemo(() => new THREE.Scene(), []);
+  const pointerIntersectScene01 = useMemo(() => new THREE.Scene(), []);
+  const pointerIntersectCamera = useMemo(
     () => new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1),
     [],
   );
-  const initialMouseIntersectTexture = getMouseIntersectDataTexture();
-  const mouseIntersectRenderTarget00 = useFBO(
-    MOUSE_INTERSECT_PIXELS,
-    MOUSE_INTERSECT_PIXELS,
+  const initialPointerIntersectTexture = getPointerIntersectDataTexture();
+  const pointerIntersectRenderTarget00 = useFBO(
+    POINTER_INTERSECT_PIXELS,
+    POINTER_INTERSECT_PIXELS,
     {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -130,9 +139,9 @@ export default function ThreeBackground() {
       type: THREE.FloatType,
     },
   );
-  const mouseIntersectRenderTarget01 = useFBO(
-    MOUSE_INTERSECT_PIXELS,
-    MOUSE_INTERSECT_PIXELS,
+  const pointerIntersectRenderTarget01 = useFBO(
+    POINTER_INTERSECT_PIXELS,
+    POINTER_INTERSECT_PIXELS,
     {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -142,14 +151,14 @@ export default function ThreeBackground() {
       type: THREE.FloatType,
     },
   );
-  const mouseIntersectUniforms = useMemo(() => {
+  const pointerIntersectUniforms = useMemo(() => {
     return {
       uDelta: { value: 0 },
-      uMouseUv: { value: new THREE.Vector2() },
-      uMouseVelocity: { value: 0 },
-      uMouseTrailTexture: { value: initialMouseIntersectTexture },
+      uPointerUv: { value: new THREE.Vector2() },
+      uPointerVelocity: { value: 0 },
+      uPointerTrailTexture: { value: initialPointerIntersectTexture },
     };
-  }, [initialMouseIntersectTexture]);
+  }, [initialPointerIntersectTexture]);
   const renderPlanePositions = useMemo(
     () =>
       new Float32Array([
@@ -162,6 +171,26 @@ export default function ThreeBackground() {
     [],
   );
 
+  // ************************
+  // Display Three Background
+  // ************************
+  const displayThreeBackgroundRef = useRef(false);
+  const visibilityPctRef = useRef(0);
+  useEffect(() => {
+    const unsubDisplayThreeBackground = useAppStore.subscribe(
+      (state) => state.displayThreeBackground,
+      (value) => {
+        displayThreeBackgroundRef.current = value;
+      },
+    );
+    return () => {
+      unsubDisplayThreeBackground();
+    };
+  }, []);
+
+  // *********
+  // Animation
+  // *********
   const uDeltaRef = useRef(0);
   const uTimeRef = useRef(0);
 
@@ -175,13 +204,18 @@ export default function ThreeBackground() {
 
   const pingPongRef = useRef(true);
   useFrame(({ pointer, camera, gl }, delta) => {
+    // ******
+    // Shared
+    // ******
     uDeltaRef.current = Math.min(delta, 0.1);
     uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
 
-    // Handle mouse intersection logic
+    // **************************
+    // Pointer intersection logic
+    // **************************
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObject(
-      mouseIntersectPlaneRef.current,
+      pointerIntersectPlaneRef.current,
     );
     if (intersects.length > 0 && intersects[0].uv !== undefined) {
       const intersect = intersects[0];
@@ -202,46 +236,56 @@ export default function ThreeBackground() {
       deltaPointer.set(0, 0);
     }
     // eslint-disable-next-line react-hooks/immutability
-    mouseIntersectUniforms.uMouseUv.value = currentIntersectUv;
+    pointerIntersectUniforms.uPointerUv.value = currentIntersectUv;
     pointerVelocityRef.current = THREE.MathUtils.lerp(
       pointerVelocityRef.current,
       deltaPointer.length() / uDeltaRef.current,
       0.1,
     );
-    mouseIntersectUniforms.uMouseVelocity.value = Math.max(
+    pointerIntersectUniforms.uPointerVelocity.value = Math.max(
       0,
       pointerVelocityRef.current,
     );
 
-    // Update shared mouse intersect uniforms
-    mouseIntersectUniforms.uDelta.value = uDeltaRef.current;
+    // Update shared pointer intersect uniforms
+    pointerIntersectUniforms.uDelta.value = uDeltaRef.current;
 
     if (pingPongRef.current) {
-      gl.setRenderTarget(mouseIntersectRenderTarget00);
+      gl.setRenderTarget(pointerIntersectRenderTarget00);
       gl.clear();
-      gl.render(mouseIntersectScene00, mouseIntersectCamera);
+      gl.render(pointerIntersectScene00, pointerIntersectCamera);
 
       // eslint-disable-next-line react-hooks/immutability
-      backgroundUniforms.uMouseTrailTexture.value =
-        mouseIntersectRenderTarget00.texture as THREE.DataTexture;
-      mouseIntersectUniforms.uMouseTrailTexture.value =
-        mouseIntersectRenderTarget00.texture as THREE.DataTexture;
+      gridBlockUniforms.uPointerTrailTexture.value =
+        pointerIntersectRenderTarget00.texture as THREE.DataTexture;
+      pointerIntersectUniforms.uPointerTrailTexture.value =
+        pointerIntersectRenderTarget00.texture as THREE.DataTexture;
       // @ts-expect-error "map" exists.
-      mouseIntersectPlaneRef.current.material.map =
-        mouseIntersectRenderTarget00.texture;
+      pointerIntersectPlaneRef.current.material.map =
+        pointerIntersectRenderTarget00.texture;
     } else {
-      gl.setRenderTarget(mouseIntersectRenderTarget01);
+      gl.setRenderTarget(pointerIntersectRenderTarget01);
       gl.clear();
-      gl.render(mouseIntersectScene01, mouseIntersectCamera);
+      gl.render(pointerIntersectScene01, pointerIntersectCamera);
 
-      backgroundUniforms.uMouseTrailTexture.value =
-        mouseIntersectRenderTarget01.texture as THREE.DataTexture;
-      mouseIntersectUniforms.uMouseTrailTexture.value =
-        mouseIntersectRenderTarget01.texture as THREE.DataTexture;
+      gridBlockUniforms.uPointerTrailTexture.value =
+        pointerIntersectRenderTarget01.texture as THREE.DataTexture;
+      pointerIntersectUniforms.uPointerTrailTexture.value =
+        pointerIntersectRenderTarget01.texture as THREE.DataTexture;
     }
     pingPongRef.current = !pingPongRef.current;
 
-    backgroundUniforms.uTime.value = uTimeRef.current;
+    gridBlockUniforms.uTime.value = uTimeRef.current;
+
+    // **************************************
+    // Display background (grid blocks) logic
+    // **************************************
+    if (displayThreeBackgroundRef.current) {
+      visibilityPctRef.current = Math.min(
+        1,
+        visibilityPctRef.current + uDeltaRef.current * 0.5,
+      );
+    }
 
     gl.setRenderTarget(null);
   });
@@ -251,10 +295,10 @@ export default function ThreeBackground() {
       {createPortal(
         <mesh>
           <shaderMaterial
-            ref={mouseIntersectMaterialRef00}
-            uniforms={mouseIntersectUniforms}
-            vertexShader={mouseIntersectVertexShader}
-            fragmentShader={mouseIntersectFragmentShader}
+            ref={pointerIntersectMaterialRef00}
+            uniforms={pointerIntersectUniforms}
+            vertexShader={pointerIntersectVertexShader}
+            fragmentShader={pointerIntersectFragmentShader}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -273,15 +317,15 @@ export default function ThreeBackground() {
             />
           </bufferGeometry>
         </mesh>,
-        mouseIntersectScene00,
+        pointerIntersectScene00,
       )}
       {createPortal(
         <mesh>
           <shaderMaterial
-            ref={mouseIntersectMaterialRef01}
-            uniforms={mouseIntersectUniforms}
-            vertexShader={mouseIntersectVertexShader}
-            fragmentShader={mouseIntersectFragmentShader}
+            ref={pointerIntersectMaterialRef01}
+            uniforms={pointerIntersectUniforms}
+            vertexShader={pointerIntersectVertexShader}
+            fragmentShader={pointerIntersectFragmentShader}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -300,7 +344,7 @@ export default function ThreeBackground() {
             />
           </bufferGeometry>
         </mesh>,
-        mouseIntersectScene01,
+        pointerIntersectScene01,
       )}
 
       <Bounds fit clip margin={1.2} maxDuration={0}>
@@ -314,9 +358,9 @@ export default function ThreeBackground() {
         castShadow
         receiveShadow
       >
-        <InstancedAttribute name="aDistanceFromCenter" defaultValue={0} />
+        <InstancedAttribute name="aDistPctFromCenter" defaultValue={0} />
         <InstancedAttribute
-          name="aMouseTrailUv"
+          name="aPointerTrailUv"
           itemSize={2}
           defaultValue={[0, 0]}
         />
@@ -335,7 +379,7 @@ export default function ThreeBackground() {
           baseMaterial={THREE.MeshStandardMaterial}
           vertexShader={gridBlockVertexShader}
           fragmentShader={gridBlockFragmentShader}
-          uniforms={backgroundUniforms}
+          uniforms={gridBlockUniforms}
           color={"#e27a0b"}
         />
         <CustomShaderMaterial
@@ -343,11 +387,11 @@ export default function ThreeBackground() {
           baseMaterial={THREE.MeshDepthMaterial}
           vertexShader={gridBlockVertexShader}
           fragmentShader={gridBlockFragmentShader}
-          uniforms={backgroundUniforms}
+          uniforms={gridBlockUniforms}
         />
         <axesHelper args={[5]} visible={debug} position={[0, 1, 0]} />
         <Plane
-          ref={mouseIntersectPlaneRef}
+          ref={pointerIntersectPlaneRef}
           args={[GRID_X_SIZE, GRID_X_SIZE]}
           position={[0, 0.0, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
@@ -368,6 +412,7 @@ export default function ThreeBackground() {
             );
           }),
         )}
+        <ThreeBackgroundReadyComponent />
       </GridBlockInstances>
     </>
   );
