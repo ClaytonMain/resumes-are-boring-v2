@@ -111,6 +111,8 @@ export default function ThreeBackground() {
     return {
       uTime: { value: 0 },
       uPointerTrailTexture: { value: new THREE.DataTexture() },
+      uVisibilityPct: { value: 0 },
+      uSlowPropagationPct: { value: 0 },
     };
   }, []);
 
@@ -281,10 +283,20 @@ export default function ThreeBackground() {
     // Display background (grid blocks) logic
     // **************************************
     if (displayThreeBackgroundRef.current) {
-      visibilityPctRef.current = Math.min(
-        1,
-        visibilityPctRef.current + uDeltaRef.current * 0.5,
-      );
+      if (visibilityPctRef.current < 1) {
+        visibilityPctRef.current = Math.min(
+          1,
+          visibilityPctRef.current + uDeltaRef.current * 0.25,
+        );
+      }
+      if (gridBlockUniforms.uSlowPropagationPct.value < 1) {
+        gridBlockUniforms.uSlowPropagationPct.value = Math.min(
+          1,
+          gridBlockUniforms.uSlowPropagationPct.value +
+            uDeltaRef.current / (20 * Math.PI),
+        );
+      }
+      gridBlockUniforms.uVisibilityPct.value = visibilityPctRef.current;
     }
 
     gl.setRenderTarget(null);
@@ -375,6 +387,7 @@ export default function ThreeBackground() {
         />
         <CustomShaderMaterial
           attach="material"
+          transparent
           flatShading
           baseMaterial={THREE.MeshStandardMaterial}
           vertexShader={gridBlockVertexShader}
@@ -384,6 +397,7 @@ export default function ThreeBackground() {
         />
         <CustomShaderMaterial
           attach="customDepthMaterial"
+          transparent
           baseMaterial={THREE.MeshDepthMaterial}
           vertexShader={gridBlockVertexShader}
           fragmentShader={gridBlockFragmentShader}
