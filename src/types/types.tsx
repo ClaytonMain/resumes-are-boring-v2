@@ -40,7 +40,7 @@ export interface AppStore {
   threeBackgroundComponentReady: boolean;
   initialComponentsReady: boolean;
 
-  kickItUpANotch: "" | "BAM!";
+  isBoring: boolean;
 
   flavorTextIndex: number;
 

@@ -1,9 +1,5 @@
-uniform float uSlowPropagationPct;
-
-varying float vDistPctFromCenter;
-varying float vColorFactor;
-varying float vAlphaFactor;
+varying float vColorMix;
 
 void main() {
-  csm_DiffuseColor.rgb = mix(vec3(0.0), csm_DiffuseColor.rgb, vColorFactor);
+  csm_DiffuseColor.rgb = mix(vec3(0.0), csm_DiffuseColor.rgb, vColorMix);
 }

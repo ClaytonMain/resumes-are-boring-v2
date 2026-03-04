@@ -46,7 +46,7 @@ const useAppStore = create<AppStore>()(
         threeBackgroundComponentReady: false,
         initialComponentsReady: false,
 
-        kickItUpANotch: "",
+        isBoring: true,
 
         flavorTextIndex: 0,
 

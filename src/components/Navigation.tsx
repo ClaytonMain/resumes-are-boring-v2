@@ -18,8 +18,8 @@ export default function Navigation() {
           if (!useAppStore.getState().displayThreeBackground) {
             useAppStore.setState({ displayThreeBackground: true });
           }
-          if (useAppStore.getState().kickItUpANotch !== "BAM!") {
-            useAppStore.setState({ kickItUpANotch: "BAM!" });
+          if (useAppStore.getState().isBoring === true) {
+            useAppStore.setState({ isBoring: false });
           }
         }
       },

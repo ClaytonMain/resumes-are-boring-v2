@@ -42,12 +42,19 @@ const GRID_Z_SIZE = GRID_DIVISIONS * HEXAGON_Z_SPACING;
 interface GridBlockInstanceAttributes {
   aDistPctFromCenter: number; // 0.0 at center, 1.0 at farthest point
   aPointerTrailUv: THREE.Vector2;
+  aRandomNumber: number;
 }
 
 const [GridBlockInstances, GridBlockInstance] =
   createInstances<GridBlockInstanceAttributes>();
 
-function GridBlock({ position }: { position: THREE.Vector3 }) {
+function GridBlock({
+  position,
+  aRandomNumber,
+}: {
+  position: THREE.Vector3;
+  aRandomNumber: number;
+}) {
   const uvX = (position.x + GRID_X_SIZE / 2) / GRID_X_SIZE;
   const uvZ = (-position.z + GRID_X_SIZE / 2) / GRID_X_SIZE;
   const uv = new THREE.Vector2(uvX, uvZ);
@@ -60,6 +67,7 @@ function GridBlock({ position }: { position: THREE.Vector3 }) {
         .multiplyScalar(2 / Math.sqrt(2))
         .length()}
       aPointerTrailUv={uv}
+      aRandomNumber={aRandomNumber}
     />
   );
 }
@@ -104,9 +112,9 @@ function getPointerIntersectDataTexture() {
 export default function ThreeBackground() {
   const debug = useAppStore((state) => state.debug);
 
-  // **********
-  // Background
-  // **********
+  // ***********
+  // Grid Blocks
+  // ***********
   const gridBlockUniforms = useMemo(() => {
     return {
       uTime: { value: 0 },
@@ -114,6 +122,14 @@ export default function ThreeBackground() {
       uVisibilityPct: { value: 0 },
       uSlowPropagationPct: { value: 0 },
     };
+  }, []);
+  const gridBlockRandomNumbers = useMemo(() => {
+    const numbers = new Float32Array(GRID_DIVISIONS * GRID_DIVISIONS);
+    for (let i = 0; i < GRID_DIVISIONS * GRID_DIVISIONS; i++) {
+      // eslint-disable-next-line react-hooks/purity
+      numbers[i] = Math.random();
+    }
+    return numbers;
   }, []);
 
   // ***********************
@@ -289,12 +305,11 @@ export default function ThreeBackground() {
           visibilityPctRef.current + uDeltaRef.current * 0.25,
         );
       }
-      if (gridBlockUniforms.uSlowPropagationPct.value < 1) {
-        gridBlockUniforms.uSlowPropagationPct.value = Math.min(
-          1,
-          gridBlockUniforms.uSlowPropagationPct.value +
-            uDeltaRef.current / (20 * Math.PI),
-        );
+      if (
+        useAppStore.getState().isBoring === true &&
+        visibilityPctRef.current > 0.5
+      ) {
+        useAppStore.setState({ isBoring: false });
       }
       gridBlockUniforms.uVisibilityPct.value = visibilityPctRef.current;
     }
@@ -376,6 +391,7 @@ export default function ThreeBackground() {
           itemSize={2}
           defaultValue={[0, 0]}
         />
+        <InstancedAttribute name="aRandomNumber" defaultValue={0} />
         <cylinderGeometry
           args={[
             HEXAGON_POINT_RADIUS,
@@ -422,6 +438,9 @@ export default function ThreeBackground() {
               <GridBlock
                 key={`${x}-${z}`}
                 position={new THREE.Vector3(x, -GRID_BLOCK_HEIGHT / 2, z)}
+                aRandomNumber={
+                  gridBlockRandomNumbers[zIndex * GRID_DIVISIONS + xIndex]
+                }
               />
             );
           }),

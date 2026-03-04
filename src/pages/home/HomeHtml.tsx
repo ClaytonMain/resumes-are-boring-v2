@@ -56,7 +56,7 @@ const FLAVOR_TEXT_VARIANTS = {
 
 export default function HomeHtml() {
   const [variant, setVariant] = useState(
-    useAppStore.getState().kickItUpANotch === "BAM!" ? "showFun" : "hide",
+    useAppStore.getState().isBoring ? "hide" : "showFun",
   );
   const [flavorTextIndex] = useState(useAppStore.getState().flavorTextIndex);
 
@@ -69,7 +69,7 @@ export default function HomeHtml() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (useAppStore.getState().kickItUpANotch !== "BAM!") {
+      if (useAppStore.getState().isBoring === true) {
         setVariant("showBoring");
       }
     }, 500);
@@ -77,16 +77,16 @@ export default function HomeHtml() {
   }, []);
 
   useEffect(() => {
-    const unsubKickItUpANotch = useAppStore.subscribe(
-      (state) => state.kickItUpANotch,
+    const unsubIsBoring = useAppStore.subscribe(
+      (state) => state.isBoring,
       (value, previousValue) => {
-        if (value === "BAM!" && previousValue !== "BAM!") {
+        if (value === false && previousValue === true) {
           setVariant("showFun");
         }
       },
     );
     return () => {
-      unsubKickItUpANotch();
+      unsubIsBoring();
     };
   }, []);
 
