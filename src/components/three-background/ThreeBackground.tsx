@@ -39,6 +39,8 @@ const HEXAGON_POINT_RADIUS =
 const HEXAGON_Z_SPACING = (HEXAGON_POINT_RADIUS / BLOCK_SCALE_FACTOR) * 1.5;
 const GRID_Z_SIZE = GRID_DIVISIONS * HEXAGON_Z_SPACING;
 
+const MAX_RADII_COUNT = 10;
+
 interface GridBlockInstanceAttributes {
   aDistPctFromCenter: number; // 0.0 at center, 1.0 at farthest point
   aPointerTrailUv: THREE.Vector2;
@@ -120,7 +122,12 @@ export default function ThreeBackground() {
       uTime: { value: 0 },
       uPointerTrailTexture: { value: new THREE.DataTexture() },
       uVisibilityPct: { value: 0 },
-      uSlowPropagationPct: { value: 0 },
+      uActiveRadii: { value: 2 },
+      uRadiiPcts: { value: [1, 1] },
+      uRadiiColors: {
+        value: [new THREE.Color("#000"), new THREE.Color("#000")],
+      },
+      uRadiiPatterns: { value: [0, 0] },
     };
   }, []);
   const gridBlockRandomNumbers = useMemo(() => {
@@ -193,17 +200,23 @@ export default function ThreeBackground() {
   // Display Three Background
   // ************************
   const displayThreeBackgroundRef = useRef(false);
-  const visibilityPctRef = useRef(0);
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
       (state) => state.displayThreeBackground,
-      (value) => {
+      (value, prev) => {
         displayThreeBackgroundRef.current = value;
+        if (value === true && prev === false) {
+          gridBlockUniforms.uActiveRadii.value += 1;
+          gridBlockUniforms.uRadiiPcts.value.push(0);
+          gridBlockUniforms.uRadiiColors.value.push(new THREE.Color("#ef0717"));
+          gridBlockUniforms.uRadiiPatterns.value.push(1);
+        }
       },
     );
     return () => {
       unsubDisplayThreeBackground();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // *********

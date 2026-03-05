@@ -1,6 +1,11 @@
 uniform float uTime;
 uniform sampler2D uPointerTrailTexture;
-uniform float uVisibilityPct;
+// uniform float uVisibilityPct;
+
+uniform int uActiveRadii;
+uniform float uRadiiPcts[10];
+uniform int uRadiiPatterns[10];
+uniform float uRadiiColors[10]; // Will move to fragment later.
 
 attribute float aDistPctFromCenter;
 attribute vec2 aPointerTrailUv;
