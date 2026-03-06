@@ -56,6 +56,7 @@ export type StatsPosition = "tl" | "tr" | "bl" | "br";
 
 type PageThreeColorConfig = Record<"diffuse" | "subsurface", THREE.Color>;
 export type PageThreeColor = Record<Page, PageThreeColorConfig>;
+export type PageBlockColor = Record<Page, THREE.Color>;
 
 export interface ScatterplotStore {
   selectedTypeCategories: TypeCategory[];

@@ -10,6 +10,10 @@ import { createPortal, useFrame } from "@react-three/fiber";
 import { useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
+import {
+  PAGE_BLOCK_COLORS,
+  PAGE_PATTERN_NUMBERS,
+} from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
@@ -44,7 +48,7 @@ const MAX_RADII_COUNT = 10;
 interface GridBlockInstanceAttributes {
   aDistPctFromCenter: number; // 0.0 at center, 1.0 at farthest point
   aPointerTrailUv: THREE.Vector2;
-  aRandomNumber: number;
+  aRandomOffset: number;
 }
 
 const [GridBlockInstances, GridBlockInstance] =
@@ -52,10 +56,10 @@ const [GridBlockInstances, GridBlockInstance] =
 
 function GridBlock({
   position,
-  aRandomNumber,
+  aRandomOffset,
 }: {
   position: THREE.Vector3;
-  aRandomNumber: number;
+  aRandomOffset: number;
 }) {
   const uvX = (position.x + GRID_X_SIZE / 2) / GRID_X_SIZE;
   const uvZ = (-position.z + GRID_X_SIZE / 2) / GRID_X_SIZE;
@@ -69,7 +73,7 @@ function GridBlock({
         .multiplyScalar(2 / Math.sqrt(2))
         .length()}
       aPointerTrailUv={uv}
-      aRandomNumber={aRandomNumber}
+      aRandomOffset={aRandomOffset}
     />
   );
 }
@@ -123,18 +127,17 @@ export default function ThreeBackground() {
       uPointerTrailTexture: { value: new THREE.DataTexture() },
       uVisibilityPct: { value: 0 },
       uActiveRadii: { value: 2 },
-      uRadiiPcts: { value: [1, 1] },
+      uRadiiPcts: { value: new Array(MAX_RADII_COUNT).fill(1) },
       uRadiiColors: {
-        value: [new THREE.Color("#000"), new THREE.Color("#000")],
+        value: new Array(MAX_RADII_COUNT).fill(new THREE.Color("#000")),
       },
-      uRadiiPatterns: { value: [0, 0] },
+      uRadiiPatterns: { value: new Array(MAX_RADII_COUNT).fill(0) },
     };
   }, []);
-  const gridBlockRandomNumbers = useMemo(() => {
+  const gridBlockRandomOffsets = useMemo(() => {
     const numbers = new Float32Array(GRID_DIVISIONS * GRID_DIVISIONS);
     for (let i = 0; i < GRID_DIVISIONS * GRID_DIVISIONS; i++) {
-      // eslint-disable-next-line react-hooks/purity
-      numbers[i] = Math.random();
+      numbers[i] = Math.random() * 0.01;
     }
     return numbers;
   }, []);
@@ -200,6 +203,7 @@ export default function ThreeBackground() {
   // Display Three Background
   // ************************
   const displayThreeBackgroundRef = useRef(false);
+  const initialTimeRef = useRef(0);
   useEffect(() => {
     const unsubDisplayThreeBackground = useAppStore.subscribe(
       (state) => state.displayThreeBackground,
@@ -207,14 +211,41 @@ export default function ThreeBackground() {
         displayThreeBackgroundRef.current = value;
         if (value === true && prev === false) {
           gridBlockUniforms.uActiveRadii.value += 1;
-          gridBlockUniforms.uRadiiPcts.value.push(0);
-          gridBlockUniforms.uRadiiColors.value.push(new THREE.Color("#ef0717"));
-          gridBlockUniforms.uRadiiPatterns.value.push(1);
+          gridBlockUniforms.uRadiiPcts.value.unshift(0);
+          gridBlockUniforms.uRadiiColors.value.unshift(
+            new THREE.Color("#ef0717"),
+          );
+          gridBlockUniforms.uRadiiPatterns.value.unshift(1);
         }
       },
     );
     return () => {
       unsubDisplayThreeBackground();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // *********************
+  // Current Page Listener
+  // *********************
+  useEffect(() => {
+    const unsubCurrentPage = useAppStore.subscribe(
+      (state) => state.currentPage,
+      (currentPage, previousPage) => {
+        if (currentPage !== previousPage) {
+          gridBlockUniforms.uActiveRadii.value += 1;
+          gridBlockUniforms.uRadiiPcts.value.unshift(0);
+          gridBlockUniforms.uRadiiColors.value.unshift(
+            PAGE_BLOCK_COLORS[currentPage],
+          );
+          gridBlockUniforms.uRadiiPatterns.value.unshift(
+            PAGE_PATTERN_NUMBERS[currentPage],
+          );
+        }
+      },
+    );
+    return () => {
+      unsubCurrentPage();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -312,19 +343,29 @@ export default function ThreeBackground() {
     // Display background (grid blocks) logic
     // **************************************
     if (displayThreeBackgroundRef.current) {
-      if (visibilityPctRef.current < 1) {
-        visibilityPctRef.current = Math.min(
-          1,
-          visibilityPctRef.current + uDeltaRef.current * 0.25,
-        );
-      }
       if (
-        useAppStore.getState().isBoring === true &&
-        visibilityPctRef.current > 0.5
+        initialTimeRef.current < 1 &&
+        useAppStore.getState().isBoring === true
       ) {
-        useAppStore.setState({ isBoring: false });
+        initialTimeRef.current = Math.min(
+          1,
+          initialTimeRef.current + uDeltaRef.current * 0.25,
+        );
+        if (initialTimeRef.current > 0.5) {
+          useAppStore.setState({ isBoring: false });
+        }
       }
-      gridBlockUniforms.uVisibilityPct.value = visibilityPctRef.current;
+      const radiiPcts = gridBlockUniforms.uRadiiPcts.value as number[];
+      radiiPcts.forEach((pct, index) => {
+        radiiPcts[index] = Math.min(1, pct + uDeltaRef.current * 0.25);
+      });
+      if (radiiPcts.length > MAX_RADII_COUNT) {
+        radiiPcts.pop();
+        (gridBlockUniforms.uRadiiColors.value as THREE.Color[]).pop();
+        (gridBlockUniforms.uRadiiPatterns.value as number[]).pop();
+      }
+      gridBlockUniforms.uRadiiPcts.value = radiiPcts;
+      gridBlockUniforms.uActiveRadii.value = radiiPcts.indexOf(1) + 2;
     }
 
     gl.setRenderTarget(null);
@@ -404,7 +445,7 @@ export default function ThreeBackground() {
           itemSize={2}
           defaultValue={[0, 0]}
         />
-        <InstancedAttribute name="aRandomNumber" defaultValue={0} />
+        <InstancedAttribute name="aRandomOffset" defaultValue={0} />
         <cylinderGeometry
           args={[
             HEXAGON_POINT_RADIUS,
@@ -451,8 +492,8 @@ export default function ThreeBackground() {
               <GridBlock
                 key={`${x}-${z}`}
                 position={new THREE.Vector3(x, -GRID_BLOCK_HEIGHT / 2, z)}
-                aRandomNumber={
-                  gridBlockRandomNumbers[zIndex * GRID_DIVISIONS + xIndex]
+                aRandomOffset={
+                  gridBlockRandomOffsets[zIndex * GRID_DIVISIONS + xIndex]
                 }
               />
             );

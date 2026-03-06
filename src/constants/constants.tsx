@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import type {
   Page,
+  PageBlockColor,
   PageThreeColor,
   SceneBackgroundColors,
 } from "../types/types";
@@ -91,4 +92,22 @@ export const PAGE_THREE_COLORS: PageThreeColor = {
     diffuse: new THREE.Color("#ff7dbc"),
     subsurface: new THREE.Color("#e80c77"),
   },
+};
+
+export const PAGE_BLOCK_COLORS: PageBlockColor = {
+  home: new THREE.Color("#ef0717"),
+  about: new THREE.Color("#e27a0b"),
+  skills: new THREE.Color("#aeff16"),
+  projects: new THREE.Color("#0ce8d8"),
+  history: new THREE.Color("#820ce8"),
+  contact: new THREE.Color("#e80c77"),
+};
+
+export const PAGE_PATTERN_NUMBERS: Record<Page, number> = {
+  home: 1,
+  about: 2,
+  skills: 3,
+  projects: 4,
+  history: 5,
+  contact: 6,
 };
