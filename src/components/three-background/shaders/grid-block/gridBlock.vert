@@ -14,6 +14,8 @@ attribute float aRandomOffset;
 // varying float vColorMix;
 
 varying float vDistPctFromCenter;
+flat out int vRadiiIndex; // Well, this is weird. Have to use flat to pass int from vert to frag.
+varying float vEasedRadiiPct;
 
 float easeInQuad(float x) {
   return x * x;
@@ -30,8 +32,8 @@ void main() {
   // Default pattern: Slight negative offset.
   patternOffsets[0] = -0.1;
   // Pattern 1: Slowly propagating waves from center.
-  patternOffsets[1] = smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) *
-    0.1;
+  patternOffsets[1] =
+    smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) * 0.1;
   // Patterns 2-6: Zero for now.
   patternOffsets[2] = 0.0;
   patternOffsets[3] = 0.0;
@@ -39,15 +41,31 @@ void main() {
   patternOffsets[5] = 0.0;
   patternOffsets[6] = 0.0;
 
-  float offset = 0.0;
+  float offset;
+  float easedRadiiPct;
   for (int i = 0; i < 10; i++) {
-    if (i + 2 > uActiveRadii)
-      break;
-    float patternMix = smoothstep(aDistPctFromCenter, aDistPctFromCenter + 0.25, easeInQuad(uRadiiPcts[i] * 1.25));
-    offset += mix(patternOffsets[uRadiiPatterns[i + 1]], patternOffsets[uRadiiPatterns[i]], patternMix);
+    if (i + 2 > uActiveRadii) break;
+    easedRadiiPct = easeInQuad(uRadiiPcts[i] * 1.25);
+    if (easedRadiiPct < aDistPctFromCenter) continue;
+    float patternMix = smoothstep(
+      aDistPctFromCenter,
+      aDistPctFromCenter + 0.25,
+      easedRadiiPct
+    );
+    offset = mix(
+      patternOffsets[uRadiiPatterns[i + 1]],
+      patternOffsets[uRadiiPatterns[i]],
+      patternMix
+    );
+    vRadiiIndex = i;
+    vEasedRadiiPct = easedRadiiPct;
+    break;
   }
 
-  float pointerTrailStrength = texture2D(uPointerTrailTexture, aPointerTrailUv).r;
+  float pointerTrailStrength = texture2D(
+    uPointerTrailTexture,
+    aPointerTrailUv
+  ).r;
   float pointerTrailOffset = pointerTrailStrength * 0.25;
 
   // float colorMix = smoothstep(

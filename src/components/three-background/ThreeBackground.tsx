@@ -366,6 +366,12 @@ export default function ThreeBackground() {
       }
       gridBlockUniforms.uRadiiPcts.value = radiiPcts;
       gridBlockUniforms.uActiveRadii.value = radiiPcts.indexOf(1) + 2;
+      // if (uTimeRef.current % 1 < 0.01) {
+      //   console.log(
+      //     gridBlockUniforms.uActiveRadii.value,
+      //     gridBlockUniforms.uRadiiPcts.value,
+      //   );
+      // }
     }
 
     gl.setRenderTarget(null);
