@@ -54,6 +54,8 @@ const useAppStore = create<AppStore>()(
         targetBackgroundDiffuseUpdatedAt: Date.now(),
         targetBackgroundSubsurface: new THREE.Color("#ef0717"),
         targetBackgroundSubsurfaceUpdatedAt: Date.now(),
+
+        activeSkillIndex: 0,
       }),
       {
         name: "resumes-are-boring-app-store",

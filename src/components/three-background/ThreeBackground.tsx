@@ -15,11 +15,14 @@ import {
   PAGE_PATTERN_NUMBERS,
 } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
+import useMousePosition from "./hooks/useMousePosition";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
-import pointerIntersectFragmentShader from "./shaders/pointer-intersect/pointerIntersect.frag";
-import pointerIntersectVertexShader from "./shaders/pointer-intersect/pointerIntersect.vert";
+import offsetTextureFragmentShader from "./shaders/offset-texture/offsetTexture.frag";
+import offsetTextureVertexShader from "./shaders/offset-texture/offsetTexture.vert";
+import SkillsController from "./SkillsController";
 import ThreeBackgroundReadyComponent from "./ThreeBackgroundReadyComponent";
+import type { OffsetTextureUniforms } from "./types/types";
 
 // ********
 // Hexagons
@@ -33,7 +36,7 @@ import ThreeBackgroundReadyComponent from "./ThreeBackgroundReadyComponent";
 const GRID_X_SIZE = 15;
 // How many hexagons along the x and z axes.
 const GRID_DIVISIONS = 80;
-const GRID_BLOCK_HEIGHT = 1;
+const GRID_BLOCK_HEIGHT = 1.5;
 const BLOCK_SCALE_FACTOR = 1.0;
 
 const HEXAGON_X_SPACING = GRID_X_SIZE / GRID_DIVISIONS;
@@ -79,18 +82,14 @@ function GridBlock({
 }
 
 // ***********************
-// Pointer Intersect Plane
+// Offset Texture Plane
 // ***********************
-const POINTER_INTERSECT_PIXELS = 256;
-function getPointerIntersectDataTextureData() {
+const OFFSET_TEXTURE_PIXELS = 256;
+function getOffsetTextureDataTextureData() {
   const data = new Float32Array(
-    POINTER_INTERSECT_PIXELS * POINTER_INTERSECT_PIXELS * 4,
+    OFFSET_TEXTURE_PIXELS * OFFSET_TEXTURE_PIXELS * 4,
   );
-  for (
-    let i = 0;
-    i < POINTER_INTERSECT_PIXELS * POINTER_INTERSECT_PIXELS;
-    i++
-  ) {
+  for (let i = 0; i < OFFSET_TEXTURE_PIXELS * OFFSET_TEXTURE_PIXELS; i++) {
     const i4 = i * 4;
     data[i4 + 0] = 0.0;
     data[i4 + 1] = 0.0;
@@ -99,12 +98,12 @@ function getPointerIntersectDataTextureData() {
   }
   return data;
 }
-function getPointerIntersectDataTexture() {
-  const data = getPointerIntersectDataTextureData();
+function getOffsetTextureDataTexture() {
+  const data = getOffsetTextureDataTextureData();
   const texture = new THREE.DataTexture(
     data,
-    POINTER_INTERSECT_PIXELS,
-    POINTER_INTERSECT_PIXELS,
+    OFFSET_TEXTURE_PIXELS,
+    OFFSET_TEXTURE_PIXELS,
     THREE.RGBAFormat,
     THREE.FloatType,
   );
@@ -124,7 +123,7 @@ export default function ThreeBackground() {
   const gridBlockUniforms = useMemo(() => {
     return {
       uTime: { value: 0 },
-      uPointerTrailTexture: { value: new THREE.DataTexture() },
+      uOffsetTexture: { value: new THREE.DataTexture() },
       uVisibilityPct: { value: 0 },
       uActiveRadii: { value: 2 },
       uRadiiPcts: { value: new Array(MAX_RADII_COUNT).fill(1) },
@@ -142,22 +141,25 @@ export default function ThreeBackground() {
     return numbers;
   }, []);
 
-  // ***********************
-  // Pointer intersect plane
-  // ***********************
-  const pointerIntersectMaterialRef00 = useRef<THREE.ShaderMaterial>(null!);
-  const pointerIntersectMaterialRef01 = useRef<THREE.ShaderMaterial>(null!);
-  const pointerIntersectPlaneRef = useRef<THREE.Mesh>(null!);
-  const pointerIntersectScene00 = useMemo(() => new THREE.Scene(), []);
-  const pointerIntersectScene01 = useMemo(() => new THREE.Scene(), []);
-  const pointerIntersectCamera = useMemo(
+  // ********************
+  // Offset Texture Plane
+  // ********************
+  const offsetTextureMaterialRef00 = useRef<THREE.ShaderMaterial>(null!);
+  const offsetTextureMaterialRef01 = useRef<THREE.ShaderMaterial>(null!);
+  const offsetTexturePlaneRef = useRef<THREE.Mesh>(null!);
+  const offsetTextureScene00 = useMemo(() => new THREE.Scene(), []);
+  const offsetTextureScene01 = useMemo(() => new THREE.Scene(), []);
+  const offsetTextureCamera = useMemo(
     () => new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1),
     [],
   );
-  const initialPointerIntersectTexture = getPointerIntersectDataTexture();
-  const pointerIntersectRenderTarget00 = useFBO(
-    POINTER_INTERSECT_PIXELS,
-    POINTER_INTERSECT_PIXELS,
+  const initialOffsetTextureTexture = useMemo(
+    () => getOffsetTextureDataTexture(),
+    [],
+  );
+  const offsetTextureRenderTarget00 = useFBO(
+    OFFSET_TEXTURE_PIXELS,
+    OFFSET_TEXTURE_PIXELS,
     {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -167,9 +169,9 @@ export default function ThreeBackground() {
       type: THREE.FloatType,
     },
   );
-  const pointerIntersectRenderTarget01 = useFBO(
-    POINTER_INTERSECT_PIXELS,
-    POINTER_INTERSECT_PIXELS,
+  const offsetTextureRenderTarget01 = useFBO(
+    OFFSET_TEXTURE_PIXELS,
+    OFFSET_TEXTURE_PIXELS,
     {
       minFilter: THREE.NearestFilter,
       magFilter: THREE.NearestFilter,
@@ -179,14 +181,20 @@ export default function ThreeBackground() {
       type: THREE.FloatType,
     },
   );
-  const pointerIntersectUniforms = useMemo(() => {
+  const offsetTextureUniforms: OffsetTextureUniforms = useMemo(() => {
     return {
       uDelta: { value: 0 },
       uPointerUv: { value: new THREE.Vector2() },
       uPointerVelocity: { value: 0 },
-      uPointerTrailTexture: { value: initialPointerIntersectTexture },
+      uOffsetTexture: { value: initialOffsetTextureTexture },
+      uProficiencyUv: { value: new THREE.Vector2() },
+      uEnjoymentUv: { value: new THREE.Vector2() },
+      uExperienceUv: { value: new THREE.Vector2() },
+      uProficiencyValue: { value: 0 },
+      uEnjoymentValue: { value: 0 },
+      uExperienceValue: { value: 0 },
     };
-  }, [initialPointerIntersectTexture]);
+  }, [initialOffsetTextureTexture]);
   const renderPlanePositions = useMemo(
     () =>
       new Float32Array([
@@ -198,6 +206,7 @@ export default function ThreeBackground() {
     () => new Float32Array([0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1]),
     [],
   );
+  const mousePosition = useMousePosition();
 
   // ************************
   // Display Three Background
@@ -213,9 +222,11 @@ export default function ThreeBackground() {
           gridBlockUniforms.uActiveRadii.value += 1;
           gridBlockUniforms.uRadiiPcts.value.unshift(0);
           gridBlockUniforms.uRadiiColors.value.unshift(
-            new THREE.Color("#ef0717"),
+            PAGE_BLOCK_COLORS[useAppStore.getState().currentPage],
           );
-          gridBlockUniforms.uRadiiPatterns.value.unshift(1);
+          gridBlockUniforms.uRadiiPatterns.value.unshift(
+            PAGE_PATTERN_NUMBERS[useAppStore.getState().currentPage],
+          );
         }
       },
     );
@@ -232,7 +243,10 @@ export default function ThreeBackground() {
     const unsubCurrentPage = useAppStore.subscribe(
       (state) => state.currentPage,
       (currentPage, previousPage) => {
-        if (currentPage !== previousPage) {
+        if (
+          currentPage !== previousPage &&
+          displayThreeBackgroundRef.current === true
+        ) {
           gridBlockUniforms.uActiveRadii.value += 1;
           gridBlockUniforms.uRadiiPcts.value.unshift(0);
           gridBlockUniforms.uRadiiColors.value.unshift(
@@ -250,6 +264,13 @@ export default function ThreeBackground() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // **********
+  // Skills Uvs
+  // **********
+  const proficiencyRef = useRef<THREE.Object3D>(null!);
+  const enjoymentRef = useRef<THREE.Object3D>(null!);
+  const experienceRef = useRef<THREE.Object3D>(null!);
+
   // *********
   // Animation
   // *********
@@ -265,7 +286,7 @@ export default function ThreeBackground() {
   const pointerVelocityRef = useRef(-1);
 
   const pingPongRef = useRef(true);
-  useFrame(({ pointer, camera, gl }, delta) => {
+  useFrame(({ camera, gl }, delta) => {
     // ******
     // Shared
     // ******
@@ -275,21 +296,19 @@ export default function ThreeBackground() {
     // **************************
     // Pointer intersection logic
     // **************************
-    raycaster.setFromCamera(pointer, camera);
-    const intersects = raycaster.intersectObject(
-      pointerIntersectPlaneRef.current,
-    );
+    raycaster.setFromCamera(mousePosition, camera);
+    const intersects = raycaster.intersectObject(offsetTexturePlaneRef.current);
     if (intersects.length > 0 && intersects[0].uv !== undefined) {
       const intersect = intersects[0];
       if (pointerVelocityRef.current === -1) {
         currentIntersectUv.copy(intersect.uv!);
-        prevPointer.set(pointer.x, pointer.y);
-        currentPointer.set(pointer.x, pointer.y);
+        prevPointer.set(mousePosition.x, mousePosition.y);
+        currentPointer.set(mousePosition.x, mousePosition.y);
         deltaPointer.set(0, 0);
         pointerVelocityRef.current = 0;
       }
       currentIntersectUv.lerp(intersect.uv!, 0.3);
-      currentPointer.set(pointer.x, pointer.y);
+      currentPointer.set(mousePosition.x, mousePosition.y);
       deltaPointer.subVectors(currentPointer, prevPointer);
       prevPointer.copy(currentPointer);
     } else {
@@ -297,43 +316,83 @@ export default function ThreeBackground() {
       currentIntersectUv.set(10, 10);
       deltaPointer.set(0, 0);
     }
-    // eslint-disable-next-line react-hooks/immutability
-    pointerIntersectUniforms.uPointerUv.value = currentIntersectUv;
+    offsetTextureUniforms.uPointerUv.value = currentIntersectUv;
     pointerVelocityRef.current = THREE.MathUtils.lerp(
       pointerVelocityRef.current,
       deltaPointer.length() / uDeltaRef.current,
       0.1,
     );
-    pointerIntersectUniforms.uPointerVelocity.value = Math.max(
+    offsetTextureUniforms.uPointerVelocity.value = Math.max(
       0,
       pointerVelocityRef.current,
     );
 
-    // Update shared pointer intersect uniforms
-    pointerIntersectUniforms.uDelta.value = uDeltaRef.current;
+    // Update skills UVs
+    const cameraWorldPosition = camera.getWorldPosition(new THREE.Vector3());
+    const proficiencyWorldPosition = proficiencyRef.current.getWorldPosition(
+      new THREE.Vector3(),
+    );
+    const enjoymentWorldPosition = enjoymentRef.current.getWorldPosition(
+      new THREE.Vector3(),
+    );
+    const experienceWorldPosition = experienceRef.current.getWorldPosition(
+      new THREE.Vector3(),
+    );
+    raycaster.set(
+      cameraWorldPosition,
+      proficiencyWorldPosition.clone().sub(cameraWorldPosition).normalize(),
+    );
+    const proficiencyIntersect = raycaster.intersectObject(
+      offsetTexturePlaneRef.current,
+    )[0];
+    if (proficiencyIntersect && proficiencyIntersect.uv) {
+      offsetTextureUniforms.uProficiencyUv.value = proficiencyIntersect.uv;
+    }
+    raycaster.set(
+      cameraWorldPosition,
+      enjoymentWorldPosition.clone().sub(cameraWorldPosition).normalize(),
+    );
+    const enjoymentIntersect = raycaster.intersectObject(
+      offsetTexturePlaneRef.current,
+    )[0];
+    if (enjoymentIntersect && enjoymentIntersect.uv) {
+      offsetTextureUniforms.uEnjoymentUv.value = enjoymentIntersect.uv;
+    }
+    raycaster.set(
+      cameraWorldPosition,
+      experienceWorldPosition.clone().sub(cameraWorldPosition).normalize(),
+    );
+    const experienceIntersect = raycaster.intersectObject(
+      offsetTexturePlaneRef.current,
+    )[0];
+    if (experienceIntersect && experienceIntersect.uv) {
+      offsetTextureUniforms.uExperienceUv.value = experienceIntersect.uv;
+    }
+
+    // Update shared offset texture uniforms
+    offsetTextureUniforms.uDelta.value = uDeltaRef.current;
 
     if (pingPongRef.current) {
-      gl.setRenderTarget(pointerIntersectRenderTarget00);
+      gl.setRenderTarget(offsetTextureRenderTarget00);
       gl.clear();
-      gl.render(pointerIntersectScene00, pointerIntersectCamera);
+      gl.render(offsetTextureScene00, offsetTextureCamera);
 
-      // eslint-disable-next-line react-hooks/immutability
-      gridBlockUniforms.uPointerTrailTexture.value =
-        pointerIntersectRenderTarget00.texture as THREE.DataTexture;
-      pointerIntersectUniforms.uPointerTrailTexture.value =
-        pointerIntersectRenderTarget00.texture as THREE.DataTexture;
+      gridBlockUniforms.uOffsetTexture.value =
+        offsetTextureRenderTarget00.texture as THREE.DataTexture;
+      offsetTextureUniforms.uOffsetTexture.value =
+        offsetTextureRenderTarget00.texture as THREE.DataTexture;
       // @ts-expect-error "map" exists.
-      pointerIntersectPlaneRef.current.material.map =
-        pointerIntersectRenderTarget00.texture;
+      offsetTexturePlaneRef.current.material.map =
+        offsetTextureRenderTarget00.texture;
     } else {
-      gl.setRenderTarget(pointerIntersectRenderTarget01);
+      gl.setRenderTarget(offsetTextureRenderTarget01);
       gl.clear();
-      gl.render(pointerIntersectScene01, pointerIntersectCamera);
+      gl.render(offsetTextureScene01, offsetTextureCamera);
 
-      gridBlockUniforms.uPointerTrailTexture.value =
-        pointerIntersectRenderTarget01.texture as THREE.DataTexture;
-      pointerIntersectUniforms.uPointerTrailTexture.value =
-        pointerIntersectRenderTarget01.texture as THREE.DataTexture;
+      gridBlockUniforms.uOffsetTexture.value =
+        offsetTextureRenderTarget01.texture as THREE.DataTexture;
+      offsetTextureUniforms.uOffsetTexture.value =
+        offsetTextureRenderTarget01.texture as THREE.DataTexture;
     }
     pingPongRef.current = !pingPongRef.current;
 
@@ -366,12 +425,6 @@ export default function ThreeBackground() {
       }
       gridBlockUniforms.uRadiiPcts.value = radiiPcts;
       gridBlockUniforms.uActiveRadii.value = radiiPcts.indexOf(1) + 2;
-      // if (uTimeRef.current % 1 < 0.01) {
-      //   console.log(
-      //     gridBlockUniforms.uActiveRadii.value,
-      //     gridBlockUniforms.uRadiiPcts.value,
-      //   );
-      // }
     }
 
     gl.setRenderTarget(null);
@@ -382,10 +435,10 @@ export default function ThreeBackground() {
       {createPortal(
         <mesh>
           <shaderMaterial
-            ref={pointerIntersectMaterialRef00}
-            uniforms={pointerIntersectUniforms}
-            vertexShader={pointerIntersectVertexShader}
-            fragmentShader={pointerIntersectFragmentShader}
+            ref={offsetTextureMaterialRef00}
+            uniforms={offsetTextureUniforms}
+            vertexShader={offsetTextureVertexShader}
+            fragmentShader={offsetTextureFragmentShader}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -404,15 +457,15 @@ export default function ThreeBackground() {
             />
           </bufferGeometry>
         </mesh>,
-        pointerIntersectScene00,
+        offsetTextureScene00,
       )}
       {createPortal(
         <mesh>
           <shaderMaterial
-            ref={pointerIntersectMaterialRef01}
-            uniforms={pointerIntersectUniforms}
-            vertexShader={pointerIntersectVertexShader}
-            fragmentShader={pointerIntersectFragmentShader}
+            ref={offsetTextureMaterialRef01}
+            uniforms={offsetTextureUniforms}
+            vertexShader={offsetTextureVertexShader}
+            fragmentShader={offsetTextureFragmentShader}
           />
           <bufferGeometry>
             <bufferAttribute
@@ -431,11 +484,11 @@ export default function ThreeBackground() {
             />
           </bufferGeometry>
         </mesh>,
-        pointerIntersectScene01,
+        offsetTextureScene01,
       )}
 
-      <Bounds fit clip margin={1.2} maxDuration={0}>
-        <Box args={[1, 2, 1]} position={[0, 1, 0]} visible={debug}>
+      <Bounds fit clip margin={1.2} maxDuration={0} observe>
+        <Box args={[1.25, 2.5, 1.25]} position={[0, 1.25, 0]} visible={debug}>
           <meshBasicMaterial wireframe />
         </Box>
       </Bounds>
@@ -481,13 +534,13 @@ export default function ThreeBackground() {
         />
         <axesHelper args={[5]} visible={debug} position={[0, 1, 0]} />
         <Plane
-          ref={pointerIntersectPlaneRef}
+          ref={offsetTexturePlaneRef}
           args={[GRID_X_SIZE, GRID_X_SIZE]}
           position={[0, 0.0, 0]}
           rotation={[-Math.PI / 2, 0, 0]}
           visible={false}
         >
-          <meshBasicMaterial transparent />
+          <meshBasicMaterial />
         </Plane>
         {Array.from({ length: GRID_DIVISIONS }).map((_, xIndex) =>
           Array.from({ length: GRID_DIVISIONS }).map((_, zIndex) => {
@@ -507,6 +560,12 @@ export default function ThreeBackground() {
         )}
         <ThreeBackgroundReadyComponent />
       </GridBlockInstances>
+      <SkillsController
+        offsetTextureUniforms={offsetTextureUniforms}
+        proficiencyRef={proficiencyRef}
+        enjoymentRef={enjoymentRef}
+        experienceRef={experienceRef}
+      />
     </>
   );
 }

@@ -16,3 +16,16 @@ export type ThreeBackgroundUniforms = {
   uDiffuseColors: { value: THREE.Color[] };
   uSubsurfaceColors: { value: THREE.Color[] };
 };
+
+export type OffsetTextureUniforms = {
+  uDelta: { value: number };
+  uPointerUv: { value: THREE.Vector2 };
+  uPointerVelocity: { value: number };
+  uOffsetTexture: { value: THREE.Texture };
+  uProficiencyUv: { value: THREE.Vector2 };
+  uEnjoymentUv: { value: THREE.Vector2 };
+  uExperienceUv: { value: THREE.Vector2 };
+  uProficiencyValue: { value: number };
+  uEnjoymentValue: { value: number };
+  uExperienceValue: { value: number };
+};
