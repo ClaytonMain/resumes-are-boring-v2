@@ -54,38 +54,30 @@ export type PageThreeColor = Record<Page, PageThreeColorConfig>;
 export type PageBlockColor = Record<Page, THREE.Color>;
 
 export type SkillName =
+  // Data stuff
   | "Python"
-  | "SQL"
-  | "TypeScript"
-  | "React"
-  | "GLSL"
-  | "Communication"
-  | "Problem Solving"
-  | "Time Management"
-  | "Creativity"
   | "Snowflake"
   | "dbt Cloud"
+  | "Pie making"
   | "Fivetran"
   | "Hex"
-  | "VS Code"
-  | "Google Sheets";
-
-export type TypeCategory = "Language" | "Tool" | "Framework" | "Softskill";
-
-export type SkillCategory =
-  | "Data Vis."
-  | "Data Eng."
-  | "Data An."
-  | "Data Wrang."
-  | "Frontend"
-  | "Backend"
-  | "Graphics"
-  | "General Prog."
-  | "Softskill";
+  | "SQL"
+  | "Google Sheets"
+  // Web / graphics stuff
+  | "TypeScript"
+  | "Cat petting"
+  | "React"
+  | "GLSL"
+  // Soft skills
+  | "Problem Solving"
+  | "Creativity"
+  | "Communication"
+  | "Time Management";
 
 export type Skill = {
   name: SkillName;
-  proficiency: number; // 1-10 scale
-  enjoyment: number; // 1-10 scale
-  experience: number; // 1-10 scale
+  flavorText: string;
+  proficiency: number; // 0-1 scale
+  enjoyment: number; // 0-1 scale
+  experience: number; // 0-1 scale
 };

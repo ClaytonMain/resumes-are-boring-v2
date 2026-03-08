@@ -39,7 +39,7 @@ export default function SkillsHtml() {
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >
-      <div className="pointer-events-auto mb-10 flex rounded-lg border border-lime-400 bg-lime-500/10">
+      <div className="pointer-events-auto mb-10 flex rounded-lg border border-lime-400 bg-lime-700/80">
         <motion.button
           initial={false}
           onClick={() => handleClick(-1)}
@@ -47,7 +47,7 @@ export default function SkillsHtml() {
           whileHover={{ backgroundColor: "#ffffff1a" }}
         >
           <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-            <ChevronLeftIcon className="h-12 w-12" />
+            <ChevronLeftIcon className="h-14 w-12" />
           </motion.div>
         </motion.button>
         <AnimatePresence custom={direction} initial={false} mode="popLayout">
@@ -58,7 +58,10 @@ export default function SkillsHtml() {
             exit={{ opacity: 0, x: direction * -50 }}
             className="my-auto w-64 text-center text-xl font-bold tracking-tight"
           >
-            {SKILLS[skillIndex].name}
+            <motion.div>{SKILLS[skillIndex].name}</motion.div>
+            <motion.div className="text-xs font-light tracking-tighter">
+              {SKILLS[skillIndex].flavorText}
+            </motion.div>
           </motion.div>
         </AnimatePresence>
         <motion.button
@@ -68,7 +71,7 @@ export default function SkillsHtml() {
           whileHover={{ backgroundColor: "#ffffff1a" }}
         >
           <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-            <ChevronLeftIcon className="h-12 w-12 rotate-180" />
+            <ChevronLeftIcon className="h-14 w-12 rotate-180" />
           </motion.div>
         </motion.button>
       </div>

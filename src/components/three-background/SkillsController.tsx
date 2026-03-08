@@ -1,10 +1,10 @@
-import { Billboard } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useSpring } from "motion/react";
-import { useEffect, useRef, type RefObject } from "react";
+import { useSpring, useTransform } from "motion/react";
+import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { SKILLS } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
+import { SkillsHtmlComponent } from "./SkillsHtmlComponent";
 import type { OffsetTextureUniforms } from "./types/types";
 
 export default function SkillsController({
@@ -12,87 +12,258 @@ export default function SkillsController({
   proficiencyRef,
   enjoymentRef,
   experienceRef,
+  hexagonXSpacing,
+  hexagonZSpacing,
 }: {
   offsetTextureUniforms: OffsetTextureUniforms;
   proficiencyRef: RefObject<THREE.Object3D>;
   enjoymentRef: RefObject<THREE.Object3D>;
   experienceRef: RefObject<THREE.Object3D>;
+  hexagonXSpacing: number;
+  hexagonZSpacing: number;
 }) {
-  const currentPageRef = useRef(useAppStore.getState().currentPage);
-  const activeSkillIndexRef = useRef(useAppStore.getState().activeSkillIndex);
+  const [states, setStates] = useState({
+    pageActive: useAppStore.getState().currentPage === "skills",
+    activeSkillIndex: useAppStore.getState().activeSkillIndex,
+    proficiencyMarkerValue: 0,
+    enjoymentMarkerValue: 0,
+    experienceMarkerValue: 0,
+  });
+  const objectsGroupRef = useRef<THREE.Group>(null!);
   const proficiencySpring = useSpring(
-    currentPageRef.current === "skills"
-      ? SKILLS[activeSkillIndexRef.current].proficiency / 10
-      : 0,
+    states.pageActive ? SKILLS[states.activeSkillIndex].proficiency : 0,
   );
   const enjoymentSpring = useSpring(
-    currentPageRef.current === "skills"
-      ? SKILLS[activeSkillIndexRef.current].enjoyment / 10
-      : 0,
+    states.pageActive ? SKILLS[states.activeSkillIndex].enjoyment : 0,
   );
   const experienceSpring = useSpring(
-    currentPageRef.current === "skills"
-      ? SKILLS[activeSkillIndexRef.current].experience / 10
-      : 0,
+    states.pageActive ? SKILLS[states.activeSkillIndex].experience : 0,
   );
+
+  const markerGeometry = useMemo(() => {
+    const geometry = new THREE.IcosahedronGeometry(0.025, 0);
+    geometry.deleteAttribute("normal");
+    geometry.deleteAttribute("uv");
+    return geometry;
+  }, []);
+
+  const proficiencyMarkerGroupRef = useRef<THREE.Group>(null!);
+  const proficiencyMarkerRef = useRef<THREE.Mesh>(null!);
+  const proficiencyMarkerMaterialRef = useRef<THREE.MeshStandardMaterial>(
+    null!,
+  );
+  const proficiencyMarkerSpring = useTransform(proficiencySpring, (value) => {
+    return value * 1.5 + 0.1;
+  });
+
+  const enjoymentMarkerGroupRef = useRef<THREE.Group>(null!);
+  const enjoymentMarkerRef = useRef<THREE.Mesh>(null!);
+  const enjoymentMarkerMaterialRef = useRef<THREE.MeshStandardMaterial>(null!);
+  const enjoymentMarkerSpring = useTransform(enjoymentSpring, (value) => {
+    return value * 1.5 + 0.1;
+  });
+
+  const experienceMarkerGroupRef = useRef<THREE.Group>(null!);
+  const experienceMarkerRef = useRef<THREE.Mesh>(null!);
+  const experienceMarkerMaterialRef = useRef<THREE.MeshStandardMaterial>(null!);
+  const experienceMarkerSpring = useTransform(experienceSpring, (value) => {
+    return value * 1.5 + 0.1;
+  });
 
   useEffect(() => {
     const unsubActiveSkillIndex = useAppStore.subscribe(
       (state) => state.activeSkillIndex,
       (value) => {
-        activeSkillIndexRef.current = value;
-        if (currentPageRef.current === "skills") {
-          proficiencySpring.set(SKILLS[value].proficiency / 10);
-          enjoymentSpring.set(SKILLS[value].enjoyment / 10);
-          experienceSpring.set(SKILLS[value].experience / 10);
+        const newStates = { ...states };
+        newStates.activeSkillIndex = value;
+        if (useAppStore.getState().currentPage === "skills") {
+          proficiencySpring.set(SKILLS[value].proficiency);
+          enjoymentSpring.set(SKILLS[value].enjoyment);
+          experienceSpring.set(SKILLS[value].experience);
+          newStates.proficiencyMarkerValue = SKILLS[value].proficiency * 100;
+          newStates.enjoymentMarkerValue = SKILLS[value].enjoyment * 100;
+          newStates.experienceMarkerValue = SKILLS[value].experience * 100;
         }
+        setStates(newStates);
       },
     );
     const unsubCurrentPage = useAppStore.subscribe(
       (state) => state.currentPage,
       (value) => {
-        currentPageRef.current = value;
+        const newStates = { ...states };
         if (value === "skills") {
-          proficiencySpring.set(
-            SKILLS[activeSkillIndexRef.current].proficiency / 10,
-          );
-          enjoymentSpring.set(
-            SKILLS[activeSkillIndexRef.current].enjoyment / 10,
-          );
-          experienceSpring.set(
-            SKILLS[activeSkillIndexRef.current].experience / 10,
-          );
+          proficiencySpring.set(SKILLS[states.activeSkillIndex].proficiency);
+          enjoymentSpring.set(SKILLS[states.activeSkillIndex].enjoyment);
+          experienceSpring.set(SKILLS[states.activeSkillIndex].experience);
+
+          newStates.pageActive = true;
+          newStates.proficiencyMarkerValue =
+            SKILLS[states.activeSkillIndex].proficiency * 100;
+          newStates.enjoymentMarkerValue =
+            SKILLS[states.activeSkillIndex].enjoyment * 100;
+          newStates.experienceMarkerValue =
+            SKILLS[states.activeSkillIndex].experience * 100;
         } else {
           proficiencySpring.set(0);
           enjoymentSpring.set(0);
           experienceSpring.set(0);
+
+          newStates.pageActive = false;
+          newStates.proficiencyMarkerValue = 0;
+          newStates.enjoymentMarkerValue = 0;
+          newStates.experienceMarkerValue = 0;
         }
+        setStates(newStates);
       },
     );
     return () => {
       unsubActiveSkillIndex();
       unsubCurrentPage();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enjoymentSpring, experienceSpring, proficiencySpring, states]);
+
+  const randomFactors = useMemo(() => {
+    return [
+      Math.random() * 0.2 + 0.9,
+      Math.random() * 0.2 + 0.9,
+      Math.random() * 0.2 + 0.9,
+    ];
   }, []);
 
-  useFrame(() => {
+  const clampedDeltaRef = useRef(0);
+  useFrame(({ camera }, delta) => {
+    clampedDeltaRef.current = Math.min(delta, 0.1);
+
+    objectsGroupRef.current.lookAt(
+      camera
+        .getWorldDirection(new THREE.Vector3())
+        .multiply(new THREE.Vector3(-1, 0, -1)),
+    );
+
+    // Proficiency
     if (proficiencyRef.current) {
       offsetTextureUniforms.uProficiencyValue.value = proficiencySpring.get();
     }
+    if (proficiencyMarkerRef.current) {
+      proficiencyMarkerRef.current.rotation.y +=
+        clampedDeltaRef.current * 0.5 * randomFactors[0];
+      proficiencyMarkerRef.current.rotation.x +=
+        clampedDeltaRef.current * 0.25 * randomFactors[0];
+    }
+    if (proficiencyMarkerGroupRef.current) {
+      proficiencyMarkerGroupRef.current.position.y =
+        proficiencyMarkerSpring.get();
+    }
+    if (proficiencyMarkerMaterialRef.current) {
+      proficiencyMarkerMaterialRef.current.opacity = THREE.MathUtils.lerp(
+        proficiencyMarkerMaterialRef.current.opacity,
+        states.pageActive ? 0.95 : 0,
+        clampedDeltaRef.current * 10,
+      );
+    }
+
+    // Enjoyment
     if (enjoymentRef.current) {
       offsetTextureUniforms.uEnjoymentValue.value = enjoymentSpring.get();
     }
+    if (enjoymentMarkerRef.current) {
+      enjoymentMarkerRef.current.rotation.y +=
+        clampedDeltaRef.current * 0.5 * randomFactors[1];
+      enjoymentMarkerRef.current.rotation.x +=
+        clampedDeltaRef.current * 0.25 * randomFactors[1];
+    }
+    if (enjoymentMarkerGroupRef.current) {
+      enjoymentMarkerGroupRef.current.position.y = enjoymentMarkerSpring.get();
+    }
+    if (enjoymentMarkerMaterialRef.current) {
+      enjoymentMarkerMaterialRef.current.opacity = THREE.MathUtils.lerp(
+        enjoymentMarkerMaterialRef.current.opacity,
+        states.pageActive ? 0.95 : 0,
+        clampedDeltaRef.current * 10,
+      );
+    }
+
+    // Experience
     if (experienceRef.current) {
       offsetTextureUniforms.uExperienceValue.value = experienceSpring.get();
+    }
+    if (experienceMarkerRef.current) {
+      experienceMarkerRef.current.rotation.y +=
+        clampedDeltaRef.current * 0.5 * randomFactors[2];
+      experienceMarkerRef.current.rotation.x +=
+        clampedDeltaRef.current * 0.25 * randomFactors[2];
+    }
+    if (experienceMarkerGroupRef.current) {
+      experienceMarkerGroupRef.current.position.y =
+        experienceMarkerSpring.get();
+    }
+    if (experienceMarkerMaterialRef.current) {
+      experienceMarkerMaterialRef.current.opacity = THREE.MathUtils.lerp(
+        experienceMarkerMaterialRef.current.opacity,
+        states.pageActive ? 0.95 : 0,
+        clampedDeltaRef.current * 10,
+      );
     }
   });
 
   return (
-    <Billboard>
-      <object3D ref={proficiencyRef} position={[-0.6, 0.0, 0.5]} />
-      <object3D ref={enjoymentRef} position={[0, 0.0, 0.5]} />
-      <object3D ref={experienceRef} position={[0.6, 0.0, 0.5]} />
-    </Billboard>
+    <>
+      <group ref={objectsGroupRef}>
+        <group position={[-hexagonXSpacing * 3, 0.0, hexagonZSpacing * 2]}>
+          <object3D ref={proficiencyRef} />
+          <group ref={proficiencyMarkerGroupRef}>
+            <mesh ref={proficiencyMarkerRef} geometry={markerGeometry}>
+              <meshStandardMaterial
+                ref={proficiencyMarkerMaterialRef}
+                color="#112211"
+                flatShading
+                transparent
+              />
+            </mesh>
+            <SkillsHtmlComponent
+              pageActive={states.pageActive}
+              value={states.proficiencyMarkerValue}
+              label="Proficiency"
+            />
+          </group>
+        </group>
+        <group position={[0, 0.0, hexagonZSpacing * 2]}>
+          <object3D ref={enjoymentRef} />
+          <group ref={enjoymentMarkerGroupRef}>
+            <mesh ref={enjoymentMarkerRef} geometry={markerGeometry}>
+              <meshStandardMaterial
+                ref={enjoymentMarkerMaterialRef}
+                color="#112211"
+                flatShading
+                transparent
+              />
+            </mesh>
+            <SkillsHtmlComponent
+              pageActive={states.pageActive}
+              value={states.enjoymentMarkerValue}
+              label="Enjoyment"
+            />
+          </group>
+        </group>
+        <group position={[hexagonXSpacing * 3, 0.0, hexagonZSpacing * 2]}>
+          <object3D ref={experienceRef} />
+          <group ref={experienceMarkerGroupRef}>
+            <mesh ref={experienceMarkerRef} geometry={markerGeometry}>
+              <meshStandardMaterial
+                ref={experienceMarkerMaterialRef}
+                color="#112211"
+                flatShading
+                transparent
+              />
+            </mesh>
+            <SkillsHtmlComponent
+              pageActive={states.pageActive}
+              value={states.experienceMarkerValue}
+              label="Experience"
+            />
+          </group>
+        </group>
+      </group>
+    </>
   );
 }

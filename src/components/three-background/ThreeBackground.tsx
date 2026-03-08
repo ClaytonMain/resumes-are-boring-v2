@@ -565,6 +565,8 @@ export default function ThreeBackground() {
         proficiencyRef={proficiencyRef}
         enjoymentRef={enjoymentRef}
         experienceRef={experienceRef}
+        hexagonXSpacing={HEXAGON_X_SPACING}
+        hexagonZSpacing={HEXAGON_Z_SPACING}
       />
     </>
   );
