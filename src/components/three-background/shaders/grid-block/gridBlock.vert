@@ -13,12 +13,15 @@ varying float vDistPctFromCenter;
 flat out int vRadiiIndex; // Well, this is weird. Have to use flat to pass int from vert to frag.
 varying float vEasedRadiiPct;
 varying float vTotalOffset;
+varying float vYPos;
 
 float easeInQuad(float x) {
   return x * x;
 }
 
 void main() {
+  vec4 offsetTextureStrength = texture2D(uOffsetTexture, aPointerTrailUv);
+  float skillsStrength = offsetTextureStrength.g * 1.5;
   // Min active radii is 2.
   // Will loop through radii pcts to mix offset height based on pct from center.
   // Need to get heights for radii patterns though.
@@ -29,8 +32,8 @@ void main() {
   patternOffsets[1] = smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) * 0.1;
   // Patterns 2-6: Zero for now.
   patternOffsets[2] = smoothstep(0.0, 2.0, sin(aPointerTrailUv.x * 15.0 * 3.14159) * sin(uTime * 0.5 + aDistPctFromCenter * 10.0) + cos(aPointerTrailUv.y * 15.0 * 3.14159) * cos(uTime * 0.5 + aDistPctFromCenter * 10.0)) * 0.15;
-  patternOffsets[3] = 0.0;
-  patternOffsets[4] = 0.0;
+  patternOffsets[3] = skillsStrength;
+  patternOffsets[4] = -smoothstep(0.3, 0.0, aDistPctFromCenter) * 4.0 + smoothstep(0.0, 1.0, pow(sin(uTime * 0.5 + aDistPctFromCenter * 25.0), 2.0)) * 0.1;
   patternOffsets[5] = 0.0;
   patternOffsets[6] = 0.0;
 
@@ -49,15 +52,13 @@ void main() {
     break;
   }
 
-  vec4 offsetTextureStrength = texture2D(uOffsetTexture, aPointerTrailUv);
   float pointerTrailOffset = offsetTextureStrength.r * 0.15;
 
-  float skillsStrength = offsetTextureStrength.g * 1.5;
-
-  float totalOffset = offset + pointerTrailOffset + aRandomOffset + skillsStrength;
+  float totalOffset = offset + pointerTrailOffset + aRandomOffset;
   csm_Position.y += totalOffset;
 
   // vColorMix = colorMix;
   vDistPctFromCenter = aDistPctFromCenter;
   vTotalOffset = totalOffset;
+  vYPos = csm_Position.y;
 }

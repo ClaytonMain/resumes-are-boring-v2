@@ -49,26 +49,23 @@ export default function SkillsController({
 
   const proficiencyMarkerGroupRef = useRef<THREE.Group>(null!);
   const proficiencyMarkerRef = useRef<THREE.Mesh>(null!);
-  const proficiencyMarkerMaterialRef = useRef<THREE.MeshStandardMaterial>(
-    null!,
-  );
   const proficiencyMarkerSpring = useTransform(proficiencySpring, (value) => {
     return value * 1.5 + 0.1;
   });
 
   const enjoymentMarkerGroupRef = useRef<THREE.Group>(null!);
   const enjoymentMarkerRef = useRef<THREE.Mesh>(null!);
-  const enjoymentMarkerMaterialRef = useRef<THREE.MeshStandardMaterial>(null!);
   const enjoymentMarkerSpring = useTransform(enjoymentSpring, (value) => {
     return value * 1.5 + 0.1;
   });
 
   const experienceMarkerGroupRef = useRef<THREE.Group>(null!);
   const experienceMarkerRef = useRef<THREE.Mesh>(null!);
-  const experienceMarkerMaterialRef = useRef<THREE.MeshStandardMaterial>(null!);
   const experienceMarkerSpring = useTransform(experienceSpring, (value) => {
     return value * 1.5 + 0.1;
   });
+
+  const markerScaleRef = useRef(states.pageActive ? 1.0 : 0);
 
   useEffect(() => {
     const unsubActiveSkillIndex = useAppStore.subscribe(
@@ -140,6 +137,19 @@ export default function SkillsController({
         .multiply(new THREE.Vector3(-1, 0, -1)),
     );
 
+    // Marker opacity
+    if (states.pageActive && markerScaleRef.current < 1.0) {
+      markerScaleRef.current += clampedDeltaRef.current * 0.25;
+      if (markerScaleRef.current > 1.0) {
+        markerScaleRef.current = 1.0;
+      }
+    } else if (!states.pageActive && markerScaleRef.current > 0) {
+      markerScaleRef.current -= clampedDeltaRef.current * 5;
+      if (markerScaleRef.current < 0) {
+        markerScaleRef.current = 0;
+      }
+    }
+
     // Proficiency
     if (proficiencyRef.current) {
       offsetTextureUniforms.uProficiencyValue.value = proficiencySpring.get();
@@ -153,13 +163,7 @@ export default function SkillsController({
     if (proficiencyMarkerGroupRef.current) {
       proficiencyMarkerGroupRef.current.position.y =
         proficiencyMarkerSpring.get();
-    }
-    if (proficiencyMarkerMaterialRef.current) {
-      proficiencyMarkerMaterialRef.current.opacity = THREE.MathUtils.lerp(
-        proficiencyMarkerMaterialRef.current.opacity,
-        states.pageActive ? 0.95 : 0,
-        clampedDeltaRef.current * 10,
-      );
+      proficiencyMarkerGroupRef.current.scale.setScalar(markerScaleRef.current);
     }
 
     // Enjoyment
@@ -174,13 +178,7 @@ export default function SkillsController({
     }
     if (enjoymentMarkerGroupRef.current) {
       enjoymentMarkerGroupRef.current.position.y = enjoymentMarkerSpring.get();
-    }
-    if (enjoymentMarkerMaterialRef.current) {
-      enjoymentMarkerMaterialRef.current.opacity = THREE.MathUtils.lerp(
-        enjoymentMarkerMaterialRef.current.opacity,
-        states.pageActive ? 0.95 : 0,
-        clampedDeltaRef.current * 10,
-      );
+      enjoymentMarkerGroupRef.current.scale.setScalar(markerScaleRef.current);
     }
 
     // Experience
@@ -196,13 +194,7 @@ export default function SkillsController({
     if (experienceMarkerGroupRef.current) {
       experienceMarkerGroupRef.current.position.y =
         experienceMarkerSpring.get();
-    }
-    if (experienceMarkerMaterialRef.current) {
-      experienceMarkerMaterialRef.current.opacity = THREE.MathUtils.lerp(
-        experienceMarkerMaterialRef.current.opacity,
-        states.pageActive ? 0.95 : 0,
-        clampedDeltaRef.current * 10,
-      );
+      experienceMarkerGroupRef.current.scale.setScalar(markerScaleRef.current);
     }
   });
 
@@ -213,12 +205,7 @@ export default function SkillsController({
           <object3D ref={proficiencyRef} />
           <group ref={proficiencyMarkerGroupRef}>
             <mesh ref={proficiencyMarkerRef} geometry={markerGeometry}>
-              <meshStandardMaterial
-                ref={proficiencyMarkerMaterialRef}
-                color="#112211"
-                flatShading
-                transparent
-              />
+              <meshStandardMaterial color="#112211" flatShading />
             </mesh>
             <SkillsHtmlComponent
               pageActive={states.pageActive}
@@ -231,12 +218,7 @@ export default function SkillsController({
           <object3D ref={enjoymentRef} />
           <group ref={enjoymentMarkerGroupRef}>
             <mesh ref={enjoymentMarkerRef} geometry={markerGeometry}>
-              <meshStandardMaterial
-                ref={enjoymentMarkerMaterialRef}
-                color="#112211"
-                flatShading
-                transparent
-              />
+              <meshStandardMaterial color="#112211" flatShading />
             </mesh>
             <SkillsHtmlComponent
               pageActive={states.pageActive}
@@ -249,12 +231,7 @@ export default function SkillsController({
           <object3D ref={experienceRef} />
           <group ref={experienceMarkerGroupRef}>
             <mesh ref={experienceMarkerRef} geometry={markerGeometry}>
-              <meshStandardMaterial
-                ref={experienceMarkerMaterialRef}
-                color="#112211"
-                flatShading
-                transparent
-              />
+              <meshStandardMaterial color="#112211" flatShading />
             </mesh>
             <SkillsHtmlComponent
               pageActive={states.pageActive}
