@@ -29,3 +29,13 @@ export type OffsetTextureUniforms = {
   uEnjoymentValue: { value: number };
   uExperienceValue: { value: number };
 };
+
+export type GridBlockUniforms = {
+  uTime: { value: number };
+  uOffsetTexture: { value: THREE.DataTexture };
+  uVisibilityPct: { value: number };
+  uActiveRadii: { value: number };
+  uRadiiPcts: { value: number[] };
+  uRadiiColors: { value: THREE.Color[] };
+  uRadiiPatterns: { value: number[] };
+};

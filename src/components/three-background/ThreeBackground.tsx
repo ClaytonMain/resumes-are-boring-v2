@@ -15,6 +15,7 @@ import {
   PAGE_PATTERN_NUMBERS,
 } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
+import CenterHeightCalculations from "./CenterHeightCalculations";
 import useMousePosition from "./hooks/useMousePosition";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
@@ -22,7 +23,7 @@ import offsetTextureFragmentShader from "./shaders/offset-texture/offsetTexture.
 import offsetTextureVertexShader from "./shaders/offset-texture/offsetTexture.vert";
 import SkillsController from "./SkillsController";
 import ThreeBackgroundReadyComponent from "./ThreeBackgroundReadyComponent";
-import type { OffsetTextureUniforms } from "./types/types";
+import type { GridBlockUniforms, OffsetTextureUniforms } from "./types/types";
 
 // ********
 // Hexagons
@@ -120,7 +121,7 @@ export default function ThreeBackground() {
   // ***********
   // Grid Blocks
   // ***********
-  const gridBlockUniforms = useMemo(() => {
+  const gridBlockUniforms: GridBlockUniforms = useMemo(() => {
     return {
       uTime: { value: 0 },
       uOffsetTexture: { value: new THREE.DataTexture() },
@@ -286,6 +287,11 @@ export default function ThreeBackground() {
   const pointerVelocityRef = useRef(-1);
 
   const pingPongRef = useRef(true);
+
+  // Duplicating the shader calculations for height here for timing purposes.
+  // Just for the center position though.
+  const centerHeightRef = useRef(0);
+
   useFrame(({ camera, gl }, delta) => {
     // ******
     // Shared
@@ -427,6 +433,10 @@ export default function ThreeBackground() {
       gridBlockUniforms.uActiveRadii.value = radiiPcts.indexOf(1) + 2;
     }
 
+    if (centerHeightRef.current !== undefined) {
+      console.log("Center height:", centerHeightRef.current.toFixed(2));
+    }
+
     gl.setRenderTarget(null);
   });
 
@@ -560,6 +570,13 @@ export default function ThreeBackground() {
         )}
         <ThreeBackgroundReadyComponent />
       </GridBlockInstances>
+      <CenterHeightCalculations
+        centerHeightRef={centerHeightRef}
+        gridBlockUniforms={gridBlockUniforms}
+        proficiencyRef={proficiencyRef}
+        enjoymentRef={enjoymentRef}
+        experienceRef={experienceRef}
+      />
       <SkillsController
         offsetTextureUniforms={offsetTextureUniforms}
         proficiencyRef={proficiencyRef}
@@ -567,6 +584,7 @@ export default function ThreeBackground() {
         experienceRef={experienceRef}
         hexagonXSpacing={HEXAGON_X_SPACING}
         hexagonZSpacing={HEXAGON_Z_SPACING}
+        centerHeightRef={centerHeightRef}
       />
     </>
   );

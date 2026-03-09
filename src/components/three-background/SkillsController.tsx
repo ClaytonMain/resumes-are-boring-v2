@@ -14,6 +14,7 @@ export default function SkillsController({
   experienceRef,
   hexagonXSpacing,
   hexagonZSpacing,
+  centerHeightRef,
 }: {
   offsetTextureUniforms: OffsetTextureUniforms;
   proficiencyRef: RefObject<THREE.Object3D>;
@@ -21,6 +22,7 @@ export default function SkillsController({
   experienceRef: RefObject<THREE.Object3D>;
   hexagonXSpacing: number;
   hexagonZSpacing: number;
+  centerHeightRef: RefObject<number>;
 }) {
   const [states, setStates] = useState({
     pageActive: useAppStore.getState().currentPage === "skills",
@@ -138,8 +140,12 @@ export default function SkillsController({
     );
 
     // Marker opacity
-    if (states.pageActive && markerScaleRef.current < 1.0) {
-      markerScaleRef.current += clampedDeltaRef.current * 0.25;
+    if (
+      states.pageActive &&
+      markerScaleRef.current < 1.0 &&
+      centerHeightRef.current >= 0.0
+    ) {
+      markerScaleRef.current += clampedDeltaRef.current * 5;
       if (markerScaleRef.current > 1.0) {
         markerScaleRef.current = 1.0;
       }
