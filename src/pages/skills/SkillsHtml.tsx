@@ -35,7 +35,7 @@ export default function SkillsHtml() {
     <motion.div
       key="skills-html-content-div"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >

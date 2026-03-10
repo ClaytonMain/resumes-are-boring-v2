@@ -7,31 +7,12 @@ import ProjectsHtml from "../pages/projects/ProjectsHtml";
 import SkillsHtml from "../pages/skills/SkillsHtml";
 import useAppStore from "../stores/useAppStore";
 import Navigation from "./Navigation";
-// import { useEffect } from "react";
 
 export default function HtmlElementsContainer() {
   const currentPage = useAppStore((state) => state.currentPage);
   const initialComponentsReady = useAppStore(
     (state) => state.initialComponentsReady,
   );
-
-  // useEffect(() => {
-  //   const unsubCurrentPage = useAppStore.subscribe(
-  //     (state) => state.currentPage,
-  //     (value, previousValue) => {
-  //       if (value === PAGE_NAME && previousValue !== PAGE_NAME) {
-  //         UTILS.requestCameraUpdate({
-  //           position: DEFAULT_CAMERA_POSITION,
-  //           lookAt: DEFAULT_CAMERA_LOOK_AT,
-  //           fov: DEFAULT_CAMERA_FOV,
-  //         });
-  //       }
-  //     },
-  //   );
-  //   return () => {
-  //     unsubCurrentPage();
-  //   };
-  // }, []);
 
   return (
     <>

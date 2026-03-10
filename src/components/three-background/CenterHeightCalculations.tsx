@@ -5,7 +5,7 @@
 // The value will be calculated here and set in the centerHeightRef.
 
 // We'll ignore the heights present in the offset texture for now,
-// but check the proficiency, enjoyment, and experience height
+// but check the proficiency, enjoyment, and experience offset
 // values directly.
 
 // We'll assume the aDistPctFromCenter is 0 for the center block.
@@ -13,6 +13,8 @@
 import { useFrame } from "@react-three/fiber";
 import { useRef, type RefObject } from "react";
 import * as THREE from "three";
+import { SKILLS } from "../../constants/constants";
+import useAppStore from "../../stores/useAppStore";
 import type { GridBlockUniforms } from "./types/types";
 
 // I know this is silly, but I just want to make this easy to cross-reference.
@@ -24,7 +26,7 @@ function smoothstep(edge0: number, edge1: number, x: number) {
   const edge1MinusEdge0Raw = edge1 - edge0;
   const edge1MinusEdge0 =
     edge1MinusEdge0Raw === 0
-      ? 0.0000001 * Math.sign(edge1MinusEdge0Raw)
+      ? 0.00001 * Math.sign(edge1MinusEdge0Raw)
       : edge1MinusEdge0Raw;
   const t = Math.max(0, Math.min(1, (x - edge0) / edge1MinusEdge0));
   return t * t * (3 - 2 * t);
@@ -41,24 +43,19 @@ function mix(x: number, y: number, a: number) {
 export default function CenterHeightCalculations({
   centerHeightRef,
   gridBlockUniforms,
-  proficiencyRef,
-  enjoymentRef,
-  experienceRef,
 }: {
   centerHeightRef: RefObject<number>;
   gridBlockUniforms: GridBlockUniforms;
-  proficiencyRef: RefObject<THREE.Object3D>;
-  enjoymentRef: RefObject<THREE.Object3D>;
-  experienceRef: RefObject<THREE.Object3D>;
 }) {
   const patternOffsetsRef = useRef([-0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
 
   useFrame(() => {
     const uTime = gridBlockUniforms.uTime.value;
     const uRadiiPatterns = gridBlockUniforms.uRadiiPatterns.value;
-    const proficiencyHeight = proficiencyRef.current?.position.y || 0;
-    const enjoymentHeight = enjoymentRef.current?.position.y || 0;
-    const experienceHeight = experienceRef.current?.position.y || 0;
+    const activeSkillIndex = useAppStore.getState().activeSkillIndex;
+    const proficiencyHeight = SKILLS[activeSkillIndex].proficiency * 0.15;
+    const enjoymentHeight = SKILLS[activeSkillIndex].enjoyment * 0.15;
+    const experienceHeight = SKILLS[activeSkillIndex].experience * 0.15;
 
     patternOffsetsRef.current[1] =
       smoothstep(0.0, 1.0, Math.sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) *

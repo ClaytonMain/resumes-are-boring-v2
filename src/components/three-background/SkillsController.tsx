@@ -14,7 +14,6 @@ export default function SkillsController({
   experienceRef,
   hexagonXSpacing,
   hexagonZSpacing,
-  centerHeightRef,
 }: {
   offsetTextureUniforms: OffsetTextureUniforms;
   proficiencyRef: RefObject<THREE.Object3D>;
@@ -22,10 +21,10 @@ export default function SkillsController({
   experienceRef: RefObject<THREE.Object3D>;
   hexagonXSpacing: number;
   hexagonZSpacing: number;
-  centerHeightRef: RefObject<number>;
 }) {
   const [states, setStates] = useState({
     pageActive: useAppStore.getState().currentPage === "skills",
+    springsActive: false,
     activeSkillIndex: useAppStore.getState().activeSkillIndex,
     proficiencyMarkerValue: 0,
     enjoymentMarkerValue: 0,
@@ -33,13 +32,13 @@ export default function SkillsController({
   });
   const objectsGroupRef = useRef<THREE.Group>(null!);
   const proficiencySpring = useSpring(
-    states.pageActive ? SKILLS[states.activeSkillIndex].proficiency : 0,
+    states.springsActive ? SKILLS[states.activeSkillIndex].proficiency : 0,
   );
   const enjoymentSpring = useSpring(
-    states.pageActive ? SKILLS[states.activeSkillIndex].enjoyment : 0,
+    states.springsActive ? SKILLS[states.activeSkillIndex].enjoyment : 0,
   );
   const experienceSpring = useSpring(
-    states.pageActive ? SKILLS[states.activeSkillIndex].experience : 0,
+    states.springsActive ? SKILLS[states.activeSkillIndex].experience : 0,
   );
 
   const markerGeometry = useMemo(() => {
@@ -75,7 +74,10 @@ export default function SkillsController({
       (value) => {
         const newStates = { ...states };
         newStates.activeSkillIndex = value;
-        if (useAppStore.getState().currentPage === "skills") {
+        if (
+          useAppStore.getState().currentPage === "skills" &&
+          states.springsActive
+        ) {
           proficiencySpring.set(SKILLS[value].proficiency);
           enjoymentSpring.set(SKILLS[value].enjoyment);
           experienceSpring.set(SKILLS[value].experience);
@@ -91,26 +93,27 @@ export default function SkillsController({
       (value) => {
         const newStates = { ...states };
         if (value === "skills") {
-          proficiencySpring.set(SKILLS[states.activeSkillIndex].proficiency);
-          enjoymentSpring.set(SKILLS[states.activeSkillIndex].enjoyment);
-          experienceSpring.set(SKILLS[states.activeSkillIndex].experience);
+          // proficiencySpring.set(SKILLS[states.activeSkillIndex].proficiency);
+          // enjoymentSpring.set(SKILLS[states.activeSkillIndex].enjoyment);
+          // experienceSpring.set(SKILLS[states.activeSkillIndex].experience);
 
           newStates.pageActive = true;
-          newStates.proficiencyMarkerValue =
-            SKILLS[states.activeSkillIndex].proficiency * 100;
-          newStates.enjoymentMarkerValue =
-            SKILLS[states.activeSkillIndex].enjoyment * 100;
-          newStates.experienceMarkerValue =
-            SKILLS[states.activeSkillIndex].experience * 100;
+          // newStates.proficiencyMarkerValue =
+          //   SKILLS[states.activeSkillIndex].proficiency * 100;
+          // newStates.enjoymentMarkerValue =
+          //   SKILLS[states.activeSkillIndex].enjoyment * 100;
+          // newStates.experienceMarkerValue =
+          //   SKILLS[states.activeSkillIndex].experience * 100;
         } else {
-          proficiencySpring.set(0);
-          enjoymentSpring.set(0);
-          experienceSpring.set(0);
+          // proficiencySpring.set(0);
+          // enjoymentSpring.set(0);
+          // experienceSpring.set(0);
 
           newStates.pageActive = false;
-          newStates.proficiencyMarkerValue = 0;
-          newStates.enjoymentMarkerValue = 0;
-          newStates.experienceMarkerValue = 0;
+          newStates.springsActive = false;
+          // newStates.proficiencyMarkerValue = 0;
+          // newStates.enjoymentMarkerValue = 0;
+          // newStates.experienceMarkerValue = 0;
         }
         setStates(newStates);
       },
@@ -120,6 +123,47 @@ export default function SkillsController({
       unsubCurrentPage();
     };
   }, [enjoymentSpring, experienceSpring, proficiencySpring, states]);
+
+  useEffect(() => {
+    if (states.pageActive) {
+      const timeout = setTimeout(() => {
+        setStates((prev) => ({ ...prev, springsActive: true }));
+      }, 500);
+      return () => clearTimeout(timeout);
+    } else {
+      setStates((prev) => ({ ...prev, springsActive: false }));
+    }
+  }, [states.pageActive]);
+
+  useEffect(() => {
+    const newStates = { ...states };
+    if (states.springsActive) {
+      proficiencySpring.set(SKILLS[states.activeSkillIndex].proficiency);
+      enjoymentSpring.set(SKILLS[states.activeSkillIndex].enjoyment);
+      experienceSpring.set(SKILLS[states.activeSkillIndex].experience);
+      newStates.proficiencyMarkerValue =
+        SKILLS[states.activeSkillIndex].proficiency * 100;
+      newStates.enjoymentMarkerValue =
+        SKILLS[states.activeSkillIndex].enjoyment * 100;
+      newStates.experienceMarkerValue =
+        SKILLS[states.activeSkillIndex].experience * 100;
+    } else {
+      proficiencySpring.set(0);
+      enjoymentSpring.set(0);
+      experienceSpring.set(0);
+      newStates.proficiencyMarkerValue = 0;
+      newStates.enjoymentMarkerValue = 0;
+      newStates.experienceMarkerValue = 0;
+    }
+    setStates(newStates);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    states.springsActive,
+    states.activeSkillIndex,
+    enjoymentSpring,
+    experienceSpring,
+    proficiencySpring,
+  ]);
 
   const randomFactors = useMemo(() => {
     return [
@@ -143,7 +187,7 @@ export default function SkillsController({
     if (
       states.pageActive &&
       markerScaleRef.current < 1.0 &&
-      centerHeightRef.current >= 0.0
+      states.springsActive
     ) {
       markerScaleRef.current += clampedDeltaRef.current * 5;
       if (markerScaleRef.current > 1.0) {
@@ -214,7 +258,8 @@ export default function SkillsController({
               <meshStandardMaterial color="#112211" flatShading />
             </mesh>
             <SkillsHtmlComponent
-              pageActive={states.pageActive}
+              index={0}
+              springsActive={states.springsActive}
               value={states.proficiencyMarkerValue}
               label="Proficiency"
             />
@@ -227,7 +272,8 @@ export default function SkillsController({
               <meshStandardMaterial color="#112211" flatShading />
             </mesh>
             <SkillsHtmlComponent
-              pageActive={states.pageActive}
+              index={1}
+              springsActive={states.springsActive}
               value={states.enjoymentMarkerValue}
               label="Enjoyment"
             />
@@ -240,7 +286,8 @@ export default function SkillsController({
               <meshStandardMaterial color="#112211" flatShading />
             </mesh>
             <SkillsHtmlComponent
-              pageActive={states.pageActive}
+              index={2}
+              springsActive={states.springsActive}
               value={states.experienceMarkerValue}
               label="Experience"
             />
