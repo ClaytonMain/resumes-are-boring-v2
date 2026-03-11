@@ -93,27 +93,10 @@ export default function SkillsController({
       (value) => {
         const newStates = { ...states };
         if (value === "skills") {
-          // proficiencySpring.set(SKILLS[states.activeSkillIndex].proficiency);
-          // enjoymentSpring.set(SKILLS[states.activeSkillIndex].enjoyment);
-          // experienceSpring.set(SKILLS[states.activeSkillIndex].experience);
-
           newStates.pageActive = true;
-          // newStates.proficiencyMarkerValue =
-          //   SKILLS[states.activeSkillIndex].proficiency * 100;
-          // newStates.enjoymentMarkerValue =
-          //   SKILLS[states.activeSkillIndex].enjoyment * 100;
-          // newStates.experienceMarkerValue =
-          //   SKILLS[states.activeSkillIndex].experience * 100;
         } else {
-          // proficiencySpring.set(0);
-          // enjoymentSpring.set(0);
-          // experienceSpring.set(0);
-
           newStates.pageActive = false;
           newStates.springsActive = false;
-          // newStates.proficiencyMarkerValue = 0;
-          // newStates.enjoymentMarkerValue = 0;
-          // newStates.experienceMarkerValue = 0;
         }
         setStates(newStates);
       },
@@ -126,10 +109,10 @@ export default function SkillsController({
 
   useEffect(() => {
     if (states.pageActive) {
-      const timeout = setTimeout(() => {
+      const timeoutId = setTimeout(() => {
         setStates((prev) => ({ ...prev, springsActive: true }));
       }, 500);
-      return () => clearTimeout(timeout);
+      return () => clearTimeout(timeoutId);
     } else {
       setStates((prev) => ({ ...prev, springsActive: false }));
     }

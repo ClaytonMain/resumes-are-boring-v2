@@ -227,3 +227,18 @@ export const SKILLS: Skill[] = [
     experience: 0.884,
   },
 ];
+
+export const PROJECTS = [
+  {
+    name: "Project A",
+    description: "Description for Project A",
+  },
+  {
+    name: "Project B",
+    description: "Description for Project B",
+  },
+  {
+    name: "Project C",
+    description: "Description for Project C",
+  },
+];

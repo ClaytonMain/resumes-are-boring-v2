@@ -56,6 +56,8 @@ const useAppStore = create<AppStore>()(
         targetBackgroundSubsurfaceUpdatedAt: Date.now(),
 
         activeSkillIndex: 0,
+
+        activeProjectIndex: 0,
       }),
       {
         name: "resumes-are-boring-app-store",

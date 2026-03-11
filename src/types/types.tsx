@@ -43,6 +43,8 @@ export interface AppStore {
   targetBackgroundSubsurfaceUpdatedAt: number;
 
   activeSkillIndex: number;
+
+  activeProjectIndex: number;
 }
 
 export type SceneBackgroundColors = Record<Page, string>;
