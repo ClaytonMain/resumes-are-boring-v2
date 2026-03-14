@@ -31,19 +31,19 @@ export default function ProjectsHtml() {
       projectIndex + newDirection,
     );
     setDirection(newDirection);
-    setSkillIndex(nextSkillIndex);
-    useAppStore.setState({ activeSkillIndex: nextSkillIndex });
+    setProjectIndex(nextProjectIndex);
+    useAppStore.setState({ activeProjectIndex: nextProjectIndex });
   }
 
   return (
     <motion.div
-      key="skills-html-content-div"
+      key="projects-html-content-div"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >
-      <div className="pointer-events-auto mb-10 flex rounded-lg border border-lime-400 bg-lime-700/80">
+      <div className="pointer-events-auto mb-10 flex rounded-lg border border-teal-400 bg-teal-700/80">
         <motion.button
           initial={false}
           onClick={() => handleClick(-1)}
@@ -56,15 +56,15 @@ export default function ProjectsHtml() {
         </motion.button>
         <AnimatePresence custom={direction} initial={false} mode="popLayout">
           <motion.div
-            key={SKILLS[skillIndex].name}
+            key={PROJECTS[projectIndex].name}
             initial={{ opacity: 0, x: direction * 50 }}
             animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
             exit={{ opacity: 0, x: direction * -50 }}
             className="my-auto w-64 text-center text-xl font-bold tracking-tight"
           >
-            <motion.div>{SKILLS[skillIndex].name}</motion.div>
+            <motion.div>{PROJECTS[projectIndex].name}</motion.div>
             <motion.div className="text-xs font-light tracking-tighter">
-              {SKILLS[skillIndex].flavorText}
+              {PROJECTS[projectIndex].description}
             </motion.div>
           </motion.div>
         </AnimatePresence>

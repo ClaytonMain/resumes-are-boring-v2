@@ -15,6 +15,7 @@ import {
   PAGE_PATTERN_NUMBERS,
 } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
+import ProjectsDisplay from "../ProjectsDisplay";
 import useMousePosition from "./hooks/useMousePosition";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
@@ -571,6 +572,7 @@ export default function ThreeBackground() {
         hexagonXSpacing={HEXAGON_X_SPACING}
         hexagonZSpacing={HEXAGON_Z_SPACING}
       />
+      <ProjectsDisplay />
     </>
   );
 }
