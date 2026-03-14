@@ -241,4 +241,12 @@ export const PROJECTS = [
     name: "Project C",
     description: "Description for Project C",
   },
+  {
+    name: "Project D",
+    description: "Description for Project D",
+  },
+  {
+    name: "Project E",
+    description: "Description for Project E",
+  },
 ];
