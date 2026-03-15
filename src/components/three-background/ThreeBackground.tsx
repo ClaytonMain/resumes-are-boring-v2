@@ -294,7 +294,7 @@ export default function ThreeBackground() {
     // ******
     // Shared
     // ******
-    uDeltaRef.current = Math.min(delta, 0.1);
+    uDeltaRef.current = Math.max(Math.min(delta, 0.1), 0.0001);
     uTimeRef.current = (uTimeRef.current + uDeltaRef.current) % 100000;
 
     // **************************
@@ -491,7 +491,7 @@ export default function ThreeBackground() {
         offsetTextureScene01,
       )}
 
-      <Bounds fit clip margin={1.2} maxDuration={0} observe>
+      <Bounds fit margin={1.2} maxDuration={0}>
         <Box args={[1.25, 2.5, 1.25]} position={[0, 1.25, 0]} visible={debug}>
           <meshBasicMaterial wireframe />
         </Box>
@@ -562,8 +562,8 @@ export default function ThreeBackground() {
             );
           }),
         )}
-        <ThreeBackgroundReadyComponent />
       </GridBlockInstances>
+      <ThreeBackgroundReadyComponent />
       <SkillsController
         offsetTextureUniforms={offsetTextureUniforms}
         proficiencyRef={proficiencyRef}

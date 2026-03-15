@@ -3,7 +3,6 @@ import * as THREE from "three";
 import type {
   Page,
   PageBlockColor,
-  PageThreeColor,
   SceneBackgroundColors,
   Skill,
 } from "../types/types";
@@ -15,37 +14,18 @@ export const PAGE_NAMES: Page[] = [
   "about",
   "skills",
   "projects",
-  "history",
   "contact",
 ] as const;
 
 export const SCENE_BACKGROUND_COLORS: SceneBackgroundColors = {
-  about: "#1a1817",
-  contact: "#1a1817",
-  history: "#1a1817",
-  home: "#1a1817",
-  projects: "#1a1817",
-  skills: "#1a1817",
+  home: "#ef0717",
+  about: "#e27a0b",
+  skills: "#aeff16",
+  projects: "#0ce8d8",
+  contact: "#820ce8",
 };
 
-export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(5, 7, 5);
-export const DEFAULT_CAMERA_LOOK_AT = new THREE.Vector3(0.0, 0.0, 0.0);
-export const DEFAULT_CAMERA_FOV = 60;
-export const DEFAULT_SPRING_POSITION_CONFIG = {
-  tension: 100,
-  friction: 36,
-  mass: 30,
-};
-export const DEFAULT_SPRING_LOOK_AT_CONFIG = {
-  tension: 100,
-  friction: 16,
-  mass: 1,
-};
-export const DEFAULT_SPRING_FOV_CONFIG = {
-  tension: 100,
-  friction: 36,
-  mass: 10,
-};
+export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(6.6, 8.8, 6.6);
 
 export const STATS_CLASS_NAME =
   "if-it-works-then-it-aint-25783154-7c53-4f0f-bb9c-5b6813dc653e";
@@ -68,40 +48,35 @@ export const FLAVOR_TEXT_VALUES = [
 export const CONTENT_CONTAINER_CLASS_NAME =
   "pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-2 backdrop-blur-sm";
 
-export const PAGE_THREE_COLORS: PageThreeColor = {
-  home: {
-    diffuse: new THREE.Color("#ffa9a9"),
-    subsurface: new THREE.Color("#ef0717"),
-  },
-  about: {
-    diffuse: new THREE.Color("#ffc77e"),
-    subsurface: new THREE.Color("#e27a0b"),
-  },
-  skills: {
-    diffuse: new THREE.Color("#dbff7d"),
-    subsurface: new THREE.Color("#aeff16"),
-  },
-  projects: {
-    diffuse: new THREE.Color("#7dffc9"),
-    subsurface: new THREE.Color("#0ce8d8"),
-  },
-  history: {
-    diffuse: new THREE.Color("#9c7dff"),
-    subsurface: new THREE.Color("#820ce8"),
-  },
-  contact: {
-    diffuse: new THREE.Color("#ff7dbc"),
-    subsurface: new THREE.Color("#e80c77"),
-  },
-};
+// export const PAGE_THREE_COLORS: PageThreeColor = {
+//   home: {
+//     diffuse: new THREE.Color("#ffa9a9"),
+//     subsurface: new THREE.Color("#ef0717"),
+//   },
+//   about: {
+//     diffuse: new THREE.Color("#ffc77e"),
+//     subsurface: new THREE.Color("#e27a0b"),
+//   },
+//   skills: {
+//     diffuse: new THREE.Color("#dbff7d"),
+//     subsurface: new THREE.Color("#aeff16"),
+//   },
+//   projects: {
+//     diffuse: new THREE.Color("#7dffc9"),
+//     subsurface: new THREE.Color("#0ce8d8"),
+//   },
+//   contact: {
+//     diffuse: new THREE.Color("#9c7dff"),
+//     subsurface: new THREE.Color("#820ce8"),
+//   },
+// };
 
 export const PAGE_BLOCK_COLORS: PageBlockColor = {
   home: new THREE.Color("#ef0717"),
   about: new THREE.Color("#e27a0b"),
   skills: new THREE.Color("#aeff16"),
   projects: new THREE.Color("#0ce8d8"),
-  history: new THREE.Color("#820ce8"),
-  contact: new THREE.Color("#e80c77"),
+  contact: new THREE.Color("#820ce8"),
 };
 
 export const PAGE_PATTERN_NUMBERS: Record<Page, number> = {
@@ -109,29 +84,28 @@ export const PAGE_PATTERN_NUMBERS: Record<Page, number> = {
   about: 2,
   skills: 3,
   projects: 4,
-  history: 5,
-  contact: 6,
+  contact: 5,
 };
 
 export const SKILLS: Skill[] = [
   {
     name: "Python",
     flavorText: "Language",
-    proficiency: 0.817,
-    enjoyment: 0.842,
-    experience: 0.803,
+    proficiency: 0.887,
+    enjoyment: 0.812,
+    experience: 0.893,
   },
   {
     name: "Snowflake",
     flavorText: "Data warehouse",
-    proficiency: 0.491,
+    proficiency: 0.591,
     enjoyment: 0.672,
     experience: 0.468,
   },
   {
     name: "dbt Cloud",
     flavorText: "Data transformation",
-    proficiency: 0.689,
+    proficiency: 0.709,
     enjoyment: 0.742,
     experience: 0.542,
   },
@@ -145,35 +119,35 @@ export const SKILLS: Skill[] = [
   {
     name: "Fivetran",
     flavorText: "Extract / load",
-    proficiency: 0.692,
+    proficiency: 0.712,
     enjoyment: 0.605,
     experience: 0.427,
   },
   {
     name: "Hex",
     flavorText: "BI platform",
-    proficiency: 0.763,
+    proficiency: 0.793,
     enjoyment: 0.892,
     experience: 0.491,
   },
   {
     name: "SQL",
     flavorText: "Language",
-    proficiency: 0.672,
+    proficiency: 0.732,
     enjoyment: 0.613,
     experience: 0.711,
   },
   {
     name: "Google Sheets",
-    flavorText: "Save me",
+    flavorText: "Save me from my nightmare",
     proficiency: 0.999,
-    enjoyment: 0.134,
+    enjoyment: 0.064,
     experience: 0.999,
   },
   {
     name: "TypeScript",
     flavorText: "Language",
-    proficiency: 0.636,
+    proficiency: 0.736,
     enjoyment: 0.902,
     experience: 0.718,
   },
@@ -187,14 +161,14 @@ export const SKILLS: Skill[] = [
   {
     name: "React",
     flavorText: "Framework",
-    proficiency: 0.539,
+    proficiency: 0.759,
     enjoyment: 0.924,
-    experience: 0.546,
+    experience: 0.746,
   },
   {
     name: "GLSL",
     flavorText: "Shader language",
-    proficiency: 0.446,
+    proficiency: 0.546,
     enjoyment: 0.951,
     experience: 0.407,
   },
@@ -221,7 +195,7 @@ export const SKILLS: Skill[] = [
   },
   {
     name: "Time Management",
-    flavorText: "[TODO: Write flavor text]",
+    flavorText: "[TODO: Find time to write flavor text]",
     proficiency: 0.748,
     enjoyment: 0.521,
     experience: 0.884,
@@ -230,23 +204,31 @@ export const SKILLS: Skill[] = [
 
 export const PROJECTS = [
   {
-    name: "Project A",
-    description: "Description for Project A",
+    name: "Spherical Trochoids",
+    description:
+      "Like a Spirograph, but in 3D. I came up with the math to describe this independently!",
+    url: "https://claytonmain.github.io/spherical-trochoids/",
   },
   {
-    name: "Project B",
-    description: "Description for Project B",
+    name: "Slime Clock",
+    description: "A slime mold simulation that's also a clock! Why? Why not?!",
+    url: "https://www.slimeclock.com",
   },
   {
-    name: "Project C",
-    description: "Description for Project C",
+    name: "Conway's Symphony of Life",
+    description:
+      "A synthesizer powered by Conway's Game of Life. Try it out! (Not recommended on mobile, sorry!)",
+    url: "https://conways-symphony-of-life.vercel.app/",
   },
   {
-    name: "Project D",
-    description: "Description for Project D",
+    name: "React Three Fiber Experiments",
+    description: "Various experiments and projects using React Three Fiber.",
+    url: "https://claytonmain-r3f-experiments.vercel.app/attractor",
   },
   {
-    name: "Project E",
-    description: "Description for Project E",
+    name: "Clock Envy (Very Early WIP)",
+    description:
+      "A bunch of clocks to showcase different shaders, techniques, ideas and whatnot. It's very much a WIP, but check it out if you want! Desktop recommended!\n\nI will not apologize for the name. :P",
+    url: "https://www.clockenvy.com",
   },
 ];

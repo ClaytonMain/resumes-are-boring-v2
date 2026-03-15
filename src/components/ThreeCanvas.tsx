@@ -1,11 +1,8 @@
-import { Bounds, Environment, Loader, OrbitControls } from "@react-three/drei";
+import { Environment, Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense, useEffect, useRef } from "react";
+import { Suspense } from "react";
 import * as THREE from "three";
-import {
-  DEFAULT_CAMERA_POSITION,
-  SCENE_BACKGROUND_COLORS,
-} from "../constants/constants";
+import { DEFAULT_CAMERA_POSITION } from "../constants/constants";
 import useAppStore from "../stores/useAppStore";
 import CameraController from "./CameraController";
 import CustomStatsComponent from "./CustomStatsComponent";
@@ -13,36 +10,17 @@ import DirectionalLightComponent from "./DirectionalLightComponent";
 import ThreeBackground from "./three-background/ThreeBackground";
 
 export default function ThreeCanvas() {
-  const canvasRef = useRef<HTMLCanvasElement>(null!);
-  const debug = useAppStore((state) => state.debug);
-  const cameraRef = useRef<THREE.OrthographicCamera>(null!);
-
-  useEffect(() => {
-    const unsubCurrentPage = useAppStore.subscribe(
-      (state) => state.currentPage,
-      (value, previousValue) => {
-        if (value !== previousValue) {
-          canvasRef.current.style.background = SCENE_BACKGROUND_COLORS[value];
-        }
-      },
-    );
-    return () => {
-      unsubCurrentPage();
-    };
-  }, []);
+  const debug = useAppStore.getState().debug;
 
   return (
     <>
       <Canvas
-        ref={canvasRef}
         shadows={{
           enabled: true,
           type: THREE.PCFShadowMap,
         }}
         camera={{
-          ref: cameraRef,
           position: DEFAULT_CAMERA_POSITION,
-          // fov: DEFAULT_CAMERA_FOV,
           top: 5,
           bottom: -5,
           left: -5 * (window.innerWidth / window.innerHeight),
@@ -55,7 +33,7 @@ export default function ThreeCanvas() {
         style={{
           touchAction: "none",
           height: "100vh",
-          background: SCENE_BACKGROUND_COLORS["home"],
+          background: "#171717",
           position: "fixed",
           top: 0,
           left: 0,
@@ -63,19 +41,22 @@ export default function ThreeCanvas() {
         }}
       >
         <Suspense fallback={null}>
-          <Bounds>
-            <ThreeBackground />
-            {/* <ThreeFloor /> */}
-          </Bounds>
+          <ThreeBackground />
           <Environment preset="apartment" />
-          {/* <ambientLight intensity={0.5} /> */}
           {debug && <CustomStatsComponent />}
-          {/* <directionalLight position={[-5, 5, 5]} castShadow /> */}
           <DirectionalLightComponent />
           <CameraController />
-          <OrbitControls makeDefault autoRotate autoRotateSpeed={0.1} />
-          {/* <FogController /> */}
-          {/* <ThreeEffects /> */}
+          <OrbitControls
+            makeDefault
+            autoRotate
+            enableDamping
+            autoRotateSpeed={0.1}
+            enablePan={false}
+            maxZoom={4}
+            minZoom={2.5}
+            maxPolarAngle={Math.PI * 0.2 + 0.2}
+            minPolarAngle={Math.PI * 0.2 + 0.0}
+          />
         </Suspense>
       </Canvas>
       <Loader />

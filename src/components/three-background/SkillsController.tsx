@@ -51,19 +51,19 @@ export default function SkillsController({
   const proficiencyMarkerGroupRef = useRef<THREE.Group>(null!);
   const proficiencyMarkerRef = useRef<THREE.Mesh>(null!);
   const proficiencyMarkerSpring = useTransform(proficiencySpring, (value) => {
-    return value * 1.5 + 0.1;
+    return value * 1.5 + 0.2;
   });
 
   const enjoymentMarkerGroupRef = useRef<THREE.Group>(null!);
   const enjoymentMarkerRef = useRef<THREE.Mesh>(null!);
   const enjoymentMarkerSpring = useTransform(enjoymentSpring, (value) => {
-    return value * 1.5 + 0.1;
+    return value * 1.5 + 0.2;
   });
 
   const experienceMarkerGroupRef = useRef<THREE.Group>(null!);
   const experienceMarkerRef = useRef<THREE.Mesh>(null!);
   const experienceMarkerSpring = useTransform(experienceSpring, (value) => {
-    return value * 1.5 + 0.1;
+    return value * 1.5 + 0.2;
   });
 
   const markerScaleRef = useRef(states.pageActive ? 1.0 : 0);
@@ -111,7 +111,7 @@ export default function SkillsController({
     if (states.pageActive) {
       const timeoutId = setTimeout(() => {
         setStates((prev) => ({ ...prev, springsActive: true }));
-      }, 500);
+      }, 2000);
       return () => clearTimeout(timeoutId);
     } else {
       setStates((prev) => ({ ...prev, springsActive: false }));

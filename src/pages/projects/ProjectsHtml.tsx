@@ -60,10 +60,22 @@ export default function ProjectsHtml() {
             initial={{ opacity: 0, x: direction * 50 }}
             animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
             exit={{ opacity: 0, x: direction * -50 }}
-            className="my-auto w-64 text-center text-xl font-bold tracking-tight"
+            className="my-auto w-72 text-center text-xl font-bold tracking-tight"
           >
-            <motion.div>{PROJECTS[projectIndex].name}</motion.div>
-            <motion.div className="text-xs font-light tracking-tighter">
+            <motion.a
+              href={PROJECTS[projectIndex].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-base text-teal-50 italic underline"
+            >
+              {PROJECTS[projectIndex].name}
+            </motion.a>
+            <motion.div
+              className="my-1 max-h-12 overflow-y-auto text-left text-xs font-light tracking-tighter"
+              style={{
+                scrollbarColor: "#99f6e4 #f0fdfa",
+              }}
+            >
               {PROJECTS[projectIndex].description}
             </motion.div>
           </motion.div>

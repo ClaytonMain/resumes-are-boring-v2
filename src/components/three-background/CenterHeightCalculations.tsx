@@ -17,9 +17,7 @@ import { SKILLS } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
 import type { GridBlockUniforms } from "./types/types";
 
-// I know this is silly, but I just want to make this easy to cross-reference.
 const aDistPctFromCenter = 0.05;
-// Pretty sure it's 0.5, 0.5.
 const aPointerTrailUv = new THREE.Vector2(0.5, 0.5);
 
 function smoothstep(edge0: number, edge1: number, x: number) {

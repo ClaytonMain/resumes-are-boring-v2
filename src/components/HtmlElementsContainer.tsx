@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "motion/react";
 import AboutHtml from "../pages/about/AboutHtml";
 import ContactHtml from "../pages/contact/ContactHtml";
-import HistoryHtml from "../pages/history/HistoryHtml";
 import HomeHtml from "../pages/home/HomeHtml";
 import ProjectsHtml from "../pages/projects/ProjectsHtml";
 import SkillsHtml from "../pages/skills/SkillsHtml";
@@ -24,7 +23,6 @@ export default function HtmlElementsContainer() {
             {currentPage === "about" && <AboutHtml />}
             {currentPage === "skills" && <SkillsHtml />}
             {currentPage === "projects" && <ProjectsHtml />}
-            {currentPage === "history" && <HistoryHtml />}
             {currentPage === "contact" && <ContactHtml />}
           </AnimatePresence>
         </motion.div>

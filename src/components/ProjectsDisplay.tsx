@@ -166,19 +166,19 @@ export default function ProjectsDisplay() {
   });
 
   const project00Spring = useSpring(
-    states.activeProjectIndex === 0 ? 1.0 : -4.0,
+    states.springsActive && states.activeProjectIndex === 0 ? 1.0 : -4.0,
   );
   const project01Spring = useSpring(
-    states.activeProjectIndex === 1 ? 1.0 : -4.0,
+    states.springsActive && states.activeProjectIndex === 1 ? 1.0 : -4.0,
   );
   const project02Spring = useSpring(
-    states.activeProjectIndex === 2 ? 1.0 : -4.0,
+    states.springsActive && states.activeProjectIndex === 2 ? 1.0 : -4.0,
   );
   const project03Spring = useSpring(
-    states.activeProjectIndex === 3 ? 1.0 : -4.0,
+    states.springsActive && states.activeProjectIndex === 3 ? 1.0 : -4.0,
   );
   const project04Spring = useSpring(
-    states.activeProjectIndex === 4 ? 1.0 : -4.0,
+    states.springsActive && states.activeProjectIndex === 4 ? 1.0 : -4.0,
   );
 
   // const outerGroupRef = useRef<THREE.Group>(null!);
