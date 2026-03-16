@@ -3,6 +3,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useSpring } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
+import { PROJECTS } from "../constants/constants";
 import useAppStore from "../stores/useAppStore";
 
 function isMouse1Down(event: MouseEvent) {
@@ -185,9 +186,10 @@ export default function ProjectsDisplay() {
       <mesh
         ref={meshRef}
         name="projects-display-mesh"
-        // onPointerMove={handlePointerMove}
-        // onPointerDown={handlePointerDown}
-        // onPointerUp={handlePointerUp}
+        onClick={() => {
+          const url = PROJECTS[states.activeProjectIndex].url;
+          window.open(url, "_blank")?.focus();
+        }}
       >
         <planeGeometry args={[1.08, 1.92]} attach="geometry" />
         <meshBasicMaterial

@@ -19,13 +19,24 @@ float easeInQuad(float x) {
   return x * x;
 }
 
+// https://iquilezles.org/articles/distfunctions2d/
+float sdEquilateralTriangle(in vec2 p, in float r) {
+  const float k = sqrt(3.0);
+  p.x = abs(p.x) - r;
+  p.y = p.y + r / k;
+  if (p.x + k * p.y > 0.0)
+    p = vec2(p.x - k * p.y, -k * p.x - p.y) / 2.0;
+  p.x -= clamp(p.x, -2.0 * r, 0.0);
+  return -length(p) * sign(p.y);
+}
+
 void main() {
   vec4 offsetTextureStrength = texture2D(uOffsetTexture, aPointerTrailUv);
   float skillsStrength = offsetTextureStrength.g * 1.5;
   // Min active radii is 2.
   // Will loop through radii pcts to mix offset height based on pct from center.
   // Need to get heights for radii patterns though.
-  float patternOffsets[7];
+  float patternOffsets[6];
   // Default pattern: Slight negative offset.
   patternOffsets[0] = -0.1;
   // Pattern 1: Slowly propagating waves from center.
@@ -34,8 +45,7 @@ void main() {
   patternOffsets[2] = smoothstep(0.0, 2.0, sin(aPointerTrailUv.x * 15.0 * 3.14159) * sin(uTime * 0.5 + aDistPctFromCenter * 10.0) + cos(aPointerTrailUv.y * 15.0 * 3.14159) * cos(uTime * 0.5 + aDistPctFromCenter * 10.0)) * 0.15;
   patternOffsets[3] = skillsStrength;
   patternOffsets[4] = -smoothstep(0.3, 0.0, aDistPctFromCenter) * 4.0 + smoothstep(0.0, 1.0, pow(sin(uTime * 0.5 + aDistPctFromCenter * 25.0), 2.0)) * 0.1;
-  patternOffsets[5] = 0.0;
-  patternOffsets[6] = 0.0;
+  patternOffsets[5] = sin(sdEquilateralTriangle((aPointerTrailUv - 0.5), 0.1) * 50.0 + uTime) * 0.1;
 
   float offset;
   float easedRadiiPct;

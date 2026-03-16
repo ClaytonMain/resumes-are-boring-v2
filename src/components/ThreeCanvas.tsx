@@ -52,10 +52,10 @@ export default function ThreeCanvas() {
             enableDamping
             autoRotateSpeed={0.1}
             enablePan={false}
-            maxZoom={4}
-            minZoom={2.5}
-            maxPolarAngle={Math.PI * 0.2 + 0.2}
-            minPolarAngle={Math.PI * 0.2 + 0.0}
+            maxZoom={debug ? 100 : 4}
+            minZoom={debug ? 0.1 : 2.5}
+            maxPolarAngle={debug ? Math.PI : Math.PI * 0.2 + 0.2}
+            minPolarAngle={debug ? 0 : Math.PI * 0.2 + 0.0}
           />
         </Suspense>
       </Canvas>
