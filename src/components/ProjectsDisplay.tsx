@@ -1,9 +1,13 @@
 import { useVideoTexture } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useSpring } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import useAppStore from "../stores/useAppStore";
+
+function isMouse1Down(event: MouseEvent) {
+  return (event.buttons & 1) === 1;
+}
 
 export default function ProjectsDisplay() {
   const [states, setStates] = useState({
@@ -11,12 +15,31 @@ export default function ProjectsDisplay() {
     springsActive: false,
     activeProjectIndex: useAppStore.getState().activeProjectIndex,
   });
+  const pointerOverRef = useRef(false);
+  const pointerDownRef = useRef(false);
 
   const project00Texture = useVideoTexture("/videos/sphericalTrochoids.mkv");
   const project01Texture = useVideoTexture("/videos/slimeClock.mkv");
   const project02Texture = useVideoTexture("/videos/symphonyOfLife.mkv");
   const project03Texture = useVideoTexture("/videos/r3fExperiments.mkv");
   const project04Texture = useVideoTexture("/videos/clockEnvy.mkv");
+
+  const projectTextures = useMemo(
+    () => [
+      project00Texture,
+      project01Texture,
+      project02Texture,
+      project03Texture,
+      project04Texture,
+    ],
+    [
+      project00Texture,
+      project01Texture,
+      project02Texture,
+      project03Texture,
+      project04Texture,
+    ],
+  );
 
   const groupSpring = useSpring(states.springsActive ? 1.0 : -4.0);
 
@@ -88,11 +111,53 @@ export default function ProjectsDisplay() {
     }
   }, [groupSpring, states.springsActive]);
 
+  useEffect(() => {
+    function handleMouseMove(event: MouseEvent) {
+      if (isMouse1Down(event) !== pointerDownRef.current) {
+        pointerDownRef.current = isMouse1Down(event);
+      }
+    }
+    function handleMouseDown(event: MouseEvent) {
+      if (isMouse1Down(event) !== pointerDownRef.current) {
+        pointerDownRef.current = isMouse1Down(event);
+      }
+    }
+    function handleMouseUp(event: MouseEvent) {
+      if (isMouse1Down(event) !== pointerDownRef.current) {
+        pointerDownRef.current = isMouse1Down(event);
+      }
+    }
+    window.addEventListener("mousedown", handleMouseDown);
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mousedown", handleMouseDown);
+      window.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+  const { pointer } = useThree();
+  const raycaster = new THREE.Raycaster();
+
   const clampedDeltaRef = useRef(0);
   const timeRef = useRef(0);
   useFrame(({ camera }, delta) => {
     clampedDeltaRef.current = Math.min(delta, 0.1);
     timeRef.current += clampedDeltaRef.current;
+
+    raycaster.setFromCamera(pointer, camera);
+    const currentPointerOver =
+      raycaster.intersectObject(groupRef.current).length > 0;
+    if (currentPointerOver !== pointerOverRef.current) {
+      pointerOverRef.current = currentPointerOver;
+      if (currentPointerOver) {
+        document.body.style.cursor = "pointer";
+      } else {
+        document.body.style.cursor = "default";
+      }
+    }
+
     if (groupRef.current) {
       groupRef.current.lookAt(camera.position);
       groupRef.current.position.y = groupSpring.get();
@@ -102,24 +167,32 @@ export default function ProjectsDisplay() {
       meshRef.current.rotation.y = Math.sin(timeRef.current / 3.1) * 0.12;
       meshRef.current.rotation.z = Math.sin(timeRef.current / 3.2) * 0.12;
       meshRef.current.position.y = Math.sin(timeRef.current / 2.6) * 0.09;
+
+      meshRef.current.scale.setScalar(
+        THREE.MathUtils.lerp(
+          meshRef.current.scale.x,
+          1.0 *
+            (pointerOverRef.current ? 1.05 : 1.0) *
+            (pointerOverRef.current && pointerDownRef.current ? 0.9 : 1.0),
+          clampedDeltaRef.current * 5,
+        ),
+      );
     }
   });
 
   return (
-    <group ref={groupRef}>
-      <mesh ref={meshRef}>
+    <group ref={groupRef} name="projects-display-group">
+      <mesh
+        ref={meshRef}
+        name="projects-display-mesh"
+        // onPointerMove={handlePointerMove}
+        // onPointerDown={handlePointerDown}
+        // onPointerUp={handlePointerUp}
+      >
         <planeGeometry args={[1.08, 1.92]} attach="geometry" />
         <meshBasicMaterial
           ref={materialRef}
-          map={
-            [
-              project00Texture,
-              project01Texture,
-              project02Texture,
-              project03Texture,
-              project04Texture,
-            ][states.activeProjectIndex]
-          }
+          map={projectTextures[states.activeProjectIndex]}
           toneMapped={false}
           attach="material"
         />
