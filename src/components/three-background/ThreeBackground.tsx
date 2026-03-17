@@ -7,7 +7,7 @@ import {
   useFBO,
 } from "@react-three/drei";
 import { createPortal, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef } from "react";
+import { Suspense, useEffect, useMemo, useRef } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import {
@@ -572,7 +572,9 @@ export default function ThreeBackground() {
         hexagonXSpacing={HEXAGON_X_SPACING}
         hexagonZSpacing={HEXAGON_Z_SPACING}
       />
-      <ProjectsDisplay />
+      <Suspense fallback={null}>
+        <ProjectsDisplay />
+      </Suspense>
     </>
   );
 }
