@@ -73,7 +73,7 @@ export default function ProjectsHtml() {
             <motion.div
               className="my-1 max-h-12 overflow-y-auto text-left text-xs font-light tracking-tighter"
               style={{
-                scrollbarColor: "#99f6e4 #f0fdfa",
+                scrollbarColor: "#f0fdfa #99f6e41a",
               }}
             >
               {PROJECTS[projectIndex].description}

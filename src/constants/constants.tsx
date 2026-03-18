@@ -42,34 +42,11 @@ export const FLAVOR_TEXT_VALUES = [
   "I have two cats!",
   "I'll owe you a homemade key lime pie if you hire me full-time! Seriously!",
   "Pining for the fjords...",
-  "Ight, we're out of text now...",
+  "Alright, we're out of text now...",
 ];
 
 export const CONTENT_CONTAINER_CLASS_NAME =
   "pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-2 backdrop-blur-sm";
-
-// export const PAGE_THREE_COLORS: PageThreeColor = {
-//   home: {
-//     diffuse: new THREE.Color("#ffa9a9"),
-//     subsurface: new THREE.Color("#ef0717"),
-//   },
-//   about: {
-//     diffuse: new THREE.Color("#ffc77e"),
-//     subsurface: new THREE.Color("#e27a0b"),
-//   },
-//   skills: {
-//     diffuse: new THREE.Color("#dbff7d"),
-//     subsurface: new THREE.Color("#aeff16"),
-//   },
-//   projects: {
-//     diffuse: new THREE.Color("#7dffc9"),
-//     subsurface: new THREE.Color("#0ce8d8"),
-//   },
-//   contact: {
-//     diffuse: new THREE.Color("#9c7dff"),
-//     subsurface: new THREE.Color("#820ce8"),
-//   },
-// };
 
 export const PAGE_BLOCK_COLORS: PageBlockColor = {
   home: new THREE.Color("#ef0717"),
