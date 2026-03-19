@@ -1,4 +1,5 @@
 import {
+  Decal,
   Icosahedron,
   MeshTransmissionMaterial,
   useTexture,
@@ -6,8 +7,10 @@ import {
 import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
+import useAppStore from "../stores/useAppStore";
 
 export default function ContactDisplay() {
+  const debug = useAppStore.getState().debug;
   const groupRef = useRef<THREE.Group>(null!);
 
   const githubOrbMeshRef = useRef<THREE.Mesh>(null!);
@@ -23,7 +26,8 @@ export default function ContactDisplay() {
       groupRef.current.lookAt(camera.position);
     }
     if (githubOrbMeshRef.current) {
-      githubOrbMeshRef.current.rotation.x += delta * 0.1;
+      githubOrbMeshRef.current.rotation.x +=
+        delta * 0.1 * (Math.random() - 0.5);
       githubOrbMeshRef.current.rotation.y += delta * 0.1;
     }
     if (linkedinOrbMeshRef.current) {
@@ -46,50 +50,58 @@ export default function ContactDisplay() {
         position={[-0.6, 1, 0]}
         renderOrder={1}
       >
-        <MeshTransmissionMaterial
-          roughness={0.1}
-          thickness={0.15}
-          ior={1.1}
-          flatShading
-          color="#ede9fe"
-        />
-        <mesh
+        <meshStandardMaterial color="#2e1065" roughness={0.2} metalness={0.5} />
+        <Decal
           ref={githubTextureMeshRef}
-          position={[0, 0, 0.01]}
+          debug={debug}
+          position={[0, 0, 0.3]}
+          rotation={[0, 0, 0]}
+          scale={0.45}
           renderOrder={2}
         >
-          <planeGeometry args={[0.4, 0.4]} />
           <meshBasicMaterial
             map={githubTexture}
             transparent
-            side={THREE.DoubleSide}
+            // side={THREE.DoubleSide}
+            polygonOffset
+            polygonOffsetFactor={-500}
           />
-        </mesh>
+        </Decal>
       </Icosahedron>
       <Icosahedron
         ref={linkedinOrbMeshRef}
         args={[0.45, 0]}
         position={[0.6, 1, 0]}
-        renderOrder={1}
+        renderOrder={2}
       >
-        <MeshTransmissionMaterial
+        <meshPhysicalMaterial
           roughness={0.1}
-          thickness={0.15}
-          ior={1.1}
+          // thickness={0.15}
+          ior={1.0}
           flatShading
-          color="#ede9fe"
+          // color="#ede9fe"
+          color="#2e1065"
+          transparent
+          // opacity={0.5}
+          transmission={0.2}
         />
         <mesh
           ref={linkedinTextureMeshRef}
           position={[0, 0, 0.01]}
-          renderOrder={2}
+          renderOrder={1}
         >
           <planeGeometry args={[0.4, 0.4]} />
-          <meshBasicMaterial
+          <meshPhysicalMaterial
             map={linkedinTexture}
             transparent
             side={THREE.DoubleSide}
+            transmission={1}
           />
+          {/* <meshBasicMaterial
+            map={linkedinTexture}
+            transparent
+            side={THREE.DoubleSide}
+          /> */}
         </mesh>
       </Icosahedron>
     </group>
