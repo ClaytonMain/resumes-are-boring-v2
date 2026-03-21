@@ -104,9 +104,9 @@ export default function ContactDisplay() {
   });
 
   useFrame(({ camera }, delta) => {
-    if (groupRef.current) {
-      groupRef.current.lookAt(camera.position);
-    }
+    // if (groupRef.current) {
+    //   groupRef.current.lookAt(camera.position);
+    // }
     if (githubOrbMeshRef.current) {
       githubOrbMeshRef.current.rotation.x += delta * 0.2 * Math.random();
       githubOrbMeshRef.current.rotation.y += delta * 0.2 * Math.random();
@@ -115,12 +115,12 @@ export default function ContactDisplay() {
       linkedinOrbMeshRef.current.rotation.x += delta * 0.2 * Math.random();
       linkedinOrbMeshRef.current.rotation.y += delta * 0.2 * Math.random();
     }
-    if (githubTextureMeshRef.current) {
-      githubTextureMeshRef.current.lookAt(camera.position);
-    }
-    if (linkedinTextureMeshRef.current) {
-      linkedinTextureMeshRef.current.lookAt(camera.position);
-    }
+    // if (githubTextureMeshRef.current) {
+    //   githubTextureMeshRef.current.lookAt(camera.position);
+    // }
+    // if (linkedinTextureMeshRef.current) {
+    //   linkedinTextureMeshRef.current.lookAt(camera.position);
+    // }
   });
 
   return (
@@ -172,7 +172,7 @@ export default function ContactDisplay() {
         ref={linkedinOrbMeshRef}
         args={[0.45, 1]}
         position={[0.6, 1, 0]}
-        renderOrder={1}
+        renderOrder={2}
       >
         <meshPhysicalMaterial
           // anisotropy={controls.anisotropy}
@@ -194,7 +194,7 @@ export default function ContactDisplay() {
           opacity={controls.opacity}
           flatShading
         />
-        <Decal
+        {/* <Decal
           ref={linkedinTextureMeshRef}
           debug={debug}
           position={[0, 0, 0.3]}
@@ -209,8 +209,16 @@ export default function ContactDisplay() {
             polygonOffsetFactor={-500}
             opacity={0.9}
           />
-        </Decal>
+        </Decal> */}
       </Icosahedron>
+      <mesh
+        ref={linkedinTextureMeshRef}
+        position={[0.6, 1, -0.5]}
+        renderOrder={1}
+      >
+        <planeGeometry args={[0.45, 0.45]} />
+        <meshBasicMaterial map={linkedinTexture} transparent />
+      </mesh>
     </group>
   );
 }
