@@ -15,6 +15,7 @@ export default function ProjectsDisplay() {
     pageActive: useAppStore.getState().currentPage === "projects",
     springsActive: false,
     activeProjectIndex: useAppStore.getState().activeProjectIndex,
+    showDisplays: useAppStore.getState().currentPage === "projects",
   });
   const pointerOverRef = useRef(false);
   const pointerDownRef = useRef(false);
@@ -107,8 +108,13 @@ export default function ProjectsDisplay() {
   useEffect(() => {
     if (states.springsActive) {
       groupSpring.set(1.0);
+      setStates((prev) => ({ ...prev, showDisplays: true }));
     } else {
       groupSpring.set(-4.0);
+      const timeoutId = setTimeout(() => {
+        setStates((prev) => ({ ...prev, showDisplays: false }));
+      }, 500);
+      return () => clearTimeout(timeoutId);
     }
   }, [groupSpring, states.springsActive]);
 
@@ -138,7 +144,7 @@ export default function ProjectsDisplay() {
     };
   }, []);
 
-  const { pointer } = useThree();
+  const pointer = useThree((state) => state.pointer);
   const raycaster = new THREE.Raycaster();
 
   const clampedDeltaRef = useRef(0);
@@ -183,22 +189,24 @@ export default function ProjectsDisplay() {
 
   return (
     <group ref={groupRef} name="projects-display-group">
-      <mesh
-        ref={meshRef}
-        name="projects-display-mesh"
-        onClick={() => {
-          const url = PROJECTS[states.activeProjectIndex].url;
-          window.open(url, "_blank")?.focus();
-        }}
-      >
-        <planeGeometry args={[1.08, 1.92]} attach="geometry" />
-        <meshBasicMaterial
-          ref={materialRef}
-          map={projectTextures[states.activeProjectIndex]}
-          toneMapped={false}
-          attach="material"
-        />
-      </mesh>
+      {states.showDisplays && (
+        <mesh
+          ref={meshRef}
+          name="projects-display-mesh"
+          onClick={() => {
+            const url = PROJECTS[states.activeProjectIndex].url;
+            window.open(url, "_blank")?.focus();
+          }}
+        >
+          <planeGeometry args={[1.08, 1.92]} attach="geometry" />
+          <meshBasicMaterial
+            ref={materialRef}
+            map={projectTextures[states.activeProjectIndex]}
+            toneMapped={false}
+            attach="material"
+          />
+        </mesh>
+      )}
     </group>
   );
 }
