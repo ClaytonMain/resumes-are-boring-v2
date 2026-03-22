@@ -1,3 +1,4 @@
+import { Cylinder } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useSpring } from "motion/react";
@@ -12,6 +13,7 @@ function isMouse1Down(event: MouseEvent) {
 }
 
 export default function ContactDisplay() {
+  const debug = useAppStore.getState().debug;
   const [states, setStates] = useState({
     pageActive: useAppStore.getState().currentPage === "contact",
     springsActive: false,
@@ -203,7 +205,7 @@ export default function ContactDisplay() {
 
   return (
     <group ref={groupRef}>
-      <GithubLogo
+      {/* <GithubLogo
         ref={githubLogoGroupRef}
         material={material}
         position={[-0.6, 1, 0]}
@@ -212,8 +214,16 @@ export default function ContactDisplay() {
         onClick={() => {
           window.open("https://github.com/ClaytonMain", "_blank")?.focus();
         }}
-      />
-      <LinkedinLogo
+      >
+        <Cylinder
+          args={[0.5, 0.5, 0.1, 32]}
+          position={[0, 0, -0.05]}
+          visible={debug}
+        >
+          <meshStandardMaterial wireframe />
+        </Cylinder>
+      </GithubLogo> */}
+      {/* <LinkedinLogo
         ref={linkedinLogoGroupRef}
         material={material}
         position={[0.6, 1, 0]}
@@ -224,7 +234,7 @@ export default function ContactDisplay() {
             .open("https://www.linkedin.com/in/clayton-main/", "_blank")
             ?.focus();
         }}
-      />
+      /> */}
     </group>
   );
 }

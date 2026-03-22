@@ -15,9 +15,11 @@ type GLTFResult = GLTF & {
 
 export function LinkedinLogo({
   material,
+  children,
   ...props
 }: {
   material?: THREE.MeshStandardMaterial;
+  children?: React.ReactNode;
 } & Omit<JSX.IntrinsicElements["group"], "material">) {
   const { nodes } = useGLTF(
     "/models/LinkedinLogo.glb",
@@ -30,6 +32,7 @@ export function LinkedinLogo({
         geometry={nodes.Cube001.geometry}
         material={material || nodes.Cube001.material}
       />
+      {children}
     </group>
   );
 }

@@ -70,12 +70,9 @@ void main() {
   patternOffsets[0] = -0.1;
   // Pattern 1: Slowly propagating waves from center.
   patternOffsets[1] = smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) * 0.1;
-  // Patterns 2-6: Zero for now.
   patternOffsets[2] = smoothstep(0.0, 2.0, sin(aPointerTrailUv.x * 15.0 * PI) * sin(uTime * 0.5 + aDistPctFromCenter * 10.0) + cos(aPointerTrailUv.y * 15.0 * PI) * cos(uTime * 0.5 + aDistPctFromCenter * 10.0)) * 0.15;
-
   patternOffsets[3] = skillsStrength + getPatternOffset3();
-
-  patternOffsets[4] = -smoothstep(0.3, 0.0, aDistPctFromCenter) * 4.0 + smoothstep(0.0, 1.0, pow(sin(uTime * 0.5 + aDistPctFromCenter * 25.0), 2.0)) * 0.1;
+  patternOffsets[4] = -smoothstep(0.3, 0.0, aDistPctFromCenter) * 2.0 + smoothstep(0.0, 1.0, pow(sin(uTime * 0.5 + aDistPctFromCenter * 25.0), 2.0)) * 0.1;
   patternOffsets[5] = sin(sdEquilateralTriangle(aPointerTrailUv - 0.5, 0.1) * 50.0 + uTime) * 0.1;
 
   // patternOffsets[0] = patternOffsets[3];
