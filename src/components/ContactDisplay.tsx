@@ -1,4 +1,4 @@
-import { Cylinder } from "@react-three/drei";
+import { Box, Cylinder } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useSpring } from "motion/react";
@@ -135,24 +135,29 @@ export default function ContactDisplay() {
     timeRef.current += clampedDeltaRef.current;
 
     raycaster.setFromCamera(pointer, camera);
-    const currentPointerOverGithub =
-      raycaster.intersectObject(githubLogoGroupRef.current).length > 0;
-    const currentPointerOverLinkedin =
-      raycaster.intersectObject(linkedinLogoGroupRef.current).length > 0;
-    if (currentPointerOverGithub !== pointerOverGithubRef.current) {
-      pointerOverGithubRef.current = currentPointerOverGithub;
-      if (currentPointerOverGithub) {
-        document.body.style.cursor = "pointer";
-      } else {
-        document.body.style.cursor = "default";
+    if (githubLogoGroupRef.current) {
+      const currentPointerOverGithub =
+        raycaster.intersectObject(githubLogoGroupRef.current).length > 0;
+      if (currentPointerOverGithub !== pointerOverGithubRef.current) {
+        pointerOverGithubRef.current = currentPointerOverGithub;
+        if (currentPointerOverGithub) {
+          document.body.style.cursor = "pointer";
+        } else {
+          document.body.style.cursor = "default";
+        }
       }
     }
-    if (currentPointerOverLinkedin !== pointerOverLinkedinRef.current) {
-      pointerOverLinkedinRef.current = currentPointerOverLinkedin;
-      if (currentPointerOverLinkedin) {
-        document.body.style.cursor = "pointer";
-      } else {
-        document.body.style.cursor = "default";
+
+    if (linkedinLogoGroupRef.current) {
+      const currentPointerOverLinkedin =
+        raycaster.intersectObject(linkedinLogoGroupRef.current).length > 0;
+      if (currentPointerOverLinkedin !== pointerOverLinkedinRef.current) {
+        pointerOverLinkedinRef.current = currentPointerOverLinkedin;
+        if (currentPointerOverLinkedin) {
+          document.body.style.cursor = "pointer";
+        } else {
+          document.body.style.cursor = "default";
+        }
       }
     }
 
@@ -174,7 +179,7 @@ export default function ContactDisplay() {
       githubLogoGroupRef.current.scale.setScalar(
         THREE.MathUtils.lerp(
           githubLogoGroupRef.current.scale.x,
-          0.125 *
+          1 *
             (pointerOverGithubRef.current ? 1.05 : 1.0) *
             (pointerOverGithubRef.current && pointerDownRef.current
               ? 0.9
@@ -196,7 +201,7 @@ export default function ContactDisplay() {
       linkedinLogoGroupRef.current.scale.setScalar(
         THREE.MathUtils.lerp(
           linkedinLogoGroupRef.current.scale.x,
-          0.125 * (pointerOverLinkedinRef.current ? 1.05 : 1.0),
+          1 * (pointerOverLinkedinRef.current ? 1.05 : 1.0),
           0.1,
         ),
       );
@@ -205,36 +210,43 @@ export default function ContactDisplay() {
 
   return (
     <group ref={groupRef}>
-      {/* <GithubLogo
+      <group
         ref={githubLogoGroupRef}
-        material={material}
-        position={[-0.6, 1, 0]}
-        scale={0.125}
         renderOrder={1}
+        position={[-0.5, 1, 0]}
         onClick={() => {
           window.open("https://github.com/ClaytonMain", "_blank")?.focus();
         }}
       >
+        <GithubLogo material={material} />
         <Cylinder
-          args={[0.5, 0.5, 0.1, 32]}
-          position={[0, 0, -0.05]}
+          args={[0.33, 0.33, 0.15, 16]}
+          position={[0, 0.06, 0]}
           visible={debug}
         >
           <meshStandardMaterial wireframe />
         </Cylinder>
-      </GithubLogo> */}
-      {/* <LinkedinLogo
+      </group>
+      <group
         ref={linkedinLogoGroupRef}
-        material={material}
-        position={[0.6, 1, 0]}
-        scale={0.125}
         renderOrder={1}
+        position={[0.5, 1, 0]}
         onClick={() => {
           window
             .open("https://www.linkedin.com/in/clayton-main/", "_blank")
             ?.focus();
         }}
-      /> */}
+      >
+        <LinkedinLogo material={material} />
+        <Box
+          args={[0.66, 0.66, 0.15]}
+          rotation={[Math.PI / 2, 0, 0]}
+          position={[0, 0.06, 0]}
+          visible={debug}
+        >
+          <meshStandardMaterial wireframe />
+        </Box>
+      </group>
     </group>
   );
 }

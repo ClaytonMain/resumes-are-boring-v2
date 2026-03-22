@@ -83,19 +83,26 @@ export default function DirectionalLightComponent() {
   return (
     <directionalLight
       ref={directionalLightRef}
-      position={[-5, 3, 5]}
+      position={[-5, 5, 5]}
       castShadow
       shadow-mapSize-height={1024}
       shadow-mapSize-width={1024}
+      intensity={0.5}
     >
       <orthographicCamera
         ref={shadowCameraRef}
         attach="shadow-camera"
+        // @ts-expect-error This is fine 🔥
         left={shadowCameraControls.left}
+        // @ts-expect-error This is fine 🔥
         right={shadowCameraControls.right}
+        // @ts-expect-error This is fine 🔥
         top={shadowCameraControls.top}
+        // @ts-expect-error This is fine 🔥
         bottom={shadowCameraControls.bottom}
+        // @ts-expect-error This is fine 🔥
         near={shadowCameraControls.near}
+        // @ts-expect-error This is fine 🔥
         far={shadowCameraControls.far}
       />
     </directionalLight>

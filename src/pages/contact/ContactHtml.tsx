@@ -1,22 +1,8 @@
-import { monitor, useControls } from "leva";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-} from "motion/react";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type JSX,
-  type RefObject,
-  type SetStateAction,
-} from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useRef, type JSX, type RefObject } from "react";
 
 const CONTACT_COMPONENT_CONTENT_CLASS_NAME =
-  "my-auto flex flex-col text-base/6 gap-2";
+  "my-auto flex flex-col text-base/6 gap-2 tracking-tight text-violet-100";
 
 function ContactComponentContactContent() {
   return (
@@ -36,8 +22,6 @@ function ContactComponentContactContent() {
   );
 }
 
-type WhoAmI = [string, string];
-
 type ContactConfig = {
   displayValues: [string, string];
   content: string | JSX.Element;
@@ -52,34 +36,13 @@ const CONTACT_CONFIGS: Record<string, ContactConfig> = {
 
 function ContactComponent({
   viewportRef,
-  setWhoAmI,
   configKey,
 }: {
   viewportRef: RefObject<HTMLDivElement>;
-  setWhoAmI: Dispatch<SetStateAction<WhoAmI>>;
   configKey: keyof typeof CONTACT_CONFIGS;
 }) {
   const divRef = useRef<HTMLDivElement>(null!);
   const config = CONTACT_CONFIGS[configKey];
-
-  const { scrollYProgress } = useScroll({
-    target: divRef,
-    container: viewportRef,
-    offset: ["start center", "end center"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (latest > 0.3 && latest < 0.7) {
-      setWhoAmI(config.displayValues);
-    }
-  });
-
-  useControls({
-    [configKey]: monitor(() => scrollYProgress.get(), {
-      graph: true,
-      interval: 30,
-    }),
-  });
 
   return (
     <motion.div
@@ -88,7 +51,6 @@ function ContactComponent({
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
       viewport={{ root: viewportRef }}
-      // onViewportEnter={handleViewportEnter}
     >
       {config.content}
     </motion.div>
@@ -96,8 +58,6 @@ function ContactComponent({
 }
 
 export default function ContactHtml() {
-  const [whoAmI, setWhoAmI] = useState<WhoAmI>(["", "Contact"]);
-
   const viewportRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
@@ -116,24 +76,13 @@ export default function ContactHtml() {
         <div className="flex gap-2 overflow-hidden">
           <AnimatePresence mode="wait" initial={false}>
             <motion.h1
-              key={whoAmI[0]}
-              className="text-4xl font-bold tracking-tight text-white"
-              initial={{ y: -100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-            >
-              {whoAmI[0]}
-            </motion.h1>
-          </AnimatePresence>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.h1
-              key={whoAmI[1]}
+              key="contact-html-title"
               className="text-4xl font-bold tracking-tight text-violet-100"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
             >
-              {whoAmI[1]}
+              Contact
             </motion.h1>
           </AnimatePresence>
         </div>
@@ -141,7 +90,7 @@ export default function ContactHtml() {
       <span className="w-full border-b border-violet-400" />
       <div
         ref={viewportRef}
-        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex w-150 snap-y snap-mandatory flex-col gap-2 overflow-y-scroll"
+        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex w-150 snap-y snap-mandatory flex-col gap-2"
         style={{
           scrollbarColor: "#f5f3ff #8b5cf61a",
         }}
@@ -149,7 +98,6 @@ export default function ContactHtml() {
         <ContactComponent
           key="contact"
           viewportRef={viewportRef}
-          setWhoAmI={setWhoAmI}
           configKey="contact"
         />
       </div>

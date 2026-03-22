@@ -86,7 +86,7 @@ function GridBlock({
 // ***********************
 // Offset Texture Plane
 // ***********************
-const OFFSET_TEXTURE_PIXELS = 256;
+const OFFSET_TEXTURE_PIXELS = 128;
 function getOffsetTextureDataTextureData() {
   const data = new Float32Array(
     OFFSET_TEXTURE_PIXELS * OFFSET_TEXTURE_PIXELS * 4,
@@ -577,6 +577,11 @@ export default function ThreeBackground() {
         <ProjectsDisplay />
       </Suspense>
       <ContactDisplay />
+      {/* {debug && (
+        <Icosahedron args={[0.5, 3]} position={[0, 1.5, 0]}>
+          <meshPhysicalMaterial reflectivity={1} roughness={0} metalness={1} />
+        </Icosahedron>
+      )} */}
     </>
   );
 }

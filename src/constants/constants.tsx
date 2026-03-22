@@ -1,13 +1,5 @@
-/* eslint-disable react-refresh/only-export-components */
 import * as THREE from "three";
-import type {
-  Page,
-  PageBlockColor,
-  SceneBackgroundColors,
-  Skill,
-} from "../types/types";
-
-export const RUBIK_MONO_ONE_TTF = "fonts/RubikMonoOne-Regular.ttf";
+import type { Page, PageBlockColor, Skill } from "../types/types";
 
 export const PAGE_NAMES: Page[] = [
   "home",
@@ -16,14 +8,6 @@ export const PAGE_NAMES: Page[] = [
   "projects",
   "contact",
 ] as const;
-
-export const SCENE_BACKGROUND_COLORS: SceneBackgroundColors = {
-  home: "#ef0717",
-  about: "#e27a0b",
-  skills: "#aeff16",
-  projects: "#0ce8d8",
-  contact: "#820ce8",
-};
 
 export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(6.6, 8.8, 6.6);
 
@@ -51,8 +35,8 @@ export const CONTENT_CONTAINER_CLASS_NAME =
 export const PAGE_BLOCK_COLORS: PageBlockColor = {
   home: new THREE.Color("#ef0717"),
   about: new THREE.Color("#e27a0b"),
-  skills: new THREE.Color("#aeff16"),
-  projects: new THREE.Color("#0ce8d8"),
+  skills: new THREE.Color("#84cc16"),
+  projects: new THREE.Color("#14b8a6"),
   contact: new THREE.Color("#820ce8"),
 };
 

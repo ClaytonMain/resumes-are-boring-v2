@@ -1,4 +1,4 @@
-import { Environment, Loader, OrbitControls } from "@react-three/drei";
+import { Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import * as THREE from "three";
@@ -7,6 +7,7 @@ import useAppStore from "../stores/useAppStore";
 import CameraController from "./CameraController";
 import CustomStatsComponent from "./CustomStatsComponent";
 import DirectionalLightComponent from "./DirectionalLightComponent";
+import EnvironmentComponent from "./three-background/EnvironmentComponent";
 import ThreeBackground from "./three-background/ThreeBackground";
 
 export default function ThreeCanvas() {
@@ -42,7 +43,8 @@ export default function ThreeCanvas() {
       >
         <Suspense fallback={null}>
           <ThreeBackground />
-          <Environment preset="apartment" />
+          <ambientLight intensity={0.4} />
+          <EnvironmentComponent />
           {debug && <CustomStatsComponent />}
           <DirectionalLightComponent />
           <CameraController />

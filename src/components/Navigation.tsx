@@ -35,6 +35,7 @@ export default function Navigation() {
       animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.5 } }}
       className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch px-8 select-none"
     >
+      <motion.div className="absolute top-0 right-0 bottom-0 left-0 -z-1 h-14 bg-neutral-950/20 backdrop-blur-xs" />
       <motion.div
         className="my-4 flex items-center gap-1"
         onPointerEnter={() => setNameHovered(true)}
