@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import * as THREE from "three";
 import type { Page, PageBlockColor, Skill } from "../types/types";
 

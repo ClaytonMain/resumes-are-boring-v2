@@ -128,6 +128,8 @@ export default function ContactDisplay() {
   const pointer = useThree((state) => state.pointer);
   const raycaster = new THREE.Raycaster();
 
+  console.log("test");
+
   const clampedDeltaRef = useRef(0);
   const timeRef = useRef(0);
   useFrame(({ camera }, delta) => {
@@ -210,43 +212,48 @@ export default function ContactDisplay() {
 
   return (
     <group ref={groupRef}>
-      <group
-        ref={githubLogoGroupRef}
-        renderOrder={1}
-        position={[-0.5, 1, 0]}
-        onClick={() => {
-          window.open("https://github.com/ClaytonMain", "_blank")?.focus();
-        }}
-      >
-        <GithubLogo material={material} />
-        <Cylinder
-          args={[0.33, 0.33, 0.15, 16]}
-          position={[0, 0.06, 0]}
-          visible={debug}
+      {states.showLinks && (
+        <group
+          ref={githubLogoGroupRef}
+          renderOrder={1}
+          position={[-0.5, 1, 0]}
+          onClick={() => {
+            window.open("https://github.com/ClaytonMain", "_blank")?.focus();
+          }}
         >
-          <meshStandardMaterial wireframe />
-        </Cylinder>
-      </group>
-      <group
-        ref={linkedinLogoGroupRef}
-        renderOrder={1}
-        position={[0.5, 1, 0]}
-        onClick={() => {
-          window
-            .open("https://www.linkedin.com/in/clayton-main/", "_blank")
-            ?.focus();
-        }}
-      >
-        <LinkedinLogo material={material} />
-        <Box
-          args={[0.66, 0.66, 0.15]}
-          rotation={[Math.PI / 2, 0, 0]}
-          position={[0, 0.06, 0]}
-          visible={debug}
+          <GithubLogo material={material} />
+          <Cylinder
+            args={[0.33, 0.33, 0.15, 16]}
+            position={[0, 0.06, 0]}
+            visible={debug}
+          >
+            <meshStandardMaterial wireframe />
+          </Cylinder>
+        </group>
+      )}
+
+      {states.showLinks && (
+        <group
+          ref={linkedinLogoGroupRef}
+          renderOrder={1}
+          position={[0.5, 1, 0]}
+          onClick={() => {
+            window
+              .open("https://www.linkedin.com/in/clayton-main/", "_blank")
+              ?.focus();
+          }}
         >
-          <meshStandardMaterial wireframe />
-        </Box>
-      </group>
+          <LinkedinLogo material={material} />
+          <Box
+            args={[0.66, 0.66, 0.15]}
+            rotation={[Math.PI / 2, 0, 0]}
+            position={[0, 0.06, 0]}
+            visible={debug}
+          >
+            <meshStandardMaterial wireframe />
+          </Box>
+        </group>
+      )}
     </group>
   );
 }

@@ -33,17 +33,12 @@ export default function EnvironmentComponent() {
   return (
     <Environment
       environmentIntensity={0.5}
-      near={0.1}
-      far={100}
-      resolution={64}
+      // near={0.1}
+      // far={100}
+      // resolution={64}
       files="/textures/citrus_orchard_road_puresky_1k.hdr"
       // files="/textures/kloppenheim_07_puresky_1k.hdr"
-      frames={Infinity}
-    >
-      <mesh position={[0, -2, 0]}>
-        <boxGeometry args={[100, 1, 100]} />
-        <meshBasicMaterial ref={materialRef} />
-      </mesh>
-    </Environment>
+      // frames={Infinity}
+    />
   );
 }

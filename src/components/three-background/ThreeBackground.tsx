@@ -15,7 +15,7 @@ import {
   PAGE_PATTERN_NUMBERS,
 } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
-import ContactDisplay from "../ContactDisplay";
+import ContactDisplay from "../ContactDisplay.tsx";
 import ProjectsDisplay from "../ProjectsDisplay";
 import useMousePosition from "./hooks/useMousePosition";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
@@ -435,6 +435,8 @@ export default function ThreeBackground() {
     gl.setRenderTarget(null);
   });
 
+  console.log("rendering three background");
+
   return (
     <>
       {createPortal(
@@ -577,11 +579,6 @@ export default function ThreeBackground() {
         <ProjectsDisplay />
       </Suspense>
       <ContactDisplay />
-      {/* {debug && (
-        <Icosahedron args={[0.5, 3]} position={[0, 1.5, 0]}>
-          <meshPhysicalMaterial reflectivity={1} roughness={0} metalness={1} />
-        </Icosahedron>
-      )} */}
     </>
   );
 }
