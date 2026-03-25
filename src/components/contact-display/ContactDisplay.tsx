@@ -1,19 +1,16 @@
-import {
-  Box,
-  Cylinder,
-  Environment,
-  Fbo,
-  useEnvironment,
-} from "@react-three/drei";
+import { Box, Cylinder } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useControls } from "leva";
 import { useSpring } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { PAGE_BLOCK_COLORS } from "../constants/constants";
-import useAppStore from "../stores/useAppStore";
-import { GithubLogo } from "./GithubLogo";
-import { LinkedinLogo } from "./LinkedinLogo";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+import { PAGE_BLOCK_COLORS } from "../../constants/constants";
+import useAppStore from "../../stores/useAppStore";
+import { GithubLogo } from "../GithubLogo";
+import { LinkedinLogo } from "../LinkedinLogo";
+import linkFragmentShader from "./shaders/linkShader.frag";
+import linkVertexShader from "./shaders/linkShader.vert";
 
 function isMouse1Down(event: MouseEvent) {
   return (event.buttons & 1) === 1;
@@ -126,16 +123,32 @@ export default function ContactDisplay() {
     roughness: { value: 0.05, min: 0, max: 1, step: 0.01 },
   });
 
-  const material = new THREE.MeshStandardMaterial({
-    color: controls.color,
-    metalness: controls.metalness,
-    roughness: controls.roughness,
-  });
+  // const material = new THREE.MeshStandardMaterial({
+  //   color: controls.color,
+  //   metalness: controls.metalness,
+  //   roughness: controls.roughness,
+  // });
+
+  const uniforms = useMemo(() => {
+    return {
+      uFloorColor: { value: new THREE.Color(PAGE_BLOCK_COLORS.contact) },
+    };
+  }, []);
+
+  const material = useMemo(() => {
+    return new CustomShaderMaterial<typeof THREE.MeshStandardMaterial>({
+      baseMaterial: THREE.MeshStandardMaterial,
+      uniforms: uniforms,
+      vertexShader: linkVertexShader,
+      fragmentShader: linkFragmentShader,
+      color: controls.color,
+      metalness: controls.metalness,
+      roughness: controls.roughness,
+    });
+  }, [uniforms, controls.color, controls.metalness, controls.roughness]);
 
   const pointer = useThree((state) => state.pointer);
   const raycaster = new THREE.Raycaster();
-
-  console.log("test");
 
   const clampedDeltaRef = useRef(0);
   const timeRef = useRef(0);
@@ -217,84 +230,49 @@ export default function ContactDisplay() {
     }
   });
 
-  // Plan:
-  //  - Load `/textures/citrus_orchard_road_puresky_1k.hdr`
-  //  - Use as background in a scene rendered separately from the main scene
-  //  - Load in a plane that's the same color as the floor blocks for this page
-  //    - Use same material properties as the floor blocks
-  //  - Plane will be positioned at the same height as the floor.
-  //  - Plane will extend to horizon (or at least really far)
-  //  - Render scene for single frame (using primary scene lighting).
-  //  - Use texture from rendered scene as env map for logos.
-  const renderTargetRef = useRef<THREE.WebGLRenderTarget>(null!);
-
   return (
-    <>
-      <Fbo ref={renderTargetRef} width={512} height={512}>
-        {(fbo) => {
-          const cubeCamera = new THREE.CubeCamera(0.1, 100, 512);
-          return (
-            <Environment
-              files="/textures/citrus_orchard_road_puresky_1k.hdr"
-              background={true}
-              near={0.1}
-              far={100}
-              resolution={64}
-              frames={1}
+    <group ref={groupRef}>
+      {states.showLinks && (
+        <>
+          <group
+            ref={githubLogoGroupRef}
+            renderOrder={1}
+            position={[-0.5, 1, 0]}
+            onClick={() => {
+              window.open("https://github.com/ClaytonMain", "_blank")?.focus();
+            }}
+          >
+            <GithubLogo material={material} />
+            <Cylinder
+              args={[0.33, 0.33, 0.15, 16]}
+              position={[0, 0.06, 0]}
+              visible={debug}
             >
-              <mesh position={[0, -2, 0]}>
-                <boxGeometry args={[100, 1, 100]} />
-                <meshBasicMaterial color={PAGE_BLOCK_COLORS["contact"]} />
-              </mesh>
-            </Environment>
-          );
-        }}
-      </Fbo>
-      <group ref={groupRef}>
-        {states.showLinks && (
-          <>
-            <group
-              ref={githubLogoGroupRef}
-              renderOrder={1}
-              position={[-0.5, 1, 0]}
-              onClick={() => {
-                window
-                  .open("https://github.com/ClaytonMain", "_blank")
-                  ?.focus();
-              }}
+              <meshStandardMaterial wireframe />
+            </Cylinder>
+          </group>
+          <group
+            ref={linkedinLogoGroupRef}
+            renderOrder={1}
+            position={[0.5, 1, 0]}
+            onClick={() => {
+              window
+                .open("https://www.linkedin.com/in/clayton-main/", "_blank")
+                ?.focus();
+            }}
+          >
+            <LinkedinLogo material={material} />
+            <Box
+              args={[0.66, 0.66, 0.15]}
+              rotation={[Math.PI / 2, 0, 0]}
+              position={[0, 0.06, 0]}
+              visible={debug}
             >
-              <GithubLogo material={material} />
-              <Cylinder
-                args={[0.33, 0.33, 0.15, 16]}
-                position={[0, 0.06, 0]}
-                visible={debug}
-              >
-                <meshStandardMaterial wireframe />
-              </Cylinder>
-            </group>
-            <group
-              ref={linkedinLogoGroupRef}
-              renderOrder={1}
-              position={[0.5, 1, 0]}
-              onClick={() => {
-                window
-                  .open("https://www.linkedin.com/in/clayton-main/", "_blank")
-                  ?.focus();
-              }}
-            >
-              <LinkedinLogo material={material} />
-              <Box
-                args={[0.66, 0.66, 0.15]}
-                rotation={[Math.PI / 2, 0, 0]}
-                position={[0, 0.06, 0]}
-                visible={debug}
-              >
-                <meshStandardMaterial wireframe />
-              </Box>
-            </group>
-          </>
-        )}
-      </group>
-    </>
+              <meshStandardMaterial wireframe />
+            </Box>
+          </group>
+        </>
+      )}
+    </group>
   );
 }

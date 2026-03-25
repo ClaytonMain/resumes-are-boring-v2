@@ -15,7 +15,7 @@ import {
   PAGE_PATTERN_NUMBERS,
 } from "../../constants/constants";
 import useAppStore from "../../stores/useAppStore";
-import ContactDisplay from "../ContactDisplay.tsx";
+import ContactDisplay from "../contact-display/ContactDisplay.tsx";
 import ProjectsDisplay from "../ProjectsDisplay";
 import useMousePosition from "./hooks/useMousePosition";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
