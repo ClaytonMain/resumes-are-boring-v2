@@ -1,6 +1,39 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as THREE from "three";
-import type { Page, PageBlockColor, Skill } from "../types/types";
+import type {
+  Page,
+  PageBlockColor,
+  PageHtmlStyleConfigs,
+  Skill,
+} from "../types/types";
+
+export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
+  home: {
+    bg: "#ef07171a",
+    text: "#ffffff",
+    border: "#f43f5eff",
+  },
+  about: {
+    bg: "#fbbf241a",
+    text: "#373737",
+    border: "#fbbf24ff",
+  },
+  skills: {
+    bg: "#a3e6351a",
+    text: "#373737",
+    border: "#a3e635ff",
+  },
+  projects: {
+    bg: "#14b8a61a",
+    text: "#ffffff",
+    border: "#14b8a6ff",
+  },
+  contact: {
+    bg: "#820ce81a",
+    text: "#ffffff",
+    border: "#820ce8ff",
+  },
+};
 
 export const PAGE_NAMES: Page[] = [
   "home",

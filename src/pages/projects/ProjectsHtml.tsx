@@ -43,7 +43,7 @@ export default function ProjectsHtml() {
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >
-      <div className="pointer-events-auto mb-10 flex rounded-lg border border-teal-400 bg-teal-700/80">
+      <div className="pointer-events-auto mb-10 flex rounded-lg border border-teal-500/50 bg-teal-500/10">
         <motion.button
           initial={false}
           onClick={() => handleClick(-1)}

@@ -33,11 +33,10 @@ export default function Navigation() {
     <motion.nav
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 1.2, duration: 0.5 } }}
-      className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch px-8 select-none"
+      className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b border-rose-500 bg-rose-500/10 px-8 backdrop-blur-sm select-none"
     >
-      <motion.div className="absolute top-0 right-0 bottom-0 left-0 -z-1 h-14 bg-neutral-950/20 backdrop-blur-xs" />
       <motion.div
-        className="my-4 flex items-center gap-1"
+        className="my-3 flex items-center gap-1"
         onPointerEnter={() => setNameHovered(true)}
         onPointerLeave={() => setNameHovered(false)}
       >
@@ -59,7 +58,7 @@ export default function Navigation() {
         {PAGE_NAMES.map((page) => (
           <motion.div
             key={page}
-            className="relative flex h-full cursor-pointer items-center p-1 text-2xl font-light tracking-tight select-none"
+            className="relative top-0 flex h-[calc(100%+18px)] cursor-pointer items-center p-1 text-2xl font-light tracking-tight select-none"
             initial={false}
             animate={{
               color: page === currentPage ? "#111" : "#eee",

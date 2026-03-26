@@ -52,3 +52,17 @@ export type Skill = {
   enjoyment: number; // 0-1 scale
   experience: number; // 0-1 scale
 };
+
+type PageHtmlStyleConfig = {
+  bg: string;
+  text: string;
+  border: string;
+  navigation?: {
+    bg?: string;
+    text?: string;
+    border?: string;
+    tabBg?: string;
+    tabText?: string;
+  };
+};
+export type PageHtmlStyleConfigs = Record<Page, PageHtmlStyleConfig>;

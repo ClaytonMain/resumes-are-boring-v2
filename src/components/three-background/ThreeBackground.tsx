@@ -435,8 +435,6 @@ export default function ThreeBackground() {
     gl.setRenderTarget(null);
   });
 
-  console.log("rendering three background");
-
   return (
     <>
       {createPortal(
