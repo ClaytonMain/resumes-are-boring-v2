@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import useAppStore from "../stores/useAppStore";
-import type { AppStore } from "../types/types";
+import useAppStore from "../../stores/useAppStore";
+import type { AppStore } from "../../types/types";
 
 export default function ComponentStateListener() {
   useEffect(() => {

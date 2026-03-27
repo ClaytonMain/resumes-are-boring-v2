@@ -1,8 +1,8 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, motion, wrap } from "motion/react";
 import { useEffect, useState } from "react";
-import { SKILLS } from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
+import { SKILLS } from "../../../../constants/constants";
+import useAppStore from "../../../../stores/useAppStore";
 
 export default function SkillsHtml() {
   const [skillIndex, setSkillIndex] = useState(

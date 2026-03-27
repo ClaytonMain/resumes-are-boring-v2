@@ -2,7 +2,7 @@ import NumberFlow from "@number-flow/react";
 import { Html } from "@react-three/drei";
 import { AnimatePresence, motion } from "motion/react";
 
-export function SkillsHtmlComponent({
+export function SkillsDreiHtmlComponent({
   index,
   springsActive,
   value,

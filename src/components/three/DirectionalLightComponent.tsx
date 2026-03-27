@@ -2,7 +2,7 @@ import { useHelper } from "@react-three/drei";
 import { useControls } from "leva";
 import { useRef } from "react";
 import * as THREE from "three";
-import useAppStore from "../stores/useAppStore";
+import useAppStore from "../../stores/useAppStore";
 
 export default function DirectionalLightComponent() {
   const directionalLightRef = useRef<THREE.DirectionalLight>(null!);

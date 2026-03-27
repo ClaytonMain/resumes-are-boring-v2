@@ -2,8 +2,8 @@ import { Environment } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import * as THREE from "three";
-import { PAGE_BLOCK_COLORS } from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
+import { PAGE_BLOCK_COLORS } from "../../../constants/constants";
+import useAppStore from "../../../stores/useAppStore";
 
 export default function EnvironmentComponent() {
   const currentPage = useAppStore((state) => state.currentPage);

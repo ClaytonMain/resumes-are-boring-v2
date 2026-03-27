@@ -14,7 +14,7 @@ import {
   type RefObject,
   type SetStateAction,
 } from "react";
-import { CONTENT_CONTAINER_CLASS_NAME } from "../../constants/constants";
+import { CONTENT_CONTAINER_CLASS_NAME } from "../../../../constants/constants";
 
 const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "my-auto indent-4 text-base/6";
 // "my-auto indent-4 text-lg font-normal";

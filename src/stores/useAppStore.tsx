@@ -20,12 +20,10 @@ const useAppStore = create<AppStore>()(
         currentPage: "home",
         debug: false,
 
-        displayThreeBackground: false,
+        introState: "initial",
 
         threeBackgroundComponentReady: false,
         initialComponentsReady: false,
-
-        isBoring: true,
 
         flavorTextIndex: 0,
 

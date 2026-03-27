@@ -3,35 +3,39 @@ import { useEffect, useState } from "react";
 import {
   CONTENT_CONTAINER_CLASS_NAME,
   FLAVOR_TEXT_VALUES,
-} from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
+  PAGE_HTML_STYLE_CONFIGS,
+} from "../../../../constants/constants";
+import useAppStore from "../../../../stores/useAppStore";
 
 const VARIANT_EASE_IN: Easing = "easeIn";
-// const baseDelay = 1.0;
-// const delayFactor = 0.75;
-// const animateDuration = 0.35;
-// const animateEase = "easeIn";
-const CONTAINER_VARIANTS = {
-  hide: { opacity: 0, color: "#0000001a", borderColor: "#ffffff1a" },
-  showBoring: {
+const CONTAINER_INTRO_STATE_VARIANTS = {
+  initial: { opacity: 0, color: "#0000001a", borderColor: "#ffffff1a" },
+  showingText: {
     opacity: 1,
     transition: { duration: 0.5, delay: 0.5, when: "beforeChildren" },
     backgroundColor: "#0000001a",
     borderColor: "#ffffff1a",
   },
-  showFun: {
+  transitioning: {
+    opacity: 1,
+    transition: { duration: 0.5, delay: 0.5, when: "beforeChildren" },
+    backgroundColor: "#0000001a",
+    borderColor: "#ffffff1a",
+  },
+  final: {
     opacity: 1,
     transition: {
       duration: 1.5,
       ease: VARIANT_EASE_IN,
     },
-    backgroundColor: "#f43f5e1a",
-    borderColor: "#f43f5eff",
+    backgroundColor: PAGE_HTML_STYLE_CONFIGS.home.bg,
+    color: PAGE_HTML_STYLE_CONFIGS.home.text,
+    borderColor: PAGE_HTML_STYLE_CONFIGS.home.border,
   },
 };
-const RESUMES_ARE_BORING_VARIANTS = {
-  hide: { opacity: 0 },
-  showBoring: (custom: number) => ({
+const TEXT_INTRO_STATE_VARIANTS = {
+  initial: { opacity: 0 },
+  showingText: (custom: number) => ({
     opacity: 1,
     transition: {
       duration: 0.35,
@@ -39,25 +43,29 @@ const RESUMES_ARE_BORING_VARIANTS = {
       ease: VARIANT_EASE_IN,
     },
   }),
-  showFun: {
+  transitioning: {
+    opacity: 1,
+  },
+  final: {
     opacity: 1,
   },
 };
-const FLAVOR_TEXT_VARIANTS = {
-  hide: { opacity: 0 },
-  showBoring: {
+const FLAVOR_TEXT_INTRO_STATE_VARIANTS = {
+  initial: { opacity: 0 },
+  showingText: {
     opacity: 0,
   },
-  showFun: {
+  transitioning: {
+    opacity: 0,
+  },
+  final: {
     opacity: 1,
     transition: { duration: 1.5, ease: VARIANT_EASE_IN },
   },
 };
 
 export default function HomeHtml() {
-  const [variant, setVariant] = useState(
-    useAppStore.getState().isBoring ? "hide" : "showFun",
-  );
+  const variant = useAppStore((state) => state.introState);
   const [flavorTextIndex] = useState(useAppStore.getState().flavorTextIndex);
 
   useEffect(() => {
@@ -69,32 +77,18 @@ export default function HomeHtml() {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (useAppStore.getState().isBoring === true) {
-        setVariant("showBoring");
+      if (useAppStore.getState().introState === "initial") {
+        useAppStore.setState({ introState: "showingText" });
       }
     }, 500);
     return () => clearTimeout(timeoutId);
-  }, []);
-
-  useEffect(() => {
-    const unsubIsBoring = useAppStore.subscribe(
-      (state) => state.isBoring,
-      (value, previousValue) => {
-        if (value === false && previousValue === true) {
-          setVariant("showFun");
-        }
-      },
-    );
-    return () => {
-      unsubIsBoring();
-    };
   }, []);
 
   return (
     <motion.div
       key="home-html-content-div"
       className={CONTENT_CONTAINER_CLASS_NAME}
-      variants={CONTAINER_VARIANTS}
+      variants={CONTAINER_INTRO_STATE_VARIANTS}
       initial={{ opacity: 0 }}
       animate={variant}
       exit={{ opacity: 0 }}
@@ -111,7 +105,7 @@ export default function HomeHtml() {
             color: "transparent",
           }}
           custom={0}
-          variants={RESUMES_ARE_BORING_VARIANTS}
+          variants={TEXT_INTRO_STATE_VARIANTS}
           initial={variant}
           animate={variant}
         >
@@ -125,7 +119,7 @@ export default function HomeHtml() {
             color: "transparent",
           }}
           custom={1}
-          variants={RESUMES_ARE_BORING_VARIANTS}
+          variants={TEXT_INTRO_STATE_VARIANTS}
           initial={variant}
           animate={variant}
         >
@@ -138,12 +132,12 @@ export default function HomeHtml() {
             WebkitTextStroke: "1px white",
           }}
           custom={2}
-          variants={RESUMES_ARE_BORING_VARIANTS}
+          variants={TEXT_INTRO_STATE_VARIANTS}
           initial={variant}
           animate={variant}
           onAnimationComplete={(a) => {
-            if (a === "showBoring") {
-              useAppStore.setState({ displayThreeBackground: true });
+            if (a === "showingText") {
+              useAppStore.setState({ introState: "transitioning" });
             }
           }}
         >
@@ -157,7 +151,7 @@ export default function HomeHtml() {
         <motion.p
           key="enter-subtitle-p"
           className="text-sm tracking-wide text-white"
-          variants={FLAVOR_TEXT_VARIANTS}
+          variants={FLAVOR_TEXT_INTRO_STATE_VARIANTS}
           animate={variant}
         >
           {FLAVOR_TEXT_VALUES[flavorTextIndex]}

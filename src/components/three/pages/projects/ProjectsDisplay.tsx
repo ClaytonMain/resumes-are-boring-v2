@@ -3,8 +3,8 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useSpring } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
-import { PROJECTS } from "../constants/constants";
-import useAppStore from "../stores/useAppStore";
+import { PROJECTS } from "../../../../constants/constants";
+import useAppStore from "../../../../stores/useAppStore";
 
 function isMouse1Down(event: MouseEvent) {
   return (event.buttons & 1) === 1;

@@ -13,18 +13,21 @@ import CustomShaderMaterial from "three-custom-shader-material";
 import {
   PAGE_BLOCK_COLORS,
   PAGE_PATTERN_NUMBERS,
-} from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
-import ContactDisplay from "../contact-display/ContactDisplay.tsx";
-import ProjectsDisplay from "../ProjectsDisplay";
-import useMousePosition from "./hooks/useMousePosition";
+} from "../../../constants/constants.tsx";
+import useAppStore from "../../../stores/useAppStore.tsx";
+import ContactDisplay from "../pages/contact/ContactDisplay.tsx";
+import ProjectsDisplay from "../pages/projects/ProjectsDisplay.tsx";
+import SkillsController from "../pages/skills/SkillsController.tsx";
+import useMousePosition from "./hooks/useMousePosition.tsx";
 import gridBlockFragmentShader from "./shaders/grid-block/gridBlock.frag";
 import gridBlockVertexShader from "./shaders/grid-block/gridBlock.vert";
 import offsetTextureFragmentShader from "./shaders/offset-texture/offsetTexture.frag";
 import offsetTextureVertexShader from "./shaders/offset-texture/offsetTexture.vert";
-import SkillsController from "./SkillsController";
-import ThreeBackgroundReadyComponent from "./ThreeBackgroundReadyComponent";
-import type { GridBlockUniforms, OffsetTextureUniforms } from "./types/types";
+import ThreeBackgroundReadyComponent from "./ThreeBackgroundReadyComponent.tsx";
+import type {
+  GridBlockUniforms,
+  OffsetTextureUniforms,
+} from "./types/types.tsx";
 
 // ********
 // Hexagons
@@ -213,14 +216,21 @@ export default function ThreeBackground() {
   // ************************
   // Display Three Background
   // ************************
-  const displayThreeBackgroundRef = useRef(false);
+  const displayThreeBackgroundRef = useRef(
+    ["transitioning", "final"].includes(useAppStore.getState().introState),
+  );
   const initialTimeRef = useRef(0);
   useEffect(() => {
-    const unsubDisplayThreeBackground = useAppStore.subscribe(
-      (state) => state.displayThreeBackground,
+    const unsubIntroState = useAppStore.subscribe(
+      (state) => state.introState,
       (value, prev) => {
-        displayThreeBackgroundRef.current = value;
-        if (value === true && prev === false) {
+        displayThreeBackgroundRef.current = ["transitioning", "final"].includes(
+          value,
+        );
+        if (
+          displayThreeBackgroundRef.current &&
+          !["transitioning", "final"].includes(prev)
+        ) {
           gridBlockUniforms.uActiveRadii.value += 1;
           gridBlockUniforms.uRadiiPcts.value.unshift(0);
           gridBlockUniforms.uRadiiColors.value.unshift(
@@ -233,7 +243,7 @@ export default function ThreeBackground() {
       },
     );
     return () => {
-      unsubDisplayThreeBackground();
+      unsubIntroState();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -409,14 +419,14 @@ export default function ThreeBackground() {
     if (displayThreeBackgroundRef.current) {
       if (
         initialTimeRef.current < 1 &&
-        useAppStore.getState().isBoring === true
+        useAppStore.getState().introState !== "final"
       ) {
         initialTimeRef.current = Math.min(
           1,
           initialTimeRef.current + uDeltaRef.current * 0.25,
         );
         if (initialTimeRef.current > 0.5) {
-          useAppStore.setState({ isBoring: false });
+          useAppStore.setState({ introState: "final" });
         }
       }
       const radiiPcts = gridBlockUniforms.uRadiiPcts.value as number[];

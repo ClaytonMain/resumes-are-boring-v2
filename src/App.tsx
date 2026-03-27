@@ -1,9 +1,9 @@
 import { Leva } from "leva";
 import "./App.css";
-import ComponentStateListener from "./components/ComponentStateListener";
-import DebugListener from "./components/DebugListener";
-import HtmlElementsContainer from "./components/HtmlElementsContainer";
-import ThreeCanvas from "./components/ThreeCanvas";
+import HtmlElementsContainer from "./components/html/HtmlElementsContainer";
+import ComponentStateListener from "./components/three/ComponentStateListener";
+import DebugListener from "./components/three/DebugListener";
+import ThreeCanvas from "./components/three/ThreeCanvas";
 import useAppStore from "./stores/useAppStore";
 
 function App() {

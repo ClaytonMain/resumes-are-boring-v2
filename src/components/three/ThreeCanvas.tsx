@@ -2,13 +2,13 @@ import { Loader, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Suspense } from "react";
 import * as THREE from "three";
-import { DEFAULT_CAMERA_POSITION } from "../constants/constants";
-import useAppStore from "../stores/useAppStore";
+import { DEFAULT_CAMERA_POSITION } from "../../constants/constants";
+import useAppStore from "../../stores/useAppStore";
 import CameraController from "./CameraController";
 import CustomStatsComponent from "./CustomStatsComponent";
 import DirectionalLightComponent from "./DirectionalLightComponent";
-import EnvironmentComponent from "./three-background/EnvironmentComponent";
-import ThreeBackground from "./three-background/ThreeBackground";
+import EnvironmentComponent from "./background/EnvironmentComponent";
+import ThreeBackground from "./background/ThreeBackground";
 
 export default function ThreeCanvas() {
   const debug = useAppStore.getState().debug;

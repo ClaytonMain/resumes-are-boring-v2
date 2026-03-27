@@ -7,6 +7,20 @@ import type {
   Skill,
 } from "../types/types";
 
+// type PageHtmlStyleConfig = {
+//   bg: string;
+//   text: string;
+//   border: string;
+//   scrollBar0: string;
+//   scrollBar1: string;
+//   navigation?: {
+//     bg?: string;
+//     text?: string;
+//     border?: string;
+//     tabBg?: string;
+//     tabText?: string;
+//   };
+// };
 export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
   home: {
     bg: "#ef07171a",
@@ -24,14 +38,16 @@ export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
     border: "#a3e635ff",
   },
   projects: {
-    bg: "#14b8a61a",
+    bg: "#14b8a64d",
     text: "#ffffff",
-    border: "#14b8a6ff",
+    border: "#14b8a680",
+    scrollBar0: "#f0fdfaff",
+    scrollBar1: "#99f6e41a",
   },
   contact: {
-    bg: "#820ce81a",
+    bg: "#a78bfa1a",
     text: "#ffffff",
-    border: "#820ce8ff",
+    border: "#a78bfaff",
   },
 };
 

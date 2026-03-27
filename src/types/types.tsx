@@ -6,12 +6,10 @@ export interface AppStore {
   currentPage: Page;
   debug: boolean;
 
-  displayThreeBackground: boolean;
+  introState: "initial" | "showingText" | "transitioning" | "final";
 
   threeBackgroundComponentReady: boolean;
   initialComponentsReady: boolean;
-
-  isBoring: boolean;
 
   flavorTextIndex: number;
 
@@ -57,6 +55,8 @@ type PageHtmlStyleConfig = {
   bg: string;
   text: string;
   border: string;
+  scrollBar0?: string;
+  scrollBar1?: string;
   navigation?: {
     bg?: string;
     text?: string;

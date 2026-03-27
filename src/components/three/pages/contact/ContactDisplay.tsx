@@ -5,10 +5,10 @@ import { useSpring } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material/vanilla";
-import { PAGE_BLOCK_COLORS } from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
-import { GithubLogo } from "../GithubLogo";
-import { LinkedinLogo } from "../LinkedinLogo";
+import { PAGE_BLOCK_COLORS } from "../../../../constants/constants";
+import useAppStore from "../../../../stores/useAppStore";
+import { GithubLogo } from "./GithubLogo";
+import { LinkedinLogo } from "./LinkedinLogo";
 import linkFragmentShader from "./shaders/linkShader.frag";
 import linkVertexShader from "./shaders/linkShader.vert";
 

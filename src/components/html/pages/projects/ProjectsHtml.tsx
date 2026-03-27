@@ -1,8 +1,8 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, motion, wrap } from "motion/react";
 import { useEffect, useState } from "react";
-import { PROJECTS } from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
+import { PROJECTS } from "../../../../constants/constants";
+import useAppStore from "../../../../stores/useAppStore";
 
 export default function ProjectsHtml() {
   const [projectIndex, setProjectIndex] = useState(
@@ -43,7 +43,7 @@ export default function ProjectsHtml() {
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >
-      <div className="pointer-events-auto mb-10 flex rounded-lg border border-teal-500/50 bg-teal-500/10">
+      <div className="pointer-events-auto mb-10 flex gap-2 rounded-lg border border-teal-500/50 bg-teal-500/30">
         <motion.button
           initial={false}
           onClick={() => handleClick(-1)}

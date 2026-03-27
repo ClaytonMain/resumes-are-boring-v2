@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useState } from "react";
-import { PAGE_NAMES } from "../constants/constants";
-import useAppStore from "../stores/useAppStore";
+import { PAGE_NAMES } from "../../constants/constants";
+import useAppStore from "../../stores/useAppStore";
 
 export default function Navigation() {
   const [currentPage, setCurrentPage] = useState(
@@ -15,12 +15,7 @@ export default function Navigation() {
       (value, previousValue) => {
         if (value !== previousValue) {
           setCurrentPage(value);
-          if (!useAppStore.getState().displayThreeBackground) {
-            useAppStore.setState({ displayThreeBackground: true });
-          }
-          if (useAppStore.getState().isBoring === true) {
-            useAppStore.setState({ isBoring: false });
-          }
+          useAppStore.setState({ introState: "final" });
         }
       },
     );

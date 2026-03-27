@@ -2,10 +2,10 @@ import { useFrame } from "@react-three/fiber";
 import { useSpring, useTransform } from "motion/react";
 import { useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
-import { SKILLS } from "../../constants/constants";
-import useAppStore from "../../stores/useAppStore";
-import { SkillsHtmlComponent } from "./SkillsHtmlComponent";
-import type { OffsetTextureUniforms } from "./types/types";
+import { SKILLS } from "../../../../constants/constants";
+import useAppStore from "../../../../stores/useAppStore";
+import type { OffsetTextureUniforms } from "../../background/types/types";
+import { SkillsDreiHtmlComponent } from "./SkillsDreiHtmlComponent";
 
 export default function SkillsController({
   offsetTextureUniforms,
@@ -234,13 +234,13 @@ export default function SkillsController({
   return (
     <>
       <group ref={objectsGroupRef}>
-        <group position={[-hexagonXSpacing * 3, 0.0, hexagonZSpacing * 2]}>
+        <group position={[-hexagonXSpacing * 3.5, 0.0, hexagonZSpacing * 2.0]}>
           <object3D ref={proficiencyRef} />
           <group ref={proficiencyMarkerGroupRef}>
             <mesh ref={proficiencyMarkerRef} geometry={markerGeometry}>
               <meshStandardMaterial color="#112211" flatShading />
             </mesh>
-            <SkillsHtmlComponent
+            <SkillsDreiHtmlComponent
               index={0}
               springsActive={states.springsActive}
               value={states.proficiencyMarkerValue}
@@ -248,13 +248,13 @@ export default function SkillsController({
             />
           </group>
         </group>
-        <group position={[0, 0.0, hexagonZSpacing * 2]}>
+        <group position={[0.0, 0.0, hexagonZSpacing * 2.0]}>
           <object3D ref={enjoymentRef} />
           <group ref={enjoymentMarkerGroupRef}>
             <mesh ref={enjoymentMarkerRef} geometry={markerGeometry}>
               <meshStandardMaterial color="#112211" flatShading />
             </mesh>
-            <SkillsHtmlComponent
+            <SkillsDreiHtmlComponent
               index={1}
               springsActive={states.springsActive}
               value={states.enjoymentMarkerValue}
@@ -262,13 +262,13 @@ export default function SkillsController({
             />
           </group>
         </group>
-        <group position={[hexagonXSpacing * 3, 0.0, hexagonZSpacing * 2]}>
+        <group position={[hexagonXSpacing * 3.5, 0.0, hexagonZSpacing * 2.0]}>
           <object3D ref={experienceRef} />
           <group ref={experienceMarkerGroupRef}>
             <mesh ref={experienceMarkerRef} geometry={markerGeometry}>
               <meshStandardMaterial color="#112211" flatShading />
             </mesh>
-            <SkillsHtmlComponent
+            <SkillsDreiHtmlComponent
               index={2}
               springsActive={states.springsActive}
               value={states.experienceMarkerValue}

@@ -1,7 +1,7 @@
 import { Stats } from "@react-three/drei";
 import { useEffect } from "react";
-import { STATS_CLASS_NAME } from "../constants/constants";
-import type { StatsPosition } from "../types/types";
+import { STATS_CLASS_NAME } from "../../constants/constants";
+import type { StatsPosition } from "../../types/types";
 
 function getStatsClassName(position: StatsPosition) {
   const tOrB = position.charAt(0) === "t" ? "top-0" : "bottom-0";
