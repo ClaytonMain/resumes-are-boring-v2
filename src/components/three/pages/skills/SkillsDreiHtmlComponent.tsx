@@ -19,7 +19,7 @@ export function SkillsDreiHtmlComponent({
         {springsActive && (
           <motion.div
             key={`skills-html-content-div-${index}`}
-            className="top-0 bottom-0 -translate-x-1/2 -translate-y-25 transform text-black"
+            className="top-0 bottom-0 -translate-x-1/2 -translate-y-25 transform text-neutral-800"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1, transition: { delay: 0.05 * index } }}
             exit={{ opacity: 0 }}

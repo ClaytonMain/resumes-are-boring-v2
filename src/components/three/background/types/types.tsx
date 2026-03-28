@@ -37,5 +37,6 @@ export type GridBlockUniforms = {
   uActiveRadii: { value: number };
   uRadiiPcts: { value: number[] };
   uRadiiColors: { value: THREE.Color[] };
+  uRadiiYOffsetColors: { value: THREE.Color[] };
   uRadiiPatterns: { value: number[] };
 };

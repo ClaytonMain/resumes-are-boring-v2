@@ -1,7 +1,10 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, motion, wrap } from "motion/react";
 import { useEffect, useState } from "react";
-import { SKILLS } from "../../../../constants/constants";
+import {
+  PAGE_HTML_STYLE_CONFIGS,
+  SKILLS,
+} from "../../../../constants/constants";
 import useAppStore from "../../../../stores/useAppStore";
 
 export default function SkillsHtml() {
@@ -39,7 +42,14 @@ export default function SkillsHtml() {
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >
-      <div className="pointer-events-auto mb-10 flex rounded-lg border border-lime-400 bg-lime-400/10">
+      <div
+        className="pointer-events-auto mb-10 flex rounded-lg border backdrop-blur-sm"
+        style={{
+          backgroundColor: PAGE_HTML_STYLE_CONFIGS.skills.bg,
+          color: PAGE_HTML_STYLE_CONFIGS.skills.text,
+          borderColor: PAGE_HTML_STYLE_CONFIGS.skills.border,
+        }}
+      >
         <motion.button
           initial={false}
           onClick={() => handleClick(-1)}

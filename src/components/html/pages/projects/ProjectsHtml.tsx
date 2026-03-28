@@ -1,7 +1,10 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { AnimatePresence, motion, wrap } from "motion/react";
 import { useEffect, useState } from "react";
-import { PROJECTS } from "../../../../constants/constants";
+import {
+  PAGE_HTML_STYLE_CONFIGS,
+  PROJECTS,
+} from "../../../../constants/constants";
 import useAppStore from "../../../../stores/useAppStore";
 
 export default function ProjectsHtml() {
@@ -43,11 +46,18 @@ export default function ProjectsHtml() {
       exit={{ opacity: 0 }}
       className="flex h-full w-full items-end justify-center gap-2"
     >
-      <div className="pointer-events-auto mb-10 flex gap-2 rounded-lg border border-teal-500/50 bg-teal-500/30">
+      <div
+        className="pointer-events-auto mb-10 flex gap-2 rounded-lg border backdrop-blur-sm"
+        style={{
+          backgroundColor: PAGE_HTML_STYLE_CONFIGS.projects.bg,
+          color: PAGE_HTML_STYLE_CONFIGS.projects.text,
+          borderColor: PAGE_HTML_STYLE_CONFIGS.projects.border,
+        }}
+      >
         <motion.button
           initial={false}
           onClick={() => handleClick(-1)}
-          className="cursor-pointer"
+          className="cursor-pointer rounded-l-lg"
           whileHover={{ backgroundColor: "#ffffff1a" }}
         >
           <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
@@ -66,14 +76,14 @@ export default function ProjectsHtml() {
               href={PROJECTS[projectIndex].url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-base text-teal-50 italic underline"
+              className="text-base italic underline"
             >
               {PROJECTS[projectIndex].name}
             </motion.a>
             <motion.div
               className="my-1 max-h-12 overflow-y-auto text-left text-xs font-light tracking-tighter"
               style={{
-                scrollbarColor: "#f0fdfa #99f6e41a",
+                scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.projects.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.projects.scrollBar1}`,
               }}
             >
               {PROJECTS[projectIndex].description}
@@ -83,7 +93,7 @@ export default function ProjectsHtml() {
         <motion.button
           initial={false}
           onClick={() => handleClick(1)}
-          className="cursor-pointer"
+          className="cursor-pointer rounded-r-lg"
           whileHover={{ backgroundColor: "#ffffff1a" }}
         >
           <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>

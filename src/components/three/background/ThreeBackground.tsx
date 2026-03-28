@@ -12,6 +12,7 @@ import * as THREE from "three";
 import CustomShaderMaterial from "three-custom-shader-material";
 import {
   PAGE_BLOCK_COLORS,
+  PAGE_BLOCK_COLORS_YOFFSET,
   PAGE_PATTERN_NUMBERS,
 } from "../../../constants/constants.tsx";
 import useAppStore from "../../../stores/useAppStore.tsx";
@@ -135,6 +136,9 @@ export default function ThreeBackground() {
       uRadiiColors: {
         value: new Array(MAX_RADII_COUNT).fill(new THREE.Color("#000")),
       },
+      uRadiiYOffsetColors: {
+        value: new Array(MAX_RADII_COUNT).fill(new THREE.Color("#000")),
+      },
       uRadiiPatterns: { value: new Array(MAX_RADII_COUNT).fill(0) },
     };
   }, []);
@@ -236,6 +240,9 @@ export default function ThreeBackground() {
           gridBlockUniforms.uRadiiColors.value.unshift(
             PAGE_BLOCK_COLORS[useAppStore.getState().currentPage],
           );
+          gridBlockUniforms.uRadiiYOffsetColors.value.unshift(
+            PAGE_BLOCK_COLORS_YOFFSET[useAppStore.getState().currentPage],
+          );
           gridBlockUniforms.uRadiiPatterns.value.unshift(
             PAGE_PATTERN_NUMBERS[useAppStore.getState().currentPage],
           );
@@ -265,6 +272,9 @@ export default function ThreeBackground() {
           );
           gridBlockUniforms.uRadiiColors.value.unshift(
             PAGE_BLOCK_COLORS[currentPage],
+          );
+          gridBlockUniforms.uRadiiYOffsetColors.value.unshift(
+            PAGE_BLOCK_COLORS_YOFFSET[currentPage],
           );
           gridBlockUniforms.uRadiiPatterns.value.unshift(
             PAGE_PATTERN_NUMBERS[currentPage],
@@ -436,6 +446,7 @@ export default function ThreeBackground() {
       if (radiiPcts.length > MAX_RADII_COUNT) {
         radiiPcts.pop();
         (gridBlockUniforms.uRadiiColors.value as THREE.Color[]).pop();
+        (gridBlockUniforms.uRadiiYOffsetColors.value as THREE.Color[]).pop();
         (gridBlockUniforms.uRadiiPatterns.value as number[]).pop();
       }
       gridBlockUniforms.uRadiiPcts.value = radiiPcts;

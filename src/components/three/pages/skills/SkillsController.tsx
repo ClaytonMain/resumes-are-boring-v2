@@ -238,7 +238,7 @@ export default function SkillsController({
           <object3D ref={proficiencyRef} />
           <group ref={proficiencyMarkerGroupRef}>
             <mesh ref={proficiencyMarkerRef} geometry={markerGeometry}>
-              <meshStandardMaterial color="#112211" flatShading />
+              <meshStandardMaterial color="#262626" flatShading />
             </mesh>
             <SkillsDreiHtmlComponent
               index={0}
@@ -252,7 +252,7 @@ export default function SkillsController({
           <object3D ref={enjoymentRef} />
           <group ref={enjoymentMarkerGroupRef}>
             <mesh ref={enjoymentMarkerRef} geometry={markerGeometry}>
-              <meshStandardMaterial color="#112211" flatShading />
+              <meshStandardMaterial color="#262626" flatShading />
             </mesh>
             <SkillsDreiHtmlComponent
               index={1}
@@ -266,7 +266,7 @@ export default function SkillsController({
           <object3D ref={experienceRef} />
           <group ref={experienceMarkerGroupRef}>
             <mesh ref={experienceMarkerRef} geometry={markerGeometry}>
-              <meshStandardMaterial color="#112211" flatShading />
+              <meshStandardMaterial color="#262626" flatShading />
             </mesh>
             <SkillsDreiHtmlComponent
               index={2}

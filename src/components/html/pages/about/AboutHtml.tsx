@@ -14,14 +14,16 @@ import {
   type RefObject,
   type SetStateAction,
 } from "react";
-import { CONTENT_CONTAINER_CLASS_NAME } from "../../../../constants/constants";
+import {
+  CONTENT_CONTAINER_CLASS_NAME,
+  PAGE_HTML_STYLE_CONFIGS,
+} from "../../../../constants/constants";
 
 const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "my-auto indent-4 text-base/6";
 // "my-auto indent-4 text-lg font-normal";
-const ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME =
-  "text-amber-100 font-normal";
+const ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME = "font-normal";
 const ABOUT_COMPONENT_CONTENT_LINK_CLASS_NAME =
-  "text-amber-200 underline decoration-amber-200 decoration-1 font-normal";
+  "underline decoration-1 font-normal";
 
 function AboutComponentAboutContent() {
   return (
@@ -159,7 +161,7 @@ function AboutComponent({
   return (
     <motion.div
       ref={divRef}
-      className="mr-2 flex h-64 shrink-0 snap-center rounded bg-amber-500/10 p-2"
+      className="mr-2 flex h-64 shrink-0 snap-center rounded p-2"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
       viewport={{ root: viewportRef }}
@@ -182,11 +184,17 @@ export default function AboutHtml() {
   return (
     <motion.div
       key="about-html-content-div"
-      className={
-        CONTENT_CONTAINER_CLASS_NAME + " " + "border-amber-400 bg-amber-400/10"
-      }
+      className={CONTENT_CONTAINER_CLASS_NAME}
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      animate={{
+        opacity: 1,
+        transition: { delay: 1.0, duration: 0.5 },
+      }}
+      style={{
+        backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
+        color: PAGE_HTML_STYLE_CONFIGS.about.text,
+        borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
+      }}
       exit={{ opacity: 0 }}
     >
       <div className="flex gap-2">
@@ -194,7 +202,7 @@ export default function AboutHtml() {
           <AnimatePresence mode="wait" initial={false}>
             <motion.h1
               key={whoAmI[0]}
-              className="text-4xl font-bold tracking-tight text-white"
+              className="text-4xl font-bold tracking-tight"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
@@ -205,7 +213,7 @@ export default function AboutHtml() {
           <AnimatePresence mode="wait" initial={false}>
             <motion.h1
               key={whoAmI[1]}
-              className="text-4xl font-bold tracking-tight text-amber-100"
+              className="text-4xl font-bold tracking-tight"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
@@ -215,12 +223,12 @@ export default function AboutHtml() {
           </AnimatePresence>
         </div>
       </div>
-      <span className="w-full border-b border-amber-400" />
+      <span className="w-full border-b border-inherit" />
       <div
         ref={viewportRef}
         className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-64 w-150 snap-y snap-mandatory flex-col gap-2 overflow-y-scroll"
         style={{
-          scrollbarColor: "#fffbeb #f59e0b1a",
+          scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
         }}
       >
         <AboutComponent
