@@ -1,7 +1,6 @@
 import { motion, type Easing } from "motion/react";
 import { useEffect, useState } from "react";
 import {
-  CONTENT_CONTAINER_CLASS_NAME,
   FLAVOR_TEXT_VALUES,
   PAGE_HTML_STYLE_CONFIGS,
 } from "../../../../constants/constants";
@@ -87,7 +86,7 @@ export default function HomeHtml() {
   return (
     <motion.div
       key="home-html-content-div"
-      className={CONTENT_CONTAINER_CLASS_NAME}
+      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 text-3xl backdrop-blur-sm sm:p-1.5 sm:text-4xl md:p-2 md:text-6xl"
       variants={CONTAINER_INTRO_STATE_VARIANTS}
       initial={{ opacity: 0 }}
       animate={variant}
@@ -95,15 +94,11 @@ export default function HomeHtml() {
     >
       <motion.div
         key="enter-html-content-resumes-are-boring-div"
-        className="m-2 flex items-center justify-center gap-4"
+        className="m-1 flex items-center justify-center gap-2 sm:m-1.5 sm:gap-2.5 md:m-2 md:gap-4"
       >
         <motion.h1
           key="enter-resumes-h1"
-          className="text-6xl leading-none font-bold tracking-tighter"
-          style={{
-            WebkitTextStroke: "1px white",
-            color: "transparent",
-          }}
+          className="leading-none font-bold tracking-tighter text-gray-300/50"
           custom={0}
           variants={TEXT_INTRO_STATE_VARIANTS}
           initial={variant}
@@ -113,11 +108,7 @@ export default function HomeHtml() {
         </motion.h1>
         <motion.h1
           key="enter-are-h1"
-          className="text-6xl leading-none font-bold tracking-tighter"
-          style={{
-            WebkitTextStroke: "1px white",
-            color: "transparent",
-          }}
+          className="leading-none font-bold tracking-tighter text-gray-300/50"
           custom={1}
           variants={TEXT_INTRO_STATE_VARIANTS}
           initial={variant}
@@ -127,7 +118,7 @@ export default function HomeHtml() {
         </motion.h1>
         <motion.h1
           key="enter-boring-h1"
-          className="text-6xl leading-none font-bold tracking-tighter text-white"
+          className="leading-none font-bold tracking-tighter text-white"
           style={{
             WebkitTextStroke: "1px white",
           }}
@@ -146,11 +137,11 @@ export default function HomeHtml() {
       </motion.div>
       <motion.div
         key="enter-html-content-subtitle-div"
-        className="m-2 flex justify-end italic"
+        className="m-1 flex justify-end italic sm:m-1.5 md:m-2"
       >
         <motion.p
           key="enter-subtitle-p"
-          className="text-sm tracking-wide text-white"
+          className="text-[10px] tracking-wide text-white sm:text-xs md:text-sm"
           variants={FLAVOR_TEXT_INTRO_STATE_VARIANTS}
           animate={variant}
         >

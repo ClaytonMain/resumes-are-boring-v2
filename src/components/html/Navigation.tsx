@@ -69,6 +69,18 @@ export default function Navigation() {
   const [tabAnimate, setTabAnimate] = useState<TabAnimate>(
     getCurrentTabAnimate(),
   );
+  const [showName, setShowName] = useState(window.innerWidth > 640);
+
+  function handleResize() {
+    setShowName(window.innerWidth > 640);
+  }
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const unsubCurrentPage = useAppStore.subscribe(
@@ -101,7 +113,6 @@ export default function Navigation() {
       unsubCurrentPage();
       unsubIntroState();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -111,32 +122,33 @@ export default function Navigation() {
       }}
       animate={navigationAnimate}
       transition={{ duration: 1.0 }}
-      className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b px-8 backdrop-blur-sm select-none"
+      className="text-md pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b px-2 font-light tracking-tight backdrop-blur-sm select-none sm:px-4 sm:text-lg md:px-8 md:text-xl lg:text-2xl"
     >
-      <motion.div
-        className="my-3 flex items-center gap-1"
-        onPointerEnter={() => setNameHovered(true)}
-        onPointerLeave={() => setNameHovered(false)}
-      >
-        <h2 className="text-2xl font-light tracking-tight">CLAYTON MAIN</h2>
-        <AnimatePresence>
-          {nameHovered && (
-            <motion.div
-              className="text-sm tracking-tight"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              {"👈 That's me!"}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
-      <div className="ml-auto flex items-center justify-center gap-2">
+      {showName && (
+        <motion.div
+          className="my-2 flex items-center gap-1 sm:my-3"
+          onPointerLeave={() => setNameHovered(false)}
+        >
+          <h2>CLAYTON MAIN</h2>
+          <AnimatePresence>
+            {nameHovered && (
+              <motion.div
+                className="text-xs tracking-tight sm:text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {"👈 That's me!"}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
+      )}
+      <div className="mr-auto ml-auto flex items-center justify-center gap-0.5 sm:mr-0 sm:gap-1 md:gap-2">
         {PAGE_NAMES.map((page) => (
           <motion.div
             key={page}
-            className="relative top-0 flex h-[calc(100%+18px)] cursor-pointer items-center p-1 text-2xl font-light tracking-tight select-none"
+            className="relative top-0 flex h-[calc(100%+18px)] cursor-pointer items-center p-1 select-none"
             initial={false}
             animate={{
               color:
@@ -152,12 +164,12 @@ export default function Navigation() {
             {page.toUpperCase()}
             {page === currentPage ? (
               <motion.div
-                className="absolute right-0 bottom-0 left-0 -z-1 h-full rounded-b-lg"
+                className="absolute right-0 bottom-0 left-0 -z-1 h-full rounded-b-md sm:rounded-b-lg"
                 layoutId="selected-page-nav-indicator"
                 id="selected-page-nav-indicator"
               >
                 <motion.div
-                  className="h-full w-full rounded-b-lg"
+                  className="h-full w-full rounded-b-md sm:rounded-b-lg"
                   initial={false}
                   animate={tabAnimate}
                   transition={{ duration: 1.0 }}

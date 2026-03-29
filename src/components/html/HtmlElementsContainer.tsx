@@ -6,6 +6,7 @@ import ContactHtml from "./pages/contact/ContactHtml";
 import HomeHtml from "./pages/home/HomeHtml";
 import ProjectsHtml from "./pages/projects/ProjectsHtml";
 import SkillsHtml from "./pages/skills/SkillsHtml";
+import ScreenWidthDebugDisplay from "./ScreenWidthDebugDisplay";
 
 export default function HtmlElementsContainer() {
   const currentPage = useAppStore((state) => state.currentPage);
@@ -27,6 +28,7 @@ export default function HtmlElementsContainer() {
           </AnimatePresence>
         </motion.div>
       )}
+      <ScreenWidthDebugDisplay />
     </>
   );
 }

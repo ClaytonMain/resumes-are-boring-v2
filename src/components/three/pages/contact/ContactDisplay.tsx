@@ -123,12 +123,6 @@ export default function ContactDisplay() {
     roughness: { value: 0.05, min: 0, max: 1, step: 0.01 },
   });
 
-  // const material = new THREE.MeshStandardMaterial({
-  //   color: controls.color,
-  //   metalness: controls.metalness,
-  //   roughness: controls.roughness,
-  // });
-
   const uniforms = useMemo(() => {
     return {
       uFloorColor: { value: new THREE.Color(PAGE_BLOCK_COLORS.contact) },

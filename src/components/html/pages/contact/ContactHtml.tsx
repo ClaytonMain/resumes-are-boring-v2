@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, type JSX, type RefObject } from "react";
+import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 const CONTACT_COMPONENT_CONTENT_CLASS_NAME =
-  "my-auto flex flex-col text-base/6 gap-2 tracking-tight text-violet-100";
+  "my-auto flex flex-col text-base/6 gap-2 tracking-tight";
 
 function ContactComponentContactContent() {
   return (
@@ -47,7 +48,7 @@ function ContactComponent({
   return (
     <motion.div
       ref={divRef}
-      className="mr-2 flex shrink-0 snap-center rounded bg-violet-500/10 p-2"
+      className="mr-2 flex shrink-0 snap-center rounded p-2"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
       viewport={{ root: viewportRef }}
@@ -67,33 +68,33 @@ export default function ContactHtml() {
   return (
     <motion.div
       key="contact-html-content-div"
-      className="pointer-events-auto mx-auto mb-24 flex flex-col justify-center self-end overflow-hidden rounded-lg border border-violet-400 bg-violet-400/10 p-2 backdrop-blur-sm"
+      className="pointer-events-auto mx-auto mb-24 flex flex-col justify-center self-end overflow-hidden rounded-lg border p-2 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      style={{
+        backgroundColor: PAGE_HTML_STYLE_CONFIGS.contact.bg,
+        color: PAGE_HTML_STYLE_CONFIGS.contact.text,
+        borderColor: PAGE_HTML_STYLE_CONFIGS.contact.border,
+      }}
     >
-      <div className="flex gap-2">
-        <div className="flex gap-2 overflow-hidden">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.h1
-              key="contact-html-title"
-              className="text-4xl font-bold tracking-tight text-violet-100"
-              initial={{ y: -100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-            >
-              Contact
-            </motion.h1>
-          </AnimatePresence>
-        </div>
+      <div className="flex gap-2 overflow-hidden">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.h1
+            key="contact-html-title"
+            className="text-4xl font-bold tracking-tight"
+            initial={{ y: -100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+          >
+            Contact
+          </motion.h1>
+        </AnimatePresence>
       </div>
-      <span className="w-full border-b border-violet-400" />
+      <span className="w-full border-b border-inherit" />
       <div
         ref={viewportRef}
         className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex w-150 snap-y snap-mandatory flex-col gap-2"
-        style={{
-          scrollbarColor: "#f5f3ff #8b5cf61a",
-        }}
       >
         <ContactComponent
           key="contact"

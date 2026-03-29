@@ -14,10 +14,7 @@ import {
   type RefObject,
   type SetStateAction,
 } from "react";
-import {
-  CONTENT_CONTAINER_CLASS_NAME,
-  PAGE_HTML_STYLE_CONFIGS,
-} from "../../../../constants/constants";
+import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "my-auto indent-4 text-base/6";
 // "my-auto indent-4 text-lg font-normal";
@@ -184,25 +181,25 @@ export default function AboutHtml() {
   return (
     <motion.div
       key="about-html-content-div"
-      className={CONTENT_CONTAINER_CLASS_NAME}
+      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 backdrop-blur-sm sm:p-1.5 md:p-2"
       initial={{ opacity: 0 }}
       animate={{
         opacity: 1,
         transition: { delay: 1.0, duration: 0.5 },
       }}
+      exit={{ opacity: 0 }}
       style={{
         backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
         color: PAGE_HTML_STYLE_CONFIGS.about.text,
         borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
       }}
-      exit={{ opacity: 0 }}
     >
-      <div className="flex gap-2">
-        <div className="flex gap-2 overflow-hidden">
+      <div className="flex gap-1 sm:gap-1.5 md:gap-2">
+        <div className="flex gap-1 overflow-hidden sm:gap-1.5 md:gap-2">
           <AnimatePresence mode="wait" initial={false}>
             <motion.h1
               key={whoAmI[0]}
-              className="text-4xl font-bold tracking-tight"
+              className="text-2xl font-bold tracking-tight md:text-4xl"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
@@ -213,7 +210,7 @@ export default function AboutHtml() {
           <AnimatePresence mode="wait" initial={false}>
             <motion.h1
               key={whoAmI[1]}
-              className="text-4xl font-bold tracking-tight"
+              className="text-2xl font-bold tracking-tight md:text-4xl"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
@@ -226,7 +223,7 @@ export default function AboutHtml() {
       <span className="w-full border-b border-inherit" />
       <div
         ref={viewportRef}
-        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-64 w-150 snap-y snap-mandatory flex-col gap-2 overflow-y-scroll"
+        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-64 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll sm:w-150"
         style={{
           scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
         }}
