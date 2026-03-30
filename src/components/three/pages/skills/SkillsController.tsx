@@ -234,7 +234,7 @@ export default function SkillsController({
   return (
     <>
       <group ref={objectsGroupRef}>
-        <group position={[-hexagonXSpacing * 3.5, 0.0, hexagonZSpacing * 2.0]}>
+        <group position={[-hexagonXSpacing * 3.5, 0.0, -hexagonZSpacing * 2.0]}>
           <object3D ref={proficiencyRef} />
           <group ref={proficiencyMarkerGroupRef}>
             <mesh ref={proficiencyMarkerRef} geometry={markerGeometry}>
@@ -248,7 +248,7 @@ export default function SkillsController({
             />
           </group>
         </group>
-        <group position={[0.0, 0.0, hexagonZSpacing * 2.0]}>
+        <group position={[0.0, 0.0, -hexagonZSpacing * 2.0]}>
           <object3D ref={enjoymentRef} />
           <group ref={enjoymentMarkerGroupRef}>
             <mesh ref={enjoymentMarkerRef} geometry={markerGeometry}>
@@ -262,7 +262,7 @@ export default function SkillsController({
             />
           </group>
         </group>
-        <group position={[hexagonXSpacing * 3.5, 0.0, hexagonZSpacing * 2.0]}>
+        <group position={[hexagonXSpacing * 3.5, 0.0, -hexagonZSpacing * 2.0]}>
           <object3D ref={experienceRef} />
           <group ref={experienceMarkerGroupRef}>
             <mesh ref={experienceMarkerRef} geometry={markerGeometry}>

@@ -35,7 +35,7 @@ export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
     scrollBar1: "#3737371a",
     navigation: {
       tabBg: "#373737ff",
-      tabText: "#fbbf24ff",
+      tabText: "#cf8d3fff",
     },
   },
   skills: {

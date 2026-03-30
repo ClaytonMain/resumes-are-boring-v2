@@ -32,8 +32,8 @@ const CONTAINER_INTRO_STATE_VARIANTS = {
     borderColor: PAGE_HTML_STYLE_CONFIGS.home.border,
   },
 };
-const TEXT_INTRO_STATE_VARIANTS = {
-  initial: { opacity: 0 },
+const TEXT_INTRO_STATE_VARIANTS_00 = {
+  initial: { opacity: 0, color: "#d1d5db80" },
   showingText: (custom: number) => ({
     opacity: 1,
     transition: {
@@ -41,12 +41,35 @@ const TEXT_INTRO_STATE_VARIANTS = {
       delay: 0.5 + 0.75 * custom,
       ease: VARIANT_EASE_IN,
     },
+    color: "#d1d5db80",
   }),
   transitioning: {
     opacity: 1,
+    color: "#d1d5db80",
   },
   final: {
     opacity: 1,
+    color: "#ffffffff",
+  },
+};
+const TEXT_INTRO_STATE_VARIANTS_01 = {
+  initial: { opacity: 0, color: "#ffffffff" },
+  showingText: (custom: number) => ({
+    opacity: 1,
+    transition: {
+      duration: 0.35,
+      delay: 0.5 + 0.75 * custom,
+      ease: VARIANT_EASE_IN,
+    },
+    color: "#ffffffff",
+  }),
+  transitioning: {
+    opacity: 1,
+    color: "#ffffffff",
+  },
+  final: {
+    opacity: 1,
+    color: "#ffffffff",
   },
 };
 const FLAVOR_TEXT_INTRO_STATE_VARIANTS = {
@@ -98,9 +121,9 @@ export default function HomeHtml() {
       >
         <motion.h1
           key="enter-resumes-h1"
-          className="leading-none font-bold tracking-tighter text-gray-300/50"
+          className="leading-none font-bold tracking-tighter"
           custom={0}
-          variants={TEXT_INTRO_STATE_VARIANTS}
+          variants={TEXT_INTRO_STATE_VARIANTS_00}
           initial={variant}
           animate={variant}
         >
@@ -108,9 +131,9 @@ export default function HomeHtml() {
         </motion.h1>
         <motion.h1
           key="enter-are-h1"
-          className="leading-none font-bold tracking-tighter text-gray-300/50"
+          className="leading-none font-bold tracking-tighter"
           custom={1}
-          variants={TEXT_INTRO_STATE_VARIANTS}
+          variants={TEXT_INTRO_STATE_VARIANTS_00}
           initial={variant}
           animate={variant}
         >
@@ -118,12 +141,12 @@ export default function HomeHtml() {
         </motion.h1>
         <motion.h1
           key="enter-boring-h1"
-          className="leading-none font-bold tracking-tighter text-white"
+          className="leading-none font-bold tracking-tighter"
           style={{
             WebkitTextStroke: "1px white",
           }}
           custom={2}
-          variants={TEXT_INTRO_STATE_VARIANTS}
+          variants={TEXT_INTRO_STATE_VARIANTS_01}
           initial={variant}
           animate={variant}
           onAnimationComplete={(a) => {

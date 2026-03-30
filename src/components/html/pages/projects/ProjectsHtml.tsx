@@ -44,7 +44,7 @@ export default function ProjectsHtml() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
-      className="flex h-full w-full items-end justify-center gap-2"
+      className="flex h-dvh w-full items-end justify-center gap-2"
     >
       <div
         className="pointer-events-auto mb-10 flex gap-2 rounded-lg border backdrop-blur-sm"

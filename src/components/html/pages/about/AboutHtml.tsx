@@ -158,7 +158,7 @@ function AboutComponent({
   return (
     <motion.div
       ref={divRef}
-      className="mr-2 flex h-64 shrink-0 snap-center rounded p-2"
+      className="mr-2 flex h-100 shrink-0 snap-center rounded p-2 sm:h-64"
       initial={{ opacity: 0 }}
       whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
       viewport={{ root: viewportRef }}
@@ -181,7 +181,7 @@ export default function AboutHtml() {
   return (
     <motion.div
       key="about-html-content-div"
-      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 backdrop-blur-sm sm:p-1.5 md:p-2"
+      className="pointer-events-auto m-auto flex w-10/12 flex-col justify-center overflow-hidden rounded-md border p-1.5 backdrop-blur-sm sm:w-auto sm:rounded-lg sm:p-2"
       initial={{ opacity: 0 }}
       animate={{
         opacity: 1,
@@ -223,7 +223,7 @@ export default function AboutHtml() {
       <span className="w-full border-b border-inherit" />
       <div
         ref={viewportRef}
-        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-64 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll sm:w-150"
+        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-100 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll sm:h-64 sm:w-150"
         style={{
           scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
         }}
