@@ -11,7 +11,7 @@ function App() {
   return (
     <>
       <Leva hidden={!debug} />
-      <div className="h-full w-full overflow-hidden text-sky-50">
+      <div className="h-svh w-full overflow-hidden text-sky-50">
         <DebugListener />
         <ComponentStateListener />
         <HtmlElementsContainer />

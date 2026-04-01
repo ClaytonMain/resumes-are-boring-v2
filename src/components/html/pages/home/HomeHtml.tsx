@@ -50,6 +50,7 @@ const TEXT_INTRO_STATE_VARIANTS_00 = {
   final: {
     opacity: 1,
     color: "#ffffffff",
+    transition: { duration: 1.5, ease: VARIANT_EASE_IN },
   },
 };
 const TEXT_INTRO_STATE_VARIANTS_01 = {
@@ -70,6 +71,7 @@ const TEXT_INTRO_STATE_VARIANTS_01 = {
   final: {
     opacity: 1,
     color: "#ffffffff",
+    transition: { duration: 1.5, ease: VARIANT_EASE_IN },
   },
 };
 const FLAVOR_TEXT_INTRO_STATE_VARIANTS = {
@@ -159,12 +161,12 @@ export default function HomeHtml() {
         </motion.h1>
       </motion.div>
       <motion.div
-        key="enter-html-content-subtitle-div"
+        key="enter-html-content-flavor-text-div"
         className="m-1 flex justify-end italic sm:m-1.5 md:m-2"
       >
         <motion.p
-          key="enter-subtitle-p"
-          className="text-[10px] tracking-wide text-white sm:text-xs md:text-sm"
+          key="enter-flavor-text-p"
+          className="text-[10px] tracking-wide sm:text-xs md:text-sm"
           variants={FLAVOR_TEXT_INTRO_STATE_VARIANTS}
           animate={variant}
         >

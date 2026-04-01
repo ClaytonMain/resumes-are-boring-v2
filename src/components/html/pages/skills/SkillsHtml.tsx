@@ -40,10 +40,10 @@ export default function SkillsHtml() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
-      className="flex h-dvh w-full items-end justify-center gap-2"
+      className="flex h-svh w-full items-end justify-center gap-2"
     >
       <div
-        className="pointer-events-auto mb-10 flex rounded-lg border backdrop-blur-sm"
+        className="pointer-events-auto mb-15 flex rounded-lg border backdrop-blur-sm"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.skills.bg,
           color: PAGE_HTML_STYLE_CONFIGS.skills.text,

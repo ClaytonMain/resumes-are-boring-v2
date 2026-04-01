@@ -33,7 +33,7 @@ export default function ThreeCanvas() {
         dpr={1}
         style={{
           touchAction: "none",
-          height: "100vh",
+          height: "100svh",
           background: "#171717",
           position: "fixed",
           top: 0,
