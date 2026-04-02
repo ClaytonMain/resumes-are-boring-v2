@@ -1,7 +1,7 @@
-import { VideoTexture } from "@react-three/drei";
+import { useTexture, useVideoTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useSpring } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { PROJECTS } from "../../../../constants/constants";
 import useAppStore from "../../../../stores/useAppStore";
@@ -221,6 +221,20 @@ function isMouse1Down(event: MouseEvent) {
 //   );
 // }
 
+function FallbackTexture({ src }: { src: string }) {
+  const texture = useTexture(src);
+  return (
+    <meshBasicMaterial map={texture} toneMapped={false} attach="material" />
+  );
+}
+
+function VideoMaterial({ src }: { src: string }) {
+  const texture = useVideoTexture(src, { playsInline: true });
+  return (
+    <meshBasicMaterial map={texture} toneMapped={false} attach="material" />
+  );
+}
+
 export default function ProjectsDisplay() {
   const [states, setStates] = useState({
     pageActive: useAppStore.getState().currentPage === "projects",
@@ -229,6 +243,8 @@ export default function ProjectsDisplay() {
     showDisplays: useAppStore.getState().currentPage === "projects",
     videoTextureSource:
       PROJECTS[useAppStore.getState().activeProjectIndex].videoSrc,
+    fallbackImageSource:
+      PROJECTS[useAppStore.getState().activeProjectIndex].fallbackImageSrc,
   });
   const pointerOverRef = useRef(false);
   const pointerDownRef = useRef(false);
@@ -283,6 +299,7 @@ export default function ProjectsDisplay() {
           groupSpring.set(1.0);
           newStates.activeProjectIndex = value;
           newStates.videoTextureSource = PROJECTS[value].videoSrc;
+          newStates.fallbackImageSource = PROJECTS[value].fallbackImageSrc;
           setStates(newStates);
         }, 500);
         return () => clearTimeout(timeoutId);
@@ -405,17 +422,25 @@ export default function ProjectsDisplay() {
 
   return (
     <group ref={groupRef} name="projects-display-group">
-      <mesh
-        ref={meshRef}
-        name="projects-display-mesh"
-        onClick={() => {
-          const url = PROJECTS[states.activeProjectIndex].url;
-          window.open(url, "_blank")?.focus();
-        }}
-      >
-        <planeGeometry args={[1.08, 1.92]} attach="geometry" />
-        <VideoTexture src={states.videoTextureSource} />
-      </mesh>
+      {states.showDisplays && (
+        <mesh
+          ref={meshRef}
+          name="projects-display-mesh"
+          onClick={() => {
+            const url = PROJECTS[states.activeProjectIndex].url;
+            window.open(url, "_blank")?.focus();
+          }}
+        >
+          <planeGeometry args={[1.08, 1.92]} attach="geometry" />
+          <Suspense fallback={null}>
+            <Suspense
+              fallback={<FallbackTexture src={states.fallbackImageSource} />}
+            >
+              <VideoMaterial src={states.videoTextureSource} />
+            </Suspense>
+          </Suspense>
+        </mesh>
+      )}
     </group>
   );
 }

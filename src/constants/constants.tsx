@@ -244,12 +244,14 @@ export const PROJECTS = [
       "Like a Spirograph, but in 3D. I came up with the math to describe this independently!",
     url: "https://claytonmain.github.io/spherical-trochoids/",
     videoSrc: "/videos/sphericalTrochoids.mp4",
+    fallbackImageSrc: "/textures/sphericalTrochoids.png",
   },
   {
     name: "Slime Clock",
     description: "A slime mold simulation that's also a clock! Why? Why not?!",
     url: "https://www.slimeclock.com",
     videoSrc: "/videos/slimeClock.mp4",
+    fallbackImageSrc: "/textures/slimeClock.png",
   },
   {
     name: "Conway's Symphony of Life",
@@ -257,12 +259,14 @@ export const PROJECTS = [
       "A synthesizer powered by Conway's Game of Life. Try it out! (Not recommended on mobile, sorry!)",
     url: "https://conways-symphony-of-life.vercel.app/",
     videoSrc: "/videos/symphonyOfLife.mp4",
+    fallbackImageSrc: "/textures/symphonyOfLife.png",
   },
   {
     name: "React Three Fiber Experiments",
     description: "Various experiments and projects using React Three Fiber.",
     url: "https://claytonmain-r3f-experiments.vercel.app/attractor",
     videoSrc: "/videos/r3fExperiments.mp4",
+    fallbackImageSrc: "/textures/r3fExperiments.png",
   },
   {
     name: "Clock Envy (Very Early WIP)",
@@ -270,5 +274,6 @@ export const PROJECTS = [
       "A bunch of clocks to showcase different shaders, techniques, ideas and whatnot. It's very much a WIP, but check it out if you want! Desktop recommended!\n\nI will not apologize for the name. :P",
     url: "https://www.clockenvy.com",
     videoSrc: "/videos/clockEnvy.mp4",
+    fallbackImageSrc: "/textures/clockEnvy.png",
   },
 ];
