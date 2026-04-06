@@ -1,6 +1,6 @@
 import { Html } from "@react-three/drei";
-import { useFrame, useThree } from "@react-three/fiber";
-import { useSpring } from "motion/react";
+import { useFrame } from "@react-three/fiber";
+import { motion, useSpring } from "motion/react";
 import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { PROJECTS } from "../../../../constants/constants";
@@ -20,6 +20,7 @@ function getVideoPromise(src: string): Promise<HTMLVideoElement> {
     video.muted = true;
     video.playsInline = true;
     video.preload = "auto";
+    video.disablePictureInPicture = true;
     video.appendChild(
       document.createTextNode(
         "If you're seeing this message, it means the video textures aren't working. You can check out the projects by clicking on the display, or by clicking on the links below! Sorry for the inconvenience! :(",
@@ -40,7 +41,7 @@ function getVideoPromise(src: string): Promise<HTMLVideoElement> {
   return videoPromiseCache.get(src)!;
 }
 
-function VideoComponents({ currentSrc }: { currentSrc: string }) {
+function VideoComponent({ currentSrc }: { currentSrc: string }) {
   const video = use(getVideoPromise(currentSrc));
 
   const divRef = useRef<HTMLDivElement>(null!);
@@ -55,19 +56,31 @@ function VideoComponents({ currentSrc }: { currentSrc: string }) {
     };
   }, [video]);
 
-  return <div ref={divRef} className="h-full w-full" />;
+  return (
+    <div className="h-full w-full overflow-hidden rounded-lg">
+      <div className="absolute top-0 left-0 z-0 flex h-full w-full animate-pulse items-center justify-center bg-gray-500 text-center font-bold text-white opacity-40">
+        Loading...
+      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, transition: { duration: 0.5 } }}
+        ref={divRef}
+        className="absolute top-0 left-0 z-2 h-full w-full"
+      />
+    </div>
+  );
 }
 
 function VideoSuspenseComponent({ currentSrc }: { currentSrc: string }) {
   return (
     <Suspense
       fallback={
-        <div className="h-full w-full bg-amber-500 text-indigo-950">
+        <div className="flex h-full w-full animate-pulse items-center justify-center bg-gray-500 text-center font-bold text-white opacity-40">
           Loading...
         </div>
       }
     >
-      <VideoComponents currentSrc={currentSrc} />
+      <VideoComponent currentSrc={currentSrc} />
     </Suspense>
   );
 }
@@ -177,26 +190,11 @@ export default function ProjectsDisplay() {
     };
   }, []);
 
-  const pointer = useThree((state) => state.pointer);
-  const raycaster = new THREE.Raycaster();
-
   const clampedDeltaRef = useRef(0);
   const timeRef = useRef(0);
   useFrame(({ camera }, delta) => {
     clampedDeltaRef.current = Math.min(delta, 0.1);
     timeRef.current += clampedDeltaRef.current;
-
-    raycaster.setFromCamera(pointer, camera);
-    const currentPointerOver =
-      raycaster.intersectObject(groupRef.current).length > 0;
-    if (currentPointerOver !== pointerOverRef.current) {
-      pointerOverRef.current = currentPointerOver;
-      if (currentPointerOver) {
-        document.body.style.cursor = "pointer";
-      } else {
-        document.body.style.cursor = "default";
-      }
-    }
 
     if (groupRef.current) {
       groupRef.current.lookAt(camera.position);
@@ -225,26 +223,6 @@ export default function ProjectsDisplay() {
   return (
     <group ref={groupRef} name="projects-display-group">
       {states.showDisplays && (
-        // <mesh
-        //   ref={meshRef}
-        //   name="projects-display-mesh"
-        //   onClick={() => {
-        //     const url = PROJECTS[states.activeProjectIndex].url;
-        //     window.open(url, "_blank")?.focus();
-        //   }}
-        // >
-        //   <planeGeometry args={[1.08, 1.92]} attach="geometry" />
-        //   {/* <Suspense
-        //     fallback={
-        //       <meshBasicMaterial
-        //         map={fallbackTextures[states.activeProjectIndex]}
-        //         // toneMapped={false}
-        //         attach="material"
-        //       />
-        //     }
-        //   >
-        //     <VideoMaterial src={states.videoTextureSource} />
-        //   </Suspense> */}
         <mesh ref={meshRef} geometry={geometry}>
           <meshBasicMaterial
             toneMapped={false}
@@ -262,10 +240,21 @@ export default function ProjectsDisplay() {
             }}
             distanceFactor={1.35}
           >
-            <VideoSuspenseComponent
-              key={states.activeProjectIndex}
-              currentSrc={states.videoTextureSource}
-            />
+            <motion.a
+              href={PROJECTS[states.activeProjectIndex].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-full w-full"
+              onPointerEnter={() => (pointerOverRef.current = true)}
+              onPointerLeave={() => (pointerOverRef.current = false)}
+              onPointerDown={() => (pointerDownRef.current = true)}
+              onPointerUp={() => (pointerDownRef.current = false)}
+            >
+              <VideoSuspenseComponent
+                key={states.activeProjectIndex}
+                currentSrc={states.videoTextureSource}
+              />
+            </motion.a>
           </Html>
         </mesh>
       )}
