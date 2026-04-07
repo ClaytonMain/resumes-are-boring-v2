@@ -8,17 +8,17 @@ export default function useMousePosition() {
   });
   const mousePosition = useMemo(() => new Vector2(0, 0), []);
   useLayoutEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
+    const handleMouseMove = (event: PointerEvent) => {
       mousePosition.set(
         (event.clientX / windowSize.width) * 2 - 1,
         (event.clientY / windowSize.height) * -2 + 1,
       );
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("pointermove", handleMouseMove);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("pointermove", handleMouseMove);
     };
   }, [windowSize.width, windowSize.height, mousePosition]);
 

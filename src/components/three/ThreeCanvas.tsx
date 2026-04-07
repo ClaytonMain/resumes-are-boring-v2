@@ -51,9 +51,9 @@ export default function ThreeCanvas() {
           <OrbitControls
             makeDefault
             autoRotate
-            enableDamping
             autoRotateSpeed={0.1}
             enablePan={false}
+            enableRotate={debug}
             maxZoom={debug ? 100 : 4}
             minZoom={debug ? 0.1 : 2.5}
             maxPolarAngle={debug ? Math.PI : Math.PI * 0.2 + 0.2}
