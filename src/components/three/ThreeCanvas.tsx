@@ -27,7 +27,7 @@ export default function ThreeCanvas() {
           left: -5 * (window.innerWidth / window.innerHeight),
           right: 5 * (window.innerWidth / window.innerHeight),
           near: 0.1,
-          far: 100,
+          far: 50,
         }}
         orthographic
         dpr={1}

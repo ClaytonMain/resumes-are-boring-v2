@@ -85,8 +85,8 @@ export default function DirectionalLightComponent() {
       ref={directionalLightRef}
       position={[-5, 5, 5]}
       castShadow
-      shadow-mapSize-height={1024}
-      shadow-mapSize-width={1024}
+      shadow-mapSize-height={256}
+      shadow-mapSize-width={256}
       intensity={0.5}
     >
       <orthographicCamera

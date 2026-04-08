@@ -65,23 +65,20 @@ const [GridBlockInstances, GridBlockInstance] =
 
 function GridBlock({
   position,
+  aDistPctFromCenter,
+  aPointerTrailUv,
   aRandomOffset,
 }: {
   position: THREE.Vector3;
+  aDistPctFromCenter: number;
+  aPointerTrailUv: THREE.Vector2;
   aRandomOffset: number;
 }) {
-  const uvX = (position.x + GRID_X_SIZE / 2) / GRID_X_SIZE;
-  const uvZ = (-position.z + GRID_X_SIZE / 2) / GRID_X_SIZE;
-  const uv = new THREE.Vector2(uvX, uvZ);
   return (
     <GridBlockInstance
       position={position}
-      aDistPctFromCenter={uv
-        .clone()
-        .sub(new THREE.Vector2(0.5, 0.5))
-        .multiplyScalar(2 / Math.sqrt(2))
-        .length()}
-      aPointerTrailUv={uv}
+      aDistPctFromCenter={aDistPctFromCenter}
+      aPointerTrailUv={aPointerTrailUv}
       aRandomOffset={aRandomOffset}
     />
   );
@@ -573,15 +570,27 @@ export default function ThreeBackground() {
             const xOffset = zIndex % 2 === 0 ? 0 : HEXAGON_X_SPACING / 2;
             const x = xIndex * HEXAGON_X_SPACING + xOffset - GRID_X_SIZE / 2;
             const z = zIndex * HEXAGON_Z_SPACING - GRID_Z_SIZE / 2;
-            return (
-              <GridBlock
-                key={`${x}-${z}`}
-                position={new THREE.Vector3(x, -GRID_BLOCK_HEIGHT / 2, z)}
-                aRandomOffset={
-                  gridBlockRandomOffsets[zIndex * GRID_DIVISIONS + xIndex]
-                }
-              />
-            );
+            const uvX = (x + GRID_X_SIZE / 2) / GRID_X_SIZE;
+            const uvZ = (-z + GRID_X_SIZE / 2) / GRID_X_SIZE;
+            const uv = new THREE.Vector2(uvX, uvZ);
+            const distPctFromCenter = uv
+              .clone()
+              .sub(new THREE.Vector2(0.5, 0.5))
+              .multiplyScalar(2 / Math.sqrt(2))
+              .length();
+            if (distPctFromCenter < 0.7) {
+              return (
+                <GridBlock
+                  key={`${x}-${z}`}
+                  position={new THREE.Vector3(x, -GRID_BLOCK_HEIGHT / 2, z)}
+                  aDistPctFromCenter={distPctFromCenter}
+                  aPointerTrailUv={uv}
+                  aRandomOffset={
+                    gridBlockRandomOffsets[zIndex * GRID_DIVISIONS + xIndex]
+                  }
+                />
+              );
+            }
           }),
         )}
       </GridBlockInstances>

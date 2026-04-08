@@ -20,17 +20,16 @@ float easeInQuad(float x) {
 }
 
 // https://iquilezles.org/articles/distfunctions2d/
-float sdEquilateralTriangle(in vec2 p, in float r) {
+float sdEquilateralTriangle(vec2 p, float r) {
   const float k = sqrt(3.0);
   p.x = abs(p.x) - r;
   p.y = p.y + r / k;
-  if (p.x + k * p.y > 0.0)
-    p = vec2(p.x - k * p.y, -k * p.x - p.y) / 2.0;
+  if (p.x + k * p.y > 0.0) p = vec2(p.x - k * p.y, -k * p.x - p.y) / 2.0;
   p.x -= clamp(p.x, -2.0 * r, 0.0);
   return -length(p) * sign(p.y);
 }
 
-float sdBox(in vec2 p, in vec2 b) {
+float sdBox(vec2 p, vec2 b) {
   vec2 d = abs(p) - b;
   return length(max(d, 0.0)) + min(max(d.x, d.y), 0.0);
 }
@@ -53,10 +52,24 @@ vec2 rotateAAroundB(float angle, vec2 a, vec2 b) {
 
 float getPatternOffset3() {
   // vec2 rotatedPoint = rotateAAroundB(aDistPctFromCenter * sin(uTime * 0.1) * 10.0 + uTime, aPointerTrailUv - 0.5, vec2(0.0));
-  vec2 rotatedPoint = rotateAAroundB(aDistPctFromCenter * 8.0 - uTime * 0.1, aPointerTrailUv - 0.5, vec2(0.0));
-  float box1Strength = smoothstep(0.1, 0.0, sdBox(rotatedPoint, vec2(1.9, 0.001)));
-  float box2Strength = smoothstep(0.1, 0.0, sdBox(rotatedPoint, vec2(0.001, 1.9)));
-  return smoothstep(0.15, 0.3, aDistPctFromCenter) * 0.2 * max(box1Strength, box2Strength);
+  vec2 rotatedPoint = rotateAAroundB(
+    aDistPctFromCenter * 8.0 - uTime * 0.1,
+    aPointerTrailUv - 0.5,
+    vec2(0.0)
+  );
+  float box1Strength = smoothstep(
+    0.1,
+    0.0,
+    sdBox(rotatedPoint, vec2(1.9, 0.001))
+  );
+  float box2Strength = smoothstep(
+    0.1,
+    0.0,
+    sdBox(rotatedPoint, vec2(0.001, 1.9))
+  );
+  return smoothstep(0.15, 0.3, aDistPctFromCenter) *
+  0.2 *
+  max(box1Strength, box2Strength);
 }
 
 void main() {
@@ -69,11 +82,29 @@ void main() {
   // Default pattern: Slight negative offset.
   patternOffsets[0] = -0.1;
   // Pattern 1: Slowly propagating waves from center.
-  patternOffsets[1] = smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) * 0.1;
-  patternOffsets[2] = smoothstep(0.0, 2.0, sin(aPointerTrailUv.x * 15.0 * PI) * sin(uTime * 0.5 + aDistPctFromCenter * 10.0) + cos(aPointerTrailUv.y * 15.0 * PI) * cos(uTime * 0.5 + aDistPctFromCenter * 10.0)) * 0.15;
+  patternOffsets[1] =
+    smoothstep(0.0, 1.0, sin(-uTime * 0.3 + aDistPctFromCenter * 20.0)) * 0.1;
+  patternOffsets[2] =
+    smoothstep(
+      0.0,
+      2.0,
+      sin(aPointerTrailUv.x * 15.0 * PI) *
+        sin(uTime * 0.5 + aDistPctFromCenter * 10.0) +
+        cos(aPointerTrailUv.y * 15.0 * PI) *
+          cos(uTime * 0.5 + aDistPctFromCenter * 10.0)
+    ) *
+    0.15;
   patternOffsets[3] = skillsStrength + getPatternOffset3();
-  patternOffsets[4] = -smoothstep(0.3, 0.0, aDistPctFromCenter) * 2.0 + smoothstep(0.0, 1.0, pow(sin(uTime * 0.5 + aDistPctFromCenter * 25.0), 2.0)) * 0.1;
-  patternOffsets[5] = sin(sdEquilateralTriangle(aPointerTrailUv - 0.5, 0.1) * 50.0 + uTime) * 0.1;
+  patternOffsets[4] =
+    -smoothstep(0.3, 0.0, aDistPctFromCenter) * 2.0 +
+    smoothstep(
+      0.0,
+      1.0,
+      pow(sin(uTime * 0.5 + aDistPctFromCenter * 25.0), 2.0)
+    ) *
+      0.1;
+  patternOffsets[5] =
+    sin(sdEquilateralTriangle(aPointerTrailUv - 0.5, 0.1) * 50.0 + uTime) * 0.1;
 
   // patternOffsets[0] = patternOffsets[3];
   // patternOffsets[1] = patternOffsets[3];
@@ -81,13 +112,19 @@ void main() {
   float offset;
   float easedRadiiPct;
   for (int i = 0; i < 10; i++) {
-    if (i + 2 > uActiveRadii)
-      break;
+    if (i + 2 > uActiveRadii) break;
     easedRadiiPct = easeInQuad(uRadiiPcts[i] * 1.25);
-    if (easedRadiiPct < aDistPctFromCenter)
-      continue;
-    float patternMix = smoothstep(aDistPctFromCenter, aDistPctFromCenter + 0.25, easedRadiiPct);
-    offset = mix(patternOffsets[uRadiiPatterns[i + 1]], patternOffsets[uRadiiPatterns[i]], patternMix);
+    if (easedRadiiPct < aDistPctFromCenter) continue;
+    float patternMix = smoothstep(
+      aDistPctFromCenter,
+      aDistPctFromCenter + 0.25,
+      easedRadiiPct
+    );
+    offset = mix(
+      patternOffsets[uRadiiPatterns[i + 1]],
+      patternOffsets[uRadiiPatterns[i]],
+      patternMix
+    );
     vRadiiIndex = i;
     vEasedRadiiPct = easedRadiiPct;
     break;
