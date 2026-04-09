@@ -1,7 +1,7 @@
 import { Html } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { motion, useSpring } from "motion/react";
-import { Suspense, use, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, use, useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { PROJECTS } from "../../../../constants/constants";
 import useAppStore from "../../../../stores/useAppStore";
@@ -100,7 +100,7 @@ export default function ProjectsDisplay() {
   const groupSpring = useSpring(states.springsActive ? 1.0 : -4.0);
 
   const groupRef = useRef<THREE.Group>(null!);
-  const meshRef = useRef<THREE.Mesh>(null!);
+  const displayGroupRef = useRef<THREE.Group>(null!);
 
   useEffect(() => {
     const unsubActiveProjectIndex = useAppStore.subscribe(
@@ -200,15 +200,19 @@ export default function ProjectsDisplay() {
       groupRef.current.lookAt(camera.position);
       groupRef.current.position.y = groupSpring.get();
     }
-    if (meshRef.current) {
-      meshRef.current.rotation.x = Math.sin(timeRef.current / 3.0) * 0.12;
-      meshRef.current.rotation.y = Math.sin(timeRef.current / 3.1) * 0.12;
-      meshRef.current.rotation.z = Math.sin(timeRef.current / 3.2) * 0.12;
-      meshRef.current.position.y = Math.sin(timeRef.current / 2.6) * 0.09;
+    if (displayGroupRef.current) {
+      displayGroupRef.current.rotation.x =
+        Math.sin(timeRef.current / 3.0) * 0.12;
+      displayGroupRef.current.rotation.y =
+        Math.sin(timeRef.current / 3.1) * 0.12;
+      displayGroupRef.current.rotation.z =
+        Math.sin(timeRef.current / 3.2) * 0.12;
+      displayGroupRef.current.position.y =
+        Math.sin(timeRef.current / 2.6) * 0.09;
 
-      meshRef.current.scale.setScalar(
+      displayGroupRef.current.scale.setScalar(
         THREE.MathUtils.lerp(
-          meshRef.current.scale.x,
+          displayGroupRef.current.scale.x,
           1.0 *
             (pointerOverRef.current ? 1.05 : 1.0) *
             (pointerOverRef.current && pointerDownRef.current ? 0.9 : 1.0),
@@ -218,18 +222,19 @@ export default function ProjectsDisplay() {
     }
   });
 
-  const geometry = useMemo(() => new THREE.PlaneGeometry(1.08, 1.92), []);
+  // const geometry = useMemo(() => new THREE.PlaneGeometry(1.08, 1.92), []);
 
   return (
     <group ref={groupRef} name="projects-display-group">
       {states.showDisplays && (
-        <mesh ref={meshRef} geometry={geometry}>
-          <meshBasicMaterial
-            toneMapped={false}
-            attach="material"
-            transparent
-            opacity={0}
-          />
+        <group ref={displayGroupRef} name="display-group">
+          {/* <mesh ref={meshRef} geometry={geometry}>
+           <meshBasicMaterial
+             toneMapped={false}
+             attach="material"
+             transparent
+             opacity={0}
+           /> */}
 
           <Html
             // occlude
@@ -256,7 +261,8 @@ export default function ProjectsDisplay() {
               />
             </motion.a>
           </Html>
-        </mesh>
+          {/* </mesh> */}
+        </group>
       )}
     </group>
   );

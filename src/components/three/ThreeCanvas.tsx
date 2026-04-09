@@ -50,7 +50,7 @@ export default function ThreeCanvas() {
           <CameraController />
           <OrbitControls
             makeDefault
-            autoRotate
+            // autoRotate
             autoRotateSpeed={0.1}
             enablePan={false}
             enableRotate={debug}
