@@ -52,6 +52,7 @@ export type Skill = {
 };
 
 type PageHtmlStyleConfig = {
+  pageBg: string;
   bg: string;
   text: string;
   border: string;

@@ -7,27 +7,15 @@ import type {
   Skill,
 } from "../types/types";
 
-// type PageHtmlStyleConfig = {
-//   bg: string;
-//   text: string;
-//   border: string;
-//   scrollBar0: string;
-//   scrollBar1: string;
-//   navigation?: {
-//     bg?: string;
-//     text?: string;
-//     border?: string;
-//     tabBg?: string;
-//     tabText?: string;
-//   };
-// };
 export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
   home: {
+    pageBg: "#E41225",
     bg: "#ef07171a",
     text: "#ffffffff",
     border: "#ef07174d",
   },
   about: {
+    pageBg: "#DB8727",
     bg: "#fbbf241a",
     text: "#373737ff",
     border: "#373737ff",
@@ -39,6 +27,7 @@ export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
     },
   },
   skills: {
+    pageBg: "#97C83D",
     bg: "#a3e6351a",
     text: "#373737ff",
     border: "#373737ff",
@@ -48,6 +37,7 @@ export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
     },
   },
   projects: {
+    pageBg: "#2B3435",
     bg: "#d1fae51a",
     text: "#ffffffff",
     border: "#ffffff33",
@@ -62,6 +52,7 @@ export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
     },
   },
   contact: {
+    pageBg: "#7816D2",
     bg: "#a78bfa1a",
     text: "#ffffffff",
     border: "#a78bfaff",
