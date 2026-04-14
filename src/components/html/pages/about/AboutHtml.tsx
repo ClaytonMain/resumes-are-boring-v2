@@ -1,24 +1,9 @@
 import { ChevronLeftIcon } from "@heroicons/react/20/solid";
-import { monitor, useControls } from "leva";
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  wrap,
-} from "motion/react";
-import {
-  useEffect,
-  useRef,
-  useState,
-  type Dispatch,
-  type JSX,
-  type RefObject,
-  type SetStateAction,
-} from "react";
+import { AnimatePresence, motion, wrap } from "motion/react";
+import { useState } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
-const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "my-auto indent-4 text-base/6";
+const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 text-base/6";
 // "my-auto indent-4 text-lg font-normal";
 const ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME = "font-normal";
 const ABOUT_COMPONENT_CONTENT_LINK_CLASS_NAME =
@@ -46,7 +31,7 @@ function AboutComponentAboutContent() {
 
 function AboutComponentDataPersonContent() {
   return (
-    <div className="my-auto flex flex-col gap-2">
+    <div className="flex flex-col">
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
         When I started with my current employer over eight years ago, I worked
         in IT, had no real data experience, and they had{" "}
@@ -100,77 +85,6 @@ function AboutComponentGraphicsContent() {
   );
 }
 
-// type WhoAmI = [string, string];
-
-// type AboutConfig = {
-//   displayValues: [string, string];
-//   content: string | JSX.Element;
-// };
-
-// const ABOUT_CONFIGS: Record<string, AboutConfig> = {
-//   about: {
-//     displayValues: ["", "About"],
-//     content: <AboutComponentAboutContent />,
-//   },
-//   dataPerson: {
-//     displayValues: ["I am a", "Data Person"],
-//     content: <AboutComponentDataPersonContent />,
-//   },
-//   graphics: {
-//     displayValues: ["I do", "Graphics & Web Stuff"],
-//     content: <AboutComponentGraphicsContent />,
-//   },
-//   doingMyBest: {
-//     displayValues: ["I'm just", "Doing My Best"],
-//     content: <div>"This should be displayed for 'I'm just Doing My Best'"</div>,
-//   },
-// };
-
-// function AboutComponent({
-//   viewportRef,
-//   setWhoAmI,
-//   configKey,
-// }: {
-//   viewportRef: RefObject<HTMLDivElement>;
-//   setWhoAmI: Dispatch<SetStateAction<WhoAmI>>;
-//   configKey: keyof typeof ABOUT_CONFIGS;
-// }) {
-//   const divRef = useRef<HTMLDivElement>(null!);
-//   const config = ABOUT_CONFIGS[configKey];
-
-//   const { scrollYProgress } = useScroll({
-//     target: divRef,
-//     container: viewportRef,
-//     offset: ["start center", "end center"],
-//   });
-
-//   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-//     if (latest > 0.3 && latest < 0.7) {
-//       setWhoAmI(config.displayValues);
-//     }
-//   });
-
-//   useControls({
-//     [configKey]: monitor(() => scrollYProgress.get(), {
-//       graph: true,
-//       interval: 30,
-//     }),
-//   });
-
-//   return (
-//     <motion.div
-//       ref={divRef}
-//       className="mr-2 flex h-100 shrink-0 snap-center rounded p-2 sm:h-64"
-//       initial={{ opacity: 0 }}
-//       whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
-//       viewport={{ root: viewportRef }}
-//       // onViewportEnter={handleViewportEnter}
-//     >
-//       {config.content}
-//     </motion.div>
-//   );
-// }
-
 const aboutConfigs = [
   {
     header: "About",
@@ -204,118 +118,44 @@ export default function AboutHtml() {
     setAboutIndex(nextAboutIndex);
   }
 
-  // const viewportRef = useRef<HTMLDivElement>(null!);
-
-  // useEffect(() => {
-  //   viewportRef.current.scrollTo({ top: 0 });
-  // }, []);
-
-  // return (
-  //   <motion.div
-  //     key="about-html-content-div"
-  //     className="pointer-events-auto m-auto flex w-10/12 flex-col justify-center overflow-hidden rounded-md border p-1.5 backdrop-blur-sm sm:w-auto sm:rounded-lg sm:p-2"
-  //     initial={{ opacity: 0 }}
-  //     animate={{
-  //       opacity: 1,
-  //       transition: { delay: 1.0, duration: 0.5 },
-  //     }}
-  //     exit={{ opacity: 0 }}
-  //     style={{
-  //       backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
-  //       color: PAGE_HTML_STYLE_CONFIGS.about.text,
-  //       borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
-  //     }}
-  //   >
-  //     <div className="flex gap-1 sm:gap-1.5 md:gap-2">
-  //       <div className="flex gap-1 overflow-hidden sm:gap-1.5 md:gap-2">
-  //         <AnimatePresence mode="wait" initial={false}>
-  //           <motion.h1
-  //             key={whoAmI[0]}
-  //             className="text-2xl font-bold tracking-tight md:text-4xl"
-  //             initial={{ y: -100, opacity: 0 }}
-  //             animate={{ y: 0, opacity: 1 }}
-  //             exit={{ y: 100, opacity: 0 }}
-  //           >
-  //             {whoAmI[0]}
-  //           </motion.h1>
-  //         </AnimatePresence>
-  //         <AnimatePresence mode="wait" initial={false}>
-  //           <motion.h1
-  //             key={whoAmI[1]}
-  //             className="text-2xl font-bold tracking-tight md:text-4xl"
-  //             initial={{ y: -100, opacity: 0 }}
-  //             animate={{ y: 0, opacity: 1 }}
-  //             exit={{ y: 100, opacity: 0 }}
-  //           >
-  //             {whoAmI[1]}
-  //           </motion.h1>
-  //         </AnimatePresence>
-  //       </div>
-  //     </div>
-  //     <span className="w-full border-b border-inherit" />
-  //     <div
-  //       ref={viewportRef}
-  //       className="scrollbar relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-100 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll sm:h-64 sm:w-150"
-  //       style={{
-  //         scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
-  //       }}
-  //     >
-  //       <AboutComponent
-  //         key="about"
-  //         viewportRef={viewportRef}
-  //         setWhoAmI={setWhoAmI}
-  //         configKey="about"
-  //       />
-  //       <AboutComponent
-  //         key="dataPerson"
-  //         viewportRef={viewportRef}
-  //         setWhoAmI={setWhoAmI}
-  //         configKey="dataPerson"
-  //       />
-  //       <AboutComponent
-  //         key="graphics"
-  //         viewportRef={viewportRef}
-  //         setWhoAmI={setWhoAmI}
-  //         configKey="graphics"
-  //       />
-  //       <AboutComponent
-  //         key="doingMyBest"
-  //         viewportRef={viewportRef}
-  //         setWhoAmI={setWhoAmI}
-  //         configKey="doingMyBest"
-  //       />
-  //     </div>
-  //   </motion.div>
-  // );
-
   return (
     <motion.div
       key="about-html-content-div"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
-      className="flex h-svh w-full items-center justify-center gap-2"
+      className="flex h-svh w-full items-center justify-center"
     >
       <div
-        className="pointer-events-auto flex flex-col gap-2 rounded-lg border px-4 py-1 backdrop-blur-sm"
+        className="pointer-events-auto overflow-hidden rounded-lg border backdrop-blur-sm"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
           color: PAGE_HTML_STYLE_CONFIGS.about.text,
           borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
         }}
       >
-        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
-          <motion.button
-            initial={false}
-            onClick={() => handleClick(-1)}
-            className="cursor-pointer rounded-l-lg"
-            whileHover={{ backgroundColor: "#ffffff1a" }}
-          >
-            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-              <ChevronLeftIcon className="h-14 w-12" />
-            </motion.div>
-          </motion.button>
-          <div className="flex w-110 overflow-hidden">
+        <motion.button
+          initial={false}
+          onClick={() => handleClick(-1)}
+          className="absolute top-0 left-0 z-2 h-full cursor-pointer rounded-l-lg"
+          whileHover={{ backgroundColor: "#ffffff1a" }}
+        >
+          <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeftIcon className="h-14 w-14" />
+          </motion.div>
+        </motion.button>
+        <motion.button
+          initial={false}
+          onClick={() => handleClick(1)}
+          className="absolute top-0 right-0 z-2 h-full cursor-pointer rounded-r-lg"
+          whileHover={{ backgroundColor: "#ffffff1a" }}
+        >
+          <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+            <ChevronLeftIcon className="h-14 w-14 -scale-x-100" />
+          </motion.div>
+        </motion.button>
+        <div className="flex w-full flex-col items-center gap-2 p-2">
+          <div className="w-120 overflow-hidden text-left">
             <AnimatePresence mode="wait" initial={false}>
               <motion.h1
                 key={aboutConfigs[aboutIndex].header}
@@ -328,30 +168,24 @@ export default function AboutHtml() {
               </motion.h1>
             </AnimatePresence>
           </div>
-          <motion.button
-            initial={false}
-            onClick={() => handleClick(1)}
-            className="cursor-pointer rounded-r-lg"
-            whileHover={{ backgroundColor: "#ffffff1a" }}
-          >
-            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-              <ChevronLeftIcon className="h-14 w-12 rotate-180" />
-            </motion.div>
-          </motion.button>
-        </div>
-        <span className="w-full border-b border-inherit" />
-        <div className="pointer-events-auto flex gap-2 overflow-hidden">
-          <AnimatePresence custom={direction} mode="popLayout" initial={false}>
-            <motion.div
-              key={aboutConfigs[aboutIndex].header}
-              initial={{ opacity: 0, x: direction * 50 }}
-              animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
-              exit={{ opacity: 0, x: direction * -50 }}
-              className="my-auto h-60 w-180 text-base font-normal tracking-tight"
+          <span className="w-full border-b border-inherit" />
+          <div className="pointer-events-auto flex h-60 w-140 justify-center overflow-hidden">
+            <AnimatePresence
+              custom={direction}
+              mode="popLayout"
+              initial={false}
             >
-              {aboutConfigs[aboutIndex].content}
-            </motion.div>
-          </AnimatePresence>
+              <motion.div
+                key={`${aboutConfigs[aboutIndex].header}-content`}
+                initial={{ opacity: 0, x: direction * 50 }}
+                animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
+                exit={{ opacity: 0, x: direction * -50 }}
+                className="w-120 text-base font-normal tracking-tight"
+              >
+                {aboutConfigs[aboutIndex].content}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </motion.div>
