@@ -1,3 +1,4 @@
+import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { monitor, useControls } from "leva";
 import {
   AnimatePresence,
@@ -293,43 +294,65 @@ export default function AboutHtml() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
-      className="flex h-svh w-full items-end justify-center gap-2"
+      className="flex h-svh w-full items-center justify-center gap-2"
     >
-      <div className="flex gap-1 sm:gap-1.5 md:gap-2">
-        <div className="flex gap-1 overflow-hidden sm:gap-1.5 md:gap-2">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.h1
-              key={aboutConfigs[aboutIndex].header}
-              className="text-2xl font-bold tracking-tight md:text-4xl"
-              initial={{ y: -100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-            >
-              {aboutConfigs[aboutIndex].header}
-            </motion.h1>
-          </AnimatePresence>
-        </div>
-      </div>
-      <span className="w-full border-b border-inherit" />
       <div
-        className="pointer-events-auto flex gap-2 rounded-lg border backdrop-blur-sm"
+        className="pointer-events-auto flex flex-col gap-2 rounded-lg border px-4 py-1 backdrop-blur-sm"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
           color: PAGE_HTML_STYLE_CONFIGS.about.text,
           borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
         }}
       >
-        <AnimatePresence custom={direction} mode="popLayout" initial={false}>
-          <motion.div
-            key={aboutConfigs[aboutIndex].header}
-            initial={{ opacity: 0, x: direction * 50 }}
-            animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
-            exit={{ opacity: 0, x: direction * -50 }}
-            className="my-auto w-72 text-center text-base font-normal tracking-tight"
+        <div className="flex items-center gap-1 sm:gap-1.5 md:gap-2">
+          <motion.button
+            initial={false}
+            onClick={() => handleClick(-1)}
+            className="cursor-pointer rounded-l-lg"
+            whileHover={{ backgroundColor: "#ffffff1a" }}
           >
-            {aboutConfigs[aboutIndex].content}
-          </motion.div>
-        </AnimatePresence>
+            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+              <ChevronLeftIcon className="h-14 w-12" />
+            </motion.div>
+          </motion.button>
+          <div className="flex w-110 overflow-hidden">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.h1
+                key={aboutConfigs[aboutIndex].header}
+                className="text-2xl font-bold tracking-tight md:text-4xl"
+                initial={{ y: -100, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 100, opacity: 0 }}
+              >
+                {aboutConfigs[aboutIndex].header}
+              </motion.h1>
+            </AnimatePresence>
+          </div>
+          <motion.button
+            initial={false}
+            onClick={() => handleClick(1)}
+            className="cursor-pointer rounded-r-lg"
+            whileHover={{ backgroundColor: "#ffffff1a" }}
+          >
+            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+              <ChevronLeftIcon className="h-14 w-12 rotate-180" />
+            </motion.div>
+          </motion.button>
+        </div>
+        <span className="w-full border-b border-inherit" />
+        <div className="pointer-events-auto flex gap-2 overflow-hidden">
+          <AnimatePresence custom={direction} mode="popLayout" initial={false}>
+            <motion.div
+              key={aboutConfigs[aboutIndex].header}
+              initial={{ opacity: 0, x: direction * 50 }}
+              animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
+              exit={{ opacity: 0, x: direction * -50 }}
+              className="my-auto h-60 w-180 text-base font-normal tracking-tight"
+            >
+              {aboutConfigs[aboutIndex].content}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </motion.div>
   );
