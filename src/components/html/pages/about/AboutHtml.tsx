@@ -4,6 +4,7 @@ import {
   motion,
   useMotionValueEvent,
   useScroll,
+  wrap,
 } from "motion/react";
 import {
   useEffect,
@@ -98,160 +99,237 @@ function AboutComponentGraphicsContent() {
   );
 }
 
-type WhoAmI = [string, string];
+// type WhoAmI = [string, string];
 
-type AboutConfig = {
-  displayValues: [string, string];
-  content: string | JSX.Element;
-};
+// type AboutConfig = {
+//   displayValues: [string, string];
+//   content: string | JSX.Element;
+// };
 
-const ABOUT_CONFIGS: Record<string, AboutConfig> = {
-  about: {
-    displayValues: ["", "About"],
+// const ABOUT_CONFIGS: Record<string, AboutConfig> = {
+//   about: {
+//     displayValues: ["", "About"],
+//     content: <AboutComponentAboutContent />,
+//   },
+//   dataPerson: {
+//     displayValues: ["I am a", "Data Person"],
+//     content: <AboutComponentDataPersonContent />,
+//   },
+//   graphics: {
+//     displayValues: ["I do", "Graphics & Web Stuff"],
+//     content: <AboutComponentGraphicsContent />,
+//   },
+//   doingMyBest: {
+//     displayValues: ["I'm just", "Doing My Best"],
+//     content: <div>"This should be displayed for 'I'm just Doing My Best'"</div>,
+//   },
+// };
+
+// function AboutComponent({
+//   viewportRef,
+//   setWhoAmI,
+//   configKey,
+// }: {
+//   viewportRef: RefObject<HTMLDivElement>;
+//   setWhoAmI: Dispatch<SetStateAction<WhoAmI>>;
+//   configKey: keyof typeof ABOUT_CONFIGS;
+// }) {
+//   const divRef = useRef<HTMLDivElement>(null!);
+//   const config = ABOUT_CONFIGS[configKey];
+
+//   const { scrollYProgress } = useScroll({
+//     target: divRef,
+//     container: viewportRef,
+//     offset: ["start center", "end center"],
+//   });
+
+//   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+//     if (latest > 0.3 && latest < 0.7) {
+//       setWhoAmI(config.displayValues);
+//     }
+//   });
+
+//   useControls({
+//     [configKey]: monitor(() => scrollYProgress.get(), {
+//       graph: true,
+//       interval: 30,
+//     }),
+//   });
+
+//   return (
+//     <motion.div
+//       ref={divRef}
+//       className="mr-2 flex h-100 shrink-0 snap-center rounded p-2 sm:h-64"
+//       initial={{ opacity: 0 }}
+//       whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
+//       viewport={{ root: viewportRef }}
+//       // onViewportEnter={handleViewportEnter}
+//     >
+//       {config.content}
+//     </motion.div>
+//   );
+// }
+
+const aboutConfigs = [
+  {
+    header: "About",
     content: <AboutComponentAboutContent />,
   },
-  dataPerson: {
-    displayValues: ["I am a", "Data Person"],
+  {
+    header: "I'm a Data Person",
     content: <AboutComponentDataPersonContent />,
   },
-  graphics: {
-    displayValues: ["I do", "Graphics & Web Stuff"],
+  {
+    header: "I do Graphics & Web Stuff",
     content: <AboutComponentGraphicsContent />,
   },
-  doingMyBest: {
-    displayValues: ["I'm just", "Doing My Best"],
-    content: <div>"This should be displayed for 'I'm just Doing My Best'"</div>,
+  {
+    header: "Lorem Ipsum",
+    content: <div>"This should be displayed for 'Lorem Ipsum'"</div>,
   },
-};
-
-function AboutComponent({
-  viewportRef,
-  setWhoAmI,
-  configKey,
-}: {
-  viewportRef: RefObject<HTMLDivElement>;
-  setWhoAmI: Dispatch<SetStateAction<WhoAmI>>;
-  configKey: keyof typeof ABOUT_CONFIGS;
-}) {
-  const divRef = useRef<HTMLDivElement>(null!);
-  const config = ABOUT_CONFIGS[configKey];
-
-  const { scrollYProgress } = useScroll({
-    target: divRef,
-    container: viewportRef,
-    offset: ["start center", "end center"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    if (latest > 0.3 && latest < 0.7) {
-      setWhoAmI(config.displayValues);
-    }
-  });
-
-  useControls({
-    [configKey]: monitor(() => scrollYProgress.get(), {
-      graph: true,
-      interval: 30,
-    }),
-  });
-
-  return (
-    <motion.div
-      ref={divRef}
-      className="mr-2 flex h-100 shrink-0 snap-center rounded p-2 sm:h-64"
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1, transition: { duration: 0.5 } }}
-      viewport={{ root: viewportRef }}
-      // onViewportEnter={handleViewportEnter}
-    >
-      {config.content}
-    </motion.div>
-  );
-}
+];
 
 export default function AboutHtml() {
-  const [whoAmI, setWhoAmI] = useState<WhoAmI>(["", "About"]);
+  const [aboutIndex, setAboutIndex] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
 
-  const viewportRef = useRef<HTMLDivElement>(null!);
+  function handleClick(newDirection: 1 | -1) {
+    const nextAboutIndex = wrap(
+      0,
+      aboutConfigs.length,
+      aboutIndex + newDirection,
+    );
+    setDirection(newDirection);
+    setAboutIndex(nextAboutIndex);
+  }
 
-  useEffect(() => {
-    viewportRef.current.scrollTo({ top: 0 });
-  }, []);
+  // const viewportRef = useRef<HTMLDivElement>(null!);
+
+  // useEffect(() => {
+  //   viewportRef.current.scrollTo({ top: 0 });
+  // }, []);
+
+  // return (
+  //   <motion.div
+  //     key="about-html-content-div"
+  //     className="pointer-events-auto m-auto flex w-10/12 flex-col justify-center overflow-hidden rounded-md border p-1.5 backdrop-blur-sm sm:w-auto sm:rounded-lg sm:p-2"
+  //     initial={{ opacity: 0 }}
+  //     animate={{
+  //       opacity: 1,
+  //       transition: { delay: 1.0, duration: 0.5 },
+  //     }}
+  //     exit={{ opacity: 0 }}
+  //     style={{
+  //       backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
+  //       color: PAGE_HTML_STYLE_CONFIGS.about.text,
+  //       borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
+  //     }}
+  //   >
+  //     <div className="flex gap-1 sm:gap-1.5 md:gap-2">
+  //       <div className="flex gap-1 overflow-hidden sm:gap-1.5 md:gap-2">
+  //         <AnimatePresence mode="wait" initial={false}>
+  //           <motion.h1
+  //             key={whoAmI[0]}
+  //             className="text-2xl font-bold tracking-tight md:text-4xl"
+  //             initial={{ y: -100, opacity: 0 }}
+  //             animate={{ y: 0, opacity: 1 }}
+  //             exit={{ y: 100, opacity: 0 }}
+  //           >
+  //             {whoAmI[0]}
+  //           </motion.h1>
+  //         </AnimatePresence>
+  //         <AnimatePresence mode="wait" initial={false}>
+  //           <motion.h1
+  //             key={whoAmI[1]}
+  //             className="text-2xl font-bold tracking-tight md:text-4xl"
+  //             initial={{ y: -100, opacity: 0 }}
+  //             animate={{ y: 0, opacity: 1 }}
+  //             exit={{ y: 100, opacity: 0 }}
+  //           >
+  //             {whoAmI[1]}
+  //           </motion.h1>
+  //         </AnimatePresence>
+  //       </div>
+  //     </div>
+  //     <span className="w-full border-b border-inherit" />
+  //     <div
+  //       ref={viewportRef}
+  //       className="scrollbar relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-100 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll sm:h-64 sm:w-150"
+  //       style={{
+  //         scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
+  //       }}
+  //     >
+  //       <AboutComponent
+  //         key="about"
+  //         viewportRef={viewportRef}
+  //         setWhoAmI={setWhoAmI}
+  //         configKey="about"
+  //       />
+  //       <AboutComponent
+  //         key="dataPerson"
+  //         viewportRef={viewportRef}
+  //         setWhoAmI={setWhoAmI}
+  //         configKey="dataPerson"
+  //       />
+  //       <AboutComponent
+  //         key="graphics"
+  //         viewportRef={viewportRef}
+  //         setWhoAmI={setWhoAmI}
+  //         configKey="graphics"
+  //       />
+  //       <AboutComponent
+  //         key="doingMyBest"
+  //         viewportRef={viewportRef}
+  //         setWhoAmI={setWhoAmI}
+  //         configKey="doingMyBest"
+  //       />
+  //     </div>
+  //   </motion.div>
+  // );
 
   return (
     <motion.div
       key="about-html-content-div"
-      className="pointer-events-auto m-auto flex w-10/12 flex-col justify-center overflow-hidden rounded-md border p-1.5 backdrop-blur-sm sm:w-auto sm:rounded-lg sm:p-2"
       initial={{ opacity: 0 }}
-      animate={{
-        opacity: 1,
-        transition: { delay: 1.0, duration: 0.5 },
-      }}
+      animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
       exit={{ opacity: 0 }}
-      style={{
-        backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
-        color: PAGE_HTML_STYLE_CONFIGS.about.text,
-        borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
-      }}
+      className="flex h-svh w-full items-end justify-center gap-2"
     >
       <div className="flex gap-1 sm:gap-1.5 md:gap-2">
         <div className="flex gap-1 overflow-hidden sm:gap-1.5 md:gap-2">
           <AnimatePresence mode="wait" initial={false}>
             <motion.h1
-              key={whoAmI[0]}
+              key={aboutConfigs[aboutIndex].header}
               className="text-2xl font-bold tracking-tight md:text-4xl"
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 100, opacity: 0 }}
             >
-              {whoAmI[0]}
-            </motion.h1>
-          </AnimatePresence>
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.h1
-              key={whoAmI[1]}
-              className="text-2xl font-bold tracking-tight md:text-4xl"
-              initial={{ y: -100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 100, opacity: 0 }}
-            >
-              {whoAmI[1]}
+              {aboutConfigs[aboutIndex].header}
             </motion.h1>
           </AnimatePresence>
         </div>
       </div>
       <span className="w-full border-b border-inherit" />
       <div
-        ref={viewportRef}
-        className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-100 w-full snap-y snap-mandatory flex-col gap-2 overflow-y-scroll sm:h-64 sm:w-150"
+        className="pointer-events-auto flex gap-2 rounded-lg border backdrop-blur-sm"
         style={{
-          scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
+          backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
+          color: PAGE_HTML_STYLE_CONFIGS.about.text,
+          borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
         }}
       >
-        <AboutComponent
-          key="about"
-          viewportRef={viewportRef}
-          setWhoAmI={setWhoAmI}
-          configKey="about"
-        />
-        <AboutComponent
-          key="dataPerson"
-          viewportRef={viewportRef}
-          setWhoAmI={setWhoAmI}
-          configKey="dataPerson"
-        />
-        <AboutComponent
-          key="graphics"
-          viewportRef={viewportRef}
-          setWhoAmI={setWhoAmI}
-          configKey="graphics"
-        />
-        <AboutComponent
-          key="doingMyBest"
-          viewportRef={viewportRef}
-          setWhoAmI={setWhoAmI}
-          configKey="doingMyBest"
-        />
+        <AnimatePresence custom={direction} mode="popLayout" initial={false}>
+          <motion.div
+            key={aboutConfigs[aboutIndex].header}
+            initial={{ opacity: 0, x: direction * 50 }}
+            animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
+            exit={{ opacity: 0, x: direction * -50 }}
+            className="my-auto w-72 text-center text-base font-normal tracking-tight"
+          >
+            {aboutConfigs[aboutIndex].content}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </motion.div>
   );

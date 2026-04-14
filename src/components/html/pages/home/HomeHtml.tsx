@@ -7,6 +7,15 @@ import {
 import useAppStore from "../../../../stores/useAppStore";
 
 const VARIANT_EASE_IN: Easing = "easeIn";
+const BACKGROUND_COVER_INTRO_STATE_VARIANTS = {
+  initial: { color: "#171717ff" },
+  showingText: { color: "#171717ff" },
+  transitioning: {
+    color: "#17171700",
+    transition: { duration: 1.5, ease: VARIANT_EASE_IN },
+  },
+  final: { color: "#17171700" },
+};
 const CONTAINER_INTRO_STATE_VARIANTS = {
   initial: { opacity: 0, color: "#0000001a", borderColor: "#ffffff1a" },
   showingText: {
@@ -110,68 +119,76 @@ export default function HomeHtml() {
 
   return (
     <motion.div
-      key="home-html-content-div"
-      className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 text-3xl backdrop-blur-sm sm:p-1.5 sm:text-4xl md:p-2 md:text-6xl"
-      variants={CONTAINER_INTRO_STATE_VARIANTS}
-      initial={{ opacity: 0 }}
+      key="home-html-background-cover-div"
+      className="pointer-events-none absolute top-0 left-0 z-0 flex h-full w-full items-center justify-center"
+      variants={BACKGROUND_COVER_INTRO_STATE_VARIANTS}
+      initial={variant}
       animate={variant}
-      exit={{ opacity: 0 }}
     >
       <motion.div
-        key="enter-html-content-resumes-are-boring-div"
-        className="m-1 flex items-center justify-center gap-2 sm:m-1.5 sm:gap-2.5 md:m-2 md:gap-4"
+        key="home-html-content-div"
+        className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 text-3xl backdrop-blur-sm sm:p-1.5 sm:text-4xl md:p-2 md:text-6xl"
+        variants={CONTAINER_INTRO_STATE_VARIANTS}
+        initial={{ opacity: 0 }}
+        animate={variant}
+        exit={{ opacity: 0 }}
       >
-        <motion.h1
-          key="enter-resumes-h1"
-          className="leading-none font-bold tracking-tighter"
-          custom={0}
-          variants={TEXT_INTRO_STATE_VARIANTS_00}
-          initial={variant}
-          animate={variant}
+        <motion.div
+          key="enter-html-content-resumes-are-boring-div"
+          className="m-1 flex items-center justify-center gap-2 sm:m-1.5 sm:gap-2.5 md:m-2 md:gap-4"
         >
-          RÉSUMÉS
-        </motion.h1>
-        <motion.h1
-          key="enter-are-h1"
-          className="leading-none font-bold tracking-tighter"
-          custom={1}
-          variants={TEXT_INTRO_STATE_VARIANTS_00}
-          initial={variant}
-          animate={variant}
+          <motion.h1
+            key="enter-resumes-h1"
+            className="leading-none font-bold tracking-tighter"
+            custom={0}
+            variants={TEXT_INTRO_STATE_VARIANTS_00}
+            initial={variant}
+            animate={variant}
+          >
+            RÉSUMÉS
+          </motion.h1>
+          <motion.h1
+            key="enter-are-h1"
+            className="leading-none font-bold tracking-tighter"
+            custom={1}
+            variants={TEXT_INTRO_STATE_VARIANTS_00}
+            initial={variant}
+            animate={variant}
+          >
+            ARE
+          </motion.h1>
+          <motion.h1
+            key="enter-boring-h1"
+            className="leading-none font-bold tracking-tighter"
+            style={{
+              WebkitTextStroke: "1px white",
+            }}
+            custom={2}
+            variants={TEXT_INTRO_STATE_VARIANTS_01}
+            initial={variant}
+            animate={variant}
+            onAnimationComplete={(a) => {
+              if (a === "showingText") {
+                useAppStore.setState({ introState: "transitioning" });
+              }
+            }}
+          >
+            BORING.
+          </motion.h1>
+        </motion.div>
+        <motion.div
+          key="enter-html-content-flavor-text-div"
+          className="m-1 flex justify-end italic sm:m-1.5 md:m-2"
         >
-          ARE
-        </motion.h1>
-        <motion.h1
-          key="enter-boring-h1"
-          className="leading-none font-bold tracking-tighter"
-          style={{
-            WebkitTextStroke: "1px white",
-          }}
-          custom={2}
-          variants={TEXT_INTRO_STATE_VARIANTS_01}
-          initial={variant}
-          animate={variant}
-          onAnimationComplete={(a) => {
-            if (a === "showingText") {
-              useAppStore.setState({ introState: "transitioning" });
-            }
-          }}
-        >
-          BORING.
-        </motion.h1>
-      </motion.div>
-      <motion.div
-        key="enter-html-content-flavor-text-div"
-        className="m-1 flex justify-end italic sm:m-1.5 md:m-2"
-      >
-        <motion.p
-          key="enter-flavor-text-p"
-          className="text-[10px] tracking-wide sm:text-xs md:text-sm"
-          variants={FLAVOR_TEXT_INTRO_STATE_VARIANTS}
-          animate={variant}
-        >
-          {FLAVOR_TEXT_VALUES[flavorTextIndex]}
-        </motion.p>
+          <motion.p
+            key="enter-flavor-text-p"
+            className="text-[10px] tracking-wide sm:text-xs md:text-sm"
+            variants={FLAVOR_TEXT_INTRO_STATE_VARIANTS}
+            animate={variant}
+          >
+            {FLAVOR_TEXT_VALUES[flavorTextIndex]}
+          </motion.p>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
