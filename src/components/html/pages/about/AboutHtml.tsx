@@ -104,11 +104,39 @@ const aboutConfigs = [
   },
 ];
 
+function IndexDotComponent({
+  onClick,
+  active,
+}: {
+  onClick: () => void;
+  active: boolean;
+}) {
+  return (
+    <motion.button
+      initial={false}
+      onClick={onClick}
+      className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
+      whileHover={{ backgroundColor: "#ffffff1a", scale: 1.2 }}
+      whileTap={{ scale: 0.9 }}
+    >
+      <motion.div
+        className="h-3 w-3 rounded-full"
+        style={{
+          backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.text,
+        }}
+        animate={{
+          opacity: active ? 1 : 0.5,
+        }}
+      />
+    </motion.button>
+  );
+}
+
 export default function AboutHtml() {
   const [aboutIndex, setAboutIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
 
-  function handleClick(newDirection: 1 | -1) {
+  function handleDirectionClick(newDirection: 1 | -1) {
     const nextAboutIndex = wrap(
       0,
       aboutConfigs.length,
@@ -116,6 +144,13 @@ export default function AboutHtml() {
     );
     setDirection(newDirection);
     setAboutIndex(nextAboutIndex);
+  }
+
+  function handleDirectClick(newIndex: number) {
+    if (newIndex === aboutIndex) return;
+    const newDirection = newIndex > aboutIndex ? 1 : -1;
+    setDirection(newDirection);
+    setAboutIndex(newIndex);
   }
 
   return (
@@ -127,35 +162,15 @@ export default function AboutHtml() {
       className="flex h-svh w-full items-center justify-center"
     >
       <div
-        className="pointer-events-auto overflow-hidden rounded-lg border backdrop-blur-sm"
+        className="pointer-events-auto flex w-full flex-col items-center overflow-hidden rounded-lg border backdrop-blur-sm sm:w-120"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
           color: PAGE_HTML_STYLE_CONFIGS.about.text,
           borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
         }}
       >
-        <motion.button
-          initial={false}
-          onClick={() => handleClick(-1)}
-          className="absolute top-0 left-0 z-2 h-full cursor-pointer rounded-l-lg"
-          whileHover={{ backgroundColor: "#ffffff1a" }}
-        >
-          <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-            <ChevronLeftIcon className="h-14 w-14" />
-          </motion.div>
-        </motion.button>
-        <motion.button
-          initial={false}
-          onClick={() => handleClick(1)}
-          className="absolute top-0 right-0 z-2 h-full cursor-pointer rounded-r-lg"
-          whileHover={{ backgroundColor: "#ffffff1a" }}
-        >
-          <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
-            <ChevronLeftIcon className="h-14 w-14 -scale-x-100" />
-          </motion.div>
-        </motion.button>
-        <div className="flex w-full flex-col items-center gap-2 p-2">
-          <div className="w-120 overflow-hidden text-left">
+        <div className="mt-2 flex w-full flex-col items-center gap-2 px-2">
+          <div className="w-full overflow-hidden text-left">
             <AnimatePresence mode="wait" initial={false}>
               <motion.h1
                 key={aboutConfigs[aboutIndex].header}
@@ -169,7 +184,7 @@ export default function AboutHtml() {
             </AnimatePresence>
           </div>
           <span className="w-full border-b border-inherit" />
-          <div className="pointer-events-auto flex h-60 w-140 justify-center overflow-hidden">
+          <div className="pointer-events-auto flex h-60 w-full justify-center overflow-hidden">
             <AnimatePresence
               custom={direction}
               mode="popLayout"
@@ -179,13 +194,45 @@ export default function AboutHtml() {
                 key={`${aboutConfigs[aboutIndex].header}-content`}
                 initial={{ opacity: 0, x: direction * 50 }}
                 animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
-                exit={{ opacity: 0, x: direction * -50 }}
-                className="w-120 text-base font-normal tracking-tight"
+                exit={{
+                  opacity: 0,
+                  x: direction * -50,
+                  transition: { duration: 0.1 },
+                }}
+                className="w-full text-base font-normal tracking-tight"
               >
                 {aboutConfigs[aboutIndex].content}
               </motion.div>
             </AnimatePresence>
           </div>
+        </div>
+        <span className="w-full border-b border-inherit" />
+        <div className="flex h-10 w-70 items-center justify-center overflow-hidden">
+          <motion.button
+            initial={false}
+            onClick={() => handleDirectionClick(-1)}
+            className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
+            whileHover={{ backgroundColor: "#ffffff1a", scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <ChevronLeftIcon className="h-10 w-10" />
+          </motion.button>
+          {Array.from({ length: aboutConfigs.length }).map((_, index) => (
+            <IndexDotComponent
+              key={index}
+              onClick={() => handleDirectClick(index)}
+              active={index === aboutIndex}
+            />
+          ))}
+          <motion.button
+            initial={false}
+            onClick={() => handleDirectionClick(1)}
+            className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
+            whileHover={{ backgroundColor: "#ffffff1a", scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <ChevronLeftIcon className="h-10 w-10 -scale-x-100" />
+          </motion.button>
         </div>
       </div>
     </motion.div>
