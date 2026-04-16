@@ -4,7 +4,6 @@ import { useState } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 text-base/6";
-// "my-auto indent-4 text-lg font-normal";
 const ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME = "font-normal";
 const ABOUT_COMPONENT_CONTENT_LINK_CLASS_NAME =
   "underline decoration-1 font-normal";
@@ -116,18 +115,19 @@ function IndexDotComponent({
       initial={false}
       onClick={onClick}
       className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
-      whileHover={{ backgroundColor: "#ffffff1a", scale: 1.2 }}
-      whileTap={{ scale: 0.9 }}
+      whileHover={{ backgroundColor: "#ffffff1a" }}
     >
-      <motion.div
-        className="h-3 w-3 rounded-full"
-        style={{
-          backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.text,
-        }}
-        animate={{
-          opacity: active ? 1 : 0.5,
-        }}
-      />
+      <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+        <motion.div
+          className="h-3 w-3 rounded-full"
+          style={{
+            backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.text,
+          }}
+          animate={{
+            opacity: active ? 1 : 0.5,
+          }}
+        />
+      </motion.div>
     </motion.button>
   );
 }
@@ -162,14 +162,14 @@ export default function AboutHtml() {
       className="flex h-svh w-full items-center justify-center"
     >
       <div
-        className="pointer-events-auto flex w-full flex-col items-center overflow-hidden rounded-lg border backdrop-blur-sm sm:w-120"
+        className="pointer-events-auto flex w-full flex-col items-center overflow-hidden rounded-lg border px-2 backdrop-blur-sm sm:w-120"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
           color: PAGE_HTML_STYLE_CONFIGS.about.text,
           borderColor: PAGE_HTML_STYLE_CONFIGS.about.border,
         }}
       >
-        <div className="mt-2 flex w-full flex-col items-center gap-2 px-2">
+        <div className="mt-2 flex w-full flex-col items-center gap-2">
           <div className="w-full overflow-hidden text-left">
             <AnimatePresence mode="wait" initial={false}>
               <motion.h1
@@ -212,10 +212,11 @@ export default function AboutHtml() {
             initial={false}
             onClick={() => handleDirectionClick(-1)}
             className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
-            whileHover={{ backgroundColor: "#ffffff1a", scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ backgroundColor: "#ffffff1a" }}
           >
-            <ChevronLeftIcon className="h-10 w-10" />
+            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+              <ChevronLeftIcon className="h-10 w-10" />
+            </motion.div>
           </motion.button>
           {Array.from({ length: aboutConfigs.length }).map((_, index) => (
             <IndexDotComponent
@@ -228,10 +229,11 @@ export default function AboutHtml() {
             initial={false}
             onClick={() => handleDirectionClick(1)}
             className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
-            whileHover={{ backgroundColor: "#ffffff1a", scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
+            whileHover={{ backgroundColor: "#ffffff1a" }}
           >
-            <ChevronLeftIcon className="h-10 w-10 -scale-x-100" />
+            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+              <ChevronLeftIcon className="h-10 w-10 -scale-x-100" />
+            </motion.div>
           </motion.button>
         </div>
       </div>
