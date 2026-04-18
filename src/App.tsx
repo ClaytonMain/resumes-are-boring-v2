@@ -19,6 +19,9 @@ function App() {
         <HtmlElementsContainer />
         <ThreeCanvas />
       </div>
+      <div className="fixed right-2 bottom-2 text-sm text-sky-50 opacity-25">
+        This site is still a work in progress!
+      </div>
     </>
   );
 }

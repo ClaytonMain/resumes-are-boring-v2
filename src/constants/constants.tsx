@@ -87,9 +87,6 @@ export const FLAVOR_TEXT_VALUES = [
   "Alright, we're out of text now...",
 ];
 
-export const CONTENT_CONTAINER_CLASS_NAME =
-  "pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-2 backdrop-blur-sm";
-
 export const PAGE_BLOCK_COLORS: PageBlockColor = {
   home: new THREE.Color("#ef0717"),
   about: new THREE.Color("#e27a0b"),
@@ -124,16 +121,16 @@ export const SKILLS: Skill[] = [
   {
     name: "Snowflake",
     flavorText: "Data warehouse",
-    proficiency: 0.591,
+    proficiency: 0.691,
     enjoyment: 0.672,
     experience: 0.468,
   },
   {
     name: "dbt Cloud",
     flavorText: "Data transformation",
-    proficiency: 0.709,
+    proficiency: 0.789,
     enjoyment: 0.742,
-    experience: 0.542,
+    experience: 0.572,
   },
   {
     name: "Pie making",
@@ -145,16 +142,16 @@ export const SKILLS: Skill[] = [
   {
     name: "Fivetran",
     flavorText: "Extract / load",
-    proficiency: 0.712,
+    proficiency: 0.762,
     enjoyment: 0.605,
     experience: 0.427,
   },
   {
     name: "Hex",
     flavorText: "BI platform",
-    proficiency: 0.793,
+    proficiency: 0.903,
     enjoyment: 0.892,
-    experience: 0.491,
+    experience: 0.591,
   },
   {
     name: "SQL",
@@ -173,7 +170,7 @@ export const SKILLS: Skill[] = [
   {
     name: "TypeScript",
     flavorText: "Language",
-    proficiency: 0.736,
+    proficiency: 0.796,
     enjoyment: 0.902,
     experience: 0.718,
   },
@@ -187,16 +184,16 @@ export const SKILLS: Skill[] = [
   {
     name: "React",
     flavorText: "Framework",
-    proficiency: 0.759,
+    proficiency: 0.809,
     enjoyment: 0.924,
     experience: 0.746,
   },
   {
     name: "GLSL",
     flavorText: "Shader language",
-    proficiency: 0.546,
+    proficiency: 0.646,
     enjoyment: 0.951,
-    experience: 0.407,
+    experience: 0.507,
   },
   {
     name: "Problem Solving",
@@ -212,20 +209,20 @@ export const SKILLS: Skill[] = [
     enjoyment: 0.951,
     experience: 0.998,
   },
-  {
-    name: "Communication",
-    flavorText: "Please just let me work",
-    proficiency: 0.895,
-    enjoyment: 0.518,
-    experience: 0.98,
-  },
-  {
-    name: "Time Management",
-    flavorText: "[TODO: Find time to write flavor text]",
-    proficiency: 0.748,
-    enjoyment: 0.521,
-    experience: 0.884,
-  },
+  // {
+  //   name: "Communication",
+  //   flavorText: "Please just let me work",
+  //   proficiency: 0.895,
+  //   enjoyment: 0.518,
+  //   experience: 0.98,
+  // },
+  // {
+  //   name: "Time Management",
+  //   flavorText: "[TODO: Find time to write flavor text]",
+  //   proficiency: 0.748,
+  //   enjoyment: 0.521,
+  //   experience: 0.884,
+  // },
 ];
 
 export const PROJECTS = [
@@ -235,14 +232,12 @@ export const PROJECTS = [
       "Like a Spirograph, but in 3D. I came up with the math to describe this independently!",
     url: "https://claytonmain.github.io/spherical-trochoids/",
     videoSrc: "/videos/sphericalTrochoids.mp4",
-    fallbackImageSrc: "/textures/sphericalTrochoids.png",
   },
   {
     name: "Slime Clock",
     description: "A slime mold simulation that's also a clock! Why? Why not?!",
     url: "https://www.slimeclock.com",
     videoSrc: "/videos/slimeClock.mp4",
-    fallbackImageSrc: "/textures/slimeClock.png",
   },
   {
     name: "Conway's Symphony of Life",
@@ -250,14 +245,12 @@ export const PROJECTS = [
       "A synthesizer powered by Conway's Game of Life. Try it out! (Not recommended on mobile, sorry!)",
     url: "https://conways-symphony-of-life.vercel.app/",
     videoSrc: "/videos/symphonyOfLife.mp4",
-    fallbackImageSrc: "/textures/symphonyOfLife.png",
   },
   {
     name: "React Three Fiber Experiments",
     description: "Various experiments and projects using React Three Fiber.",
     url: "https://claytonmain-r3f-experiments.vercel.app/attractor",
     videoSrc: "/videos/r3fExperiments.mp4",
-    fallbackImageSrc: "/textures/r3fExperiments.png",
   },
   {
     name: "Clock Envy (Very Early WIP)",
@@ -265,6 +258,5 @@ export const PROJECTS = [
       "A bunch of clocks to showcase different shaders, techniques, ideas and whatnot. It's very much a WIP, but check it out if you want! Desktop recommended!\n\nI will not apologize for the name. :P",
     url: "https://www.clockenvy.com",
     videoSrc: "/videos/clockEnvy.mp4",
-    fallbackImageSrc: "/textures/clockEnvy.png",
   },
 ];
