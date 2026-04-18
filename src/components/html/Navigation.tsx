@@ -128,6 +128,7 @@ export default function Navigation() {
         <motion.div
           className="my-2 flex items-center gap-1 sm:my-3"
           onPointerLeave={() => setNameHovered(false)}
+          onPointerEnter={() => setNameHovered(true)}
         >
           <h2>CLAYTON MAIN</h2>
           <AnimatePresence>
