@@ -3,27 +3,16 @@ import { AnimatePresence, motion, wrap } from "motion/react";
 import { useState } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
-const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 text-base/6";
-const ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME = "font-normal";
+const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 sm:text-base/6 text-sm/5";
 const ABOUT_COMPONENT_CONTENT_LINK_CLASS_NAME =
   "underline decoration-1 font-normal";
 
 function AboutComponentAboutContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I'm a{" "}
-      <span className={ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME}>
-        data person
-      </span>{" "}
-      professionally, a{" "}
-      <span className={ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME}>
-        graphics programmer & web developer
-      </span>{" "}
-      personally, and frankly, just someone who wants to{" "}
-      <span className={ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME}>
-        make cool stuff, learn new things, and make the most of it all
-      </span>
-      .
+      I'm a data person professionally, a graphics programmer & web developer
+      personally, and frankly, just someone who wants to make cool stuff, learn
+      new things, and try each day to improve in any way I can.
     </div>
   );
 }
@@ -33,29 +22,18 @@ function AboutComponentDataPersonContent() {
     <div className="flex flex-col">
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
         When I started with my current employer over eight years ago, I worked
-        in IT, had no real data experience, and they had{" "}
-        <span className={ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME}>
-          no existing data infrastructure
-        </span>{" "}
-        to speak of. Things were inefficient, to say the least (picture 40-page
-        printed reports with highlighters inefficient).
+        in IT, had no real data experience, and they had no existing data
+        infrastructure. People were spending hours on reports that should have
+        only taken minutes
       </div>
-      <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME + " " + "text-center"}>
-        <span className={"font-semibold text-amber-100"}>
-          I could not allow this.
-        </span>
-        <br />
+      <div className="text-center indent-4 text-sm/5 italic sm:text-base/6">
+        and I took that personally.
       </div>
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-        It's taken a lot of effort, and a lot of growth over the years, but
-        today, my team offers{" "}
-        <span className={ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME}>
-          self-serve, conversational analytics
-        </span>{" "}
-        to select departments, powered by{" "}
-        <span className={ABOUT_COMPONENT_CONTENT_EMPHASIS_CLASS_NAME}>
-          a modern data stack.
-        </span>{" "}
+        So I took it upon myself to learn, built the business case, and created
+        our Data Ops. department from the ground up. Today, we offer self-serve,
+        conversational analytics powered by a modern data stack. It's been a
+        long road, but I'm proud of what the department has become.
       </div>
     </div>
   );
@@ -64,8 +42,8 @@ function AboutComponentDataPersonContent() {
 function AboutComponentGraphicsContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      A few years back, I decided to learn React, Three.js, and Typescript so I
-      could showcase{" "}
+      A few years back, I decided to learn React, Three.js, and Typescript to
+      show off{" "}
       <a
         target="_blank"
         rel="noopener noreferrer"
@@ -74,12 +52,25 @@ function AboutComponentGraphicsContent() {
       >
         some math I came up with
       </a>{" "}
-      for fun. I really enjoyed the process and kept learning and building more
-      projects in my free time. Eventually, I came to realize how much overlap
-      there is between graphics programming and many of my past and present
-      hobbies and interests (programming, math, art, animation, games, etc.).
-      Plus, it's been nice to finally have something to which I can apply my
-      (somewhat rusty) linear algebra skills.
+      for fun. I really enjoyed the process, and so I kept on learning,
+      building, and improving. It dawned on me over time that this kind of work
+      sits at the center of many of my lifelong interests: art, math,
+      programming, graphics, animation, etc. This is - <i>by far</i> - the most
+      personally rewarding work I've ever done, and I intend to keep doing it
+      for a very long time.
+    </div>
+  );
+}
+
+function AboutComponentBeyondScreenContent() {
+  return (
+    <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
+      I hike. I make pies. I enjoy a good audiobook (been on a Discworld binge
+      lately, I'm always revisiting Tolkien, and the Dune books are great). I
+      enjoy 3D printing things and working on electronics projects with my son.
+      I've got a fondness for space, and I can talk about math for hours
+      (seriously, don't get me started). I could go on, but I won't. If you want
+      to know more, then let's chat!
     </div>
   );
 }
@@ -98,8 +89,8 @@ const aboutConfigs = [
     content: <AboutComponentGraphicsContent />,
   },
   {
-    header: "Lorem Ipsum",
-    content: <div>"This should be displayed for 'Lorem Ipsum'"</div>,
+    header: "Beyond the Screen...",
+    content: <AboutComponentBeyondScreenContent />,
   },
 ];
 
@@ -117,7 +108,11 @@ function IndexDotComponent({
       className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
       whileHover={{ backgroundColor: "#ffffff1a" }}
     >
-      <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+      <motion.div
+        className="flex h-full w-full items-center justify-center"
+        whileHover={{ scale: 1.2 }}
+        whileTap={{ scale: 0.9 }}
+      >
         <motion.div
           className="h-3 w-3 rounded-full"
           style={{
@@ -162,7 +157,7 @@ export default function AboutHtml() {
       className="flex h-svh w-full items-center justify-center"
     >
       <div
-        className="pointer-events-auto flex w-full flex-col items-center overflow-hidden rounded-lg border px-2 backdrop-blur-sm sm:w-120"
+        className="pointer-events-auto flex w-full flex-col items-center overflow-hidden rounded-sm border px-2 backdrop-blur-sm sm:w-130 sm:rounded-lg"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
           color: PAGE_HTML_STYLE_CONFIGS.about.text,
@@ -184,7 +179,7 @@ export default function AboutHtml() {
             </AnimatePresence>
           </div>
           <span className="w-full border-b border-inherit" />
-          <div className="pointer-events-auto flex h-60 w-full justify-center overflow-hidden">
+          <div className="pointer-events-auto flex h-70 w-full justify-center overflow-hidden sm:h-60">
             <AnimatePresence
               custom={direction}
               mode="popLayout"
@@ -199,7 +194,7 @@ export default function AboutHtml() {
                   x: direction * -50,
                   transition: { duration: 0.1 },
                 }}
-                className="w-full text-base font-normal tracking-tight"
+                className="my-auto w-full text-base font-normal tracking-tight"
               >
                 {aboutConfigs[aboutIndex].content}
               </motion.div>
@@ -214,7 +209,11 @@ export default function AboutHtml() {
             className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
             whileHover={{ backgroundColor: "#ffffff1a" }}
           >
-            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+            <motion.div
+              className="flex h-full w-full items-center justify-center"
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+            >
               <ChevronLeftIcon className="h-10 w-10" />
             </motion.div>
           </motion.button>
@@ -231,7 +230,11 @@ export default function AboutHtml() {
             className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
             whileHover={{ backgroundColor: "#ffffff1a" }}
           >
-            <motion.div whileHover={{ scale: 1.2 }} whileTap={{ scale: 0.9 }}>
+            <motion.div
+              className="flex h-full w-full items-center justify-center"
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+            >
               <ChevronLeftIcon className="h-10 w-10 -scale-x-100" />
             </motion.div>
           </motion.button>
