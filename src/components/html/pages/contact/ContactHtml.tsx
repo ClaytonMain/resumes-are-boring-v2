@@ -4,19 +4,11 @@ import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 function ContactComponentContactContent() {
   return (
-    <div className="my-auto flex flex-col gap-2 text-base/6 tracking-tight">
+    <div className="my-auto flex flex-col gap-2 indent-4 text-base/6 tracking-tight">
       <span>
-        If you're liking what you're seeing and want to chat about potential
-        opportunities, here are my links!
-      </span>
-      <span>
-        I've gotten this far on my own; Imagine what we could do together!
-      </span>
-      <span className="w-full text-right text-[0.5rem]/3 text-violet-50/80 sm:text-[0.5rem]/4">
-        Bonus points if you're willing to help relocate me to Scotland, Ireland,
-        Iceland, or New Zealand.
-        <br />
-        Hey, I can dream, can't I?
+        Click on my links! Pay me the equivalent of $200k USD annually! Provide
+        me with benefits and holidays! Relocate me and my family to Iceland, New
+        Zealand, Ireland, or Scotland! Do it!
       </span>
     </div>
   );

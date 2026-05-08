@@ -4,15 +4,15 @@ import { useState } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 sm:text-base/6 text-sm/5";
-const ABOUT_COMPONENT_CONTENT_LINK_CLASS_NAME =
-  "underline decoration-1 font-normal";
 
 function AboutComponentAboutContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I'm a data person professionally, a graphics programmer & web developer
-      personally, and frankly, just someone who wants to make cool stuff, learn
-      new things, and try each day to improve in any way I can.
+      I'm a data person professionally, and I do graphics & web stuff for fun,
+      and I am just <i>absolutely horrible</i> at writing about myself formally
+      without sounding as wretched as my ageing cat (she's awful). Why do I have
+      an about page anyways? Go look at the other pages, they're better!
+      {" :)"}
     </div>
   );
 }
@@ -21,19 +21,15 @@ function AboutComponentDataPersonContent() {
   return (
     <div className="flex flex-col">
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-        When I started with my current employer over eight years ago, I worked
-        in IT, had no real data experience, and they had no existing data
-        infrastructure. People were spending hours on reports that should have
-        only taken minutes
-      </div>
-      <div className="text-center indent-4 text-sm/5 italic sm:text-base/6">
-        and I took that personally.
+        This section used to talk about how I built up my current employer's
+        Data Ops. department from scratch despite having no formal training,{" "}
+        <i>but it sounded completely insufferable</i> so I deleted it.
       </div>
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-        So I took it upon myself to learn, built the business case, and created
-        our Data Ops. department from the ground up. Today, we offer self-serve,
-        conversational analytics powered by a modern data stack. It's been a
-        long road, but I'm proud of what the department has become.
+        It's true though, I did do that. And we use, like, an actual modern data
+        stack too. Not (just) custom Python scripts & whatnot. Go look at my
+        skills page to see what we use (it's a better page anyways{" "}
+        <i>why are you still here???</i>).
       </div>
     </div>
   );
@@ -42,22 +38,11 @@ function AboutComponentDataPersonContent() {
 function AboutComponentGraphicsContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      A few years back, I decided to learn React, Three.js, and Typescript to
-      show off{" "}
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://claytonmain.github.io/spherical-trochoids/"
-        className={ABOUT_COMPONENT_CONTENT_LINK_CLASS_NAME}
-      >
-        some math I came up with
-      </a>{" "}
-      for fun. I really enjoyed the process, and so I kept on learning,
-      building, and improving. It dawned on me over time that this kind of work
-      sits at the center of many of my lifelong interests: art, math,
-      programming, graphics, animation, etc. This is - <i>by far</i> - the most
-      personally rewarding work I've ever done, and I intend to keep doing it
-      for a very long time.
+      I learned React, Three.js, React Three Fiber ("isn't that just React &
+      Three.js though?" - yes), GLSL, Typescript, etc. on my own because I
+      WANTED TO. That's it. I mean, I <i>also</i> wanted to show off some cool
+      math I came up with, but that's not why I stuck with it. Look at this
+      website though! <i>Graphics</i>.
     </div>
   );
 }
@@ -65,12 +50,8 @@ function AboutComponentGraphicsContent() {
 function AboutComponentBeyondScreenContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I hike. I make pies. I enjoy a good audiobook (been on a Discworld binge
-      lately, I'm always revisiting Tolkien, and the Dune books are great). I
-      enjoy 3D printing things and working on electronics projects with my son.
-      I've got a fondness for space, and I can talk about math for hours
-      (seriously, don't get me started). I could go on, but I won't. If you want
-      to know more, then let's chat!
+      I'm obviously a nerd and I like hiking and making stuff and I'm great at
+      making pies and I think math is cool what more do you want from me???
     </div>
   );
 }
