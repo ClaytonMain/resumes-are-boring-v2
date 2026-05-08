@@ -121,7 +121,7 @@ export const FLAVOR_TEXT_VALUES = [
   "...seriously???",
   "You were supposed to think the flavor text was looping!",
   "I can't stop typing until you stop reading!",
-  "Alghouth...",
+  "Although...",
   "Wouldn't it be funny if I just stopped writing these?",
   "But, like, I didn't indicate that I was done?",
   "And so you'd keep looping through these thinking there'd be another easter egg",
