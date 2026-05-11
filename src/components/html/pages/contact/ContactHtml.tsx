@@ -6,9 +6,9 @@ function ContactComponentContactContent() {
   return (
     <div className="my-auto flex flex-col gap-2 indent-4 text-base/6 tracking-tight">
       <span>
-        Click on my links! Pay me the equivalent of $200k USD annually! Provide
-        me with benefits and holidays! Relocate me and my family to Iceland, New
-        Zealand, Ireland, or Scotland! Do it!
+        Click on my links! Pay me $200k USD annually! Provide me with benefits
+        and holidays! Relocate me and my family to Iceland, New Zealand,
+        Ireland, or Scotland! Do it!
       </span>
     </div>
   );
