@@ -10,8 +10,8 @@ function AboutComponentAboutContent() {
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
       I'm a data person professionally, and I do graphics & web stuff for fun,
       and I am just <i>absolutely horrible</i> at writing about myself formally
-      without sounding as wretched as my ageing cat (she's awful). Why do I have
-      an about page anyways? Go look at the other pages, they're better!
+      without sounding insufferable. Why do I have an about page anyways? Go
+      look at the other pages, they're better!
       {" :)"}
     </div>
   );
@@ -23,13 +23,12 @@ function AboutComponentDataPersonContent() {
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
         This section used to talk about how I built up my current employer's
         Data Ops. department from scratch despite having no formal training,{" "}
-        <i>but it sounded completely insufferable</i> so I deleted it.
+        <i>but it sounded unbelievably cheesy</i> so I deleted it.
       </div>
       <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
         It's true though, I did do that. And we use, like, an actual modern data
         stack too. Not (just) custom Python scripts & whatnot. Go look at my
-        skills page to see what we use (it's a better page anyways{" "}
-        <i>why are you still here???</i>).
+        skills page to see what we use (it's a better page anyways).
       </div>
     </div>
   );
@@ -40,9 +39,9 @@ function AboutComponentGraphicsContent() {
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
       I learned React, Three.js, React Three Fiber ("isn't that just React &
       Three.js though?" - yes), GLSL, Typescript, etc. on my own because I
-      WANTED TO. That's it. I mean, I <i>also</i> wanted to show off some cool
-      math I came up with, but that's not why I stuck with it. Look at this
-      website though! <i>Graphics</i>.
+      wanted to. I mean, I <i>also</i> wanted to show off some cool math I came
+      up with, but that's not why I stuck with it. Look at this website though!{" "}
+      <i>Graphics</i>.
     </div>
   );
 }
@@ -50,8 +49,8 @@ function AboutComponentGraphicsContent() {
 function AboutComponentBeyondScreenContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I'm obviously a nerd and I like hiking and making stuff and I'm great at
-      making pies and I think math is cool what more do you want from me???
+      I'm (obviously) a nerd and I like hiking and making stuff and I'm great at
+      making pies and I think math is cool. What more do you want from me?
     </div>
   );
 }
