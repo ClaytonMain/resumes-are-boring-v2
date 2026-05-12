@@ -131,18 +131,12 @@ export default function DirectionalLightComponent() {
     setStates(newStates);
   }
 
-  function onFallback(api: PerformanceMonitorApi) {
-    logPerformance("Fallback", api);
-    handleOnDecline(api);
-  }
-
   return (
     <PerformanceMonitor
       bounds={getBounds}
       flipflops={5}
       onIncline={handleOnIncline}
       onDecline={handleOnDecline}
-      onFallback={onFallback}
     >
       <directionalLight
         ref={directionalLightRef}

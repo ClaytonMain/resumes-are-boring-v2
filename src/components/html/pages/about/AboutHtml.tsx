@@ -136,7 +136,7 @@ export default function AboutHtml() {
       className="flex h-svh w-full items-center justify-center"
     >
       <div
-        className="pointer-events-auto flex w-full flex-col items-center overflow-hidden rounded-sm border px-2 backdrop-blur-sm sm:w-130 sm:rounded-lg"
+        className="pointer-events-auto flex w-11/12 flex-col items-center overflow-hidden rounded-sm border px-2 backdrop-blur-sm sm:w-130 sm:rounded-lg"
         style={{
           backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.bg,
           color: PAGE_HTML_STYLE_CONFIGS.about.text,
@@ -158,7 +158,7 @@ export default function AboutHtml() {
             </AnimatePresence>
           </div>
           <span className="w-full border-b border-inherit" />
-          <div className="pointer-events-auto flex h-70 w-full justify-center overflow-hidden sm:h-60">
+          <div className="pointer-events-auto flex h-50 w-full justify-center overflow-hidden sm:h-40">
             <AnimatePresence
               custom={direction}
               mode="popLayout"
