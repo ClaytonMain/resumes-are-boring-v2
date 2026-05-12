@@ -122,7 +122,7 @@ export default function Navigation() {
       }}
       animate={navigationAnimate}
       transition={{ duration: 1.0 }}
-      className="text-md pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b px-2 font-light tracking-tight backdrop-blur-sm select-none sm:px-4 sm:text-lg md:px-8 md:text-xl lg:text-2xl"
+      className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b px-2 text-lg font-light tracking-tight backdrop-blur-sm select-none sm:px-4 md:px-8 md:text-xl lg:text-2xl"
     >
       {showName && (
         <motion.div

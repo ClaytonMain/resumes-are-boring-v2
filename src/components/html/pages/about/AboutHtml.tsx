@@ -12,7 +12,6 @@ function AboutComponentAboutContent() {
       and I am just <i>absolutely horrible</i> at writing about myself formally
       without sounding insufferable. Why do I have an about page anyways? Go
       look at the other pages, they're better!
-      {" :)"}
     </div>
   );
 }

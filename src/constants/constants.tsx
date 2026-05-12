@@ -51,7 +51,7 @@ export const PAGE_HTML_STYLE_CONFIGS: PageHtmlStyleConfigs = {
       tabText: "#252627ff",
     },
   },
-  contact: {
+  links: {
     pageBg: "#7816D2",
     bg: "#a78bfa1a",
     text: "#ffffffff",
@@ -64,7 +64,7 @@ export const PAGE_NAMES: Page[] = [
   "about",
   "skills",
   "projects",
-  "contact",
+  "links",
 ] as const;
 
 export const DEFAULT_CAMERA_POSITION = new THREE.Vector3(6.6, 8.8, 6.6);
@@ -132,14 +132,14 @@ export const PAGE_BLOCK_COLORS: PageBlockColor = {
   about: new THREE.Color("#e27a0b"),
   skills: new THREE.Color("#84cc16"),
   projects: new THREE.Color("#14b8a6"),
-  contact: new THREE.Color("#820ce8"),
+  links: new THREE.Color("#820ce8"),
 };
 export const PAGE_BLOCK_COLORS_YOFFSET: PageBlockColor = {
   home: new THREE.Color("#ffffff"),
   about: new THREE.Color("#373737"),
   skills: new THREE.Color("#373737"),
   projects: new THREE.Color("#ffffff"),
-  contact: new THREE.Color("#ffffff"),
+  links: new THREE.Color("#ffffff"),
 };
 
 export const PAGE_PATTERN_NUMBERS: Record<Page, number> = {
@@ -147,58 +147,58 @@ export const PAGE_PATTERN_NUMBERS: Record<Page, number> = {
   about: 2,
   skills: 3,
   projects: 4,
-  contact: 5,
+  links: 5,
 };
 
 export const SKILLS: Skill[] = [
   {
-    name: "Python",
-    flavorText: "Language",
-    proficiency: 0.887,
-    enjoyment: 0.812,
-    experience: 0.893,
+    name: "dbt Cloud",
+    flavorText: "Data transformation",
+    proficiency: 0.819,
+    enjoyment: 0.842,
+    experience: 0.672,
   },
   {
     name: "Snowflake",
     flavorText: "Data warehouse",
-    proficiency: 0.691,
-    enjoyment: 0.672,
-    experience: 0.468,
-  },
-  {
-    name: "dbt Cloud",
-    flavorText: "Data transformation",
-    proficiency: 0.789,
-    enjoyment: 0.742,
-    experience: 0.572,
-  },
-  {
-    name: "Pie making",
-    flavorText: "Tasty",
-    proficiency: 0.824,
-    enjoyment: 0.994,
-    experience: 0.873,
+    proficiency: 0.791,
+    enjoyment: 0.772,
+    experience: 0.568,
   },
   {
     name: "Fivetran",
     flavorText: "Extract / load",
-    proficiency: 0.762,
-    enjoyment: 0.605,
-    experience: 0.427,
+    proficiency: 0.862,
+    enjoyment: 0.805,
+    experience: 0.727,
   },
   {
     name: "Hex",
     flavorText: "BI platform",
     proficiency: 0.903,
-    enjoyment: 0.892,
-    experience: 0.591,
+    enjoyment: 0.952,
+    experience: 0.891,
+  },
+  {
+    name: "Python",
+    flavorText: "Programming language",
+    proficiency: 0.907,
+    enjoyment: 0.812,
+    experience: 0.893,
+  },
+  {
+    name: "Pie making",
+    flavorText: "Tasty",
+    proficiency: 0.864,
+    enjoyment: 0.914,
+    experience: 0.873,
   },
   {
     name: "SQL",
-    flavorText: "Language",
-    proficiency: 0.732,
-    enjoyment: 0.613,
-    experience: 0.711,
+    flavorText: "Programming language",
+    proficiency: 0.832,
+    enjoyment: 0.713,
+    experience: 0.831,
   },
   {
     name: "Google Sheets",
@@ -209,10 +209,10 @@ export const SKILLS: Skill[] = [
   },
   {
     name: "TypeScript",
-    flavorText: "Language",
-    proficiency: 0.796,
-    enjoyment: 0.902,
-    experience: 0.718,
+    flavorText: "Programming language",
+    proficiency: 0.896,
+    enjoyment: 0.952,
+    experience: 0.818,
   },
   {
     name: "Cat petting",
@@ -224,19 +224,19 @@ export const SKILLS: Skill[] = [
   {
     name: "React",
     flavorText: "Framework",
-    proficiency: 0.809,
+    proficiency: 0.909,
     enjoyment: 0.924,
-    experience: 0.746,
+    experience: 0.846,
   },
   {
     name: "GLSL",
     flavorText: "Shader language",
-    proficiency: 0.646,
-    enjoyment: 0.951,
-    experience: 0.507,
+    proficiency: 0.746,
+    enjoyment: 0.961,
+    experience: 0.707,
   },
   {
-    name: "Problem Solving",
+    name: "Problem-solving",
     flavorText: "Love a challenge",
     proficiency: 0.934,
     enjoyment: 0.989,
