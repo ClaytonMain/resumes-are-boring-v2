@@ -104,7 +104,12 @@ void main() {
     ) *
       0.1;
   patternOffsets[5] =
-    sin(sdEquilateralTriangle(aPointerTrailUv - 0.5, 0.1) * 50.0 + uTime) * 0.1;
+    smoothstep(
+      -0.5,
+      1.0,
+      sin(sdEquilateralTriangle(aPointerTrailUv - 0.5, 0.1) * 50.0 + uTime)
+    ) *
+    0.09;
 
   // patternOffsets[0] = patternOffsets[3];
   // patternOffsets[1] = patternOffsets[3];
