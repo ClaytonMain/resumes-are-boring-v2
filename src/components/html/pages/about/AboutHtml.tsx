@@ -1,130 +1,98 @@
-import { ChevronLeftIcon } from "@heroicons/react/20/solid";
-import { AnimatePresence, motion, wrap } from "motion/react";
-import { useState } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import { useEffect, useState, type JSX } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
-const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 sm:text-base/6 text-sm/5";
+type MinigameState = {
+  minigameActive: boolean;
+  componentStartTime: number | null;
+  currentScore: number;
+  previousScore: number | null;
+  currentMinigameIndex: number;
+  onAnswer?: (isCorrect: boolean) => void;
+  onBegin?: () => void;
+  onEnd?: () => void;
+};
 
-function AboutComponentAboutContent() {
+function DefaultContent({ minigameState }: { minigameState: MinigameState }) {
   return (
-    <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I'm a data person professionally, and I do graphics & web stuff for fun,
-      and I am just <i>absolutely horrible</i> at writing about myself formally
-      without sounding insufferable. Why do I have an about page anyways? Go
-      look at the other pages, they're better!
+    <div className="flex h-40 w-full items-center justify-center rounded-sm border">
+      Placeholder Text
+      {minigameState.previousScore === null && (
+        <button
+          className="ml-4 rounded-sm bg-white/20 px-2 py-1"
+          onClick={() => minigameState.onBegin?.()}
+        >
+          Begin Minigame
+        </button>
+      )}
+      {minigameState.previousScore !== null && (
+        <div className="ml-4 flex items-center gap-2 rounded-sm bg-white/20 px-2 py-1">
+          <span>Previous Score: {minigameState.previousScore}</span>
+          <button
+            className="rounded-sm bg-white/20 px-2 py-1"
+            onClick={() => minigameState.onBegin?.()}
+          >
+            Play Again
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-function AboutComponentDataPersonContent() {
-  return (
-    <div className="flex flex-col">
-      <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-        This section used to talk about how I built up my current employer's
-        Data Ops. department from scratch despite having no formal training,{" "}
-        <i>but it sounded unbelievably cheesy</i> so I deleted it.
-      </div>
-      <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-        It's true though, I did do that. And we use, like, an actual modern data
-        stack too. Not (just) custom Python scripts & whatnot. Go look at my
-        skills page to see what we use (it's a better page anyways).
-      </div>
-    </div>
-  );
-}
-
-function AboutComponentGraphicsContent() {
-  return (
-    <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I learned React, Three.js, React Three Fiber ("isn't that just React &
-      Three.js though?" - yes), GLSL, Typescript, etc. on my own because I
-      wanted to. I mean, I <i>also</i> wanted to show off some cool math I came
-      up with, but that's not why I stuck with it. Look at this website though!{" "}
-      <i>Graphics</i>.
-    </div>
-  );
-}
-
-function AboutComponentBeyondScreenContent() {
-  return (
-    <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I'm (obviously) a nerd and I like hiking and making stuff and I'm great at
-      making pies and I think math is cool. What more do you want from me?
-    </div>
-  );
-}
-
-const aboutConfigs = [
+// Minigame screens (think "Warioware" but not nearly as complicated mostly true false with some silly stuff in there too) will be stored here. Will have title & component. Not sure how to pass minigameState to the components.
+type AboutContentItem = {
+  title: string;
+  content: (minigameState: MinigameState) => JSX.Element;
+};
+const ABOUT_CONTENT: Array<AboutContentItem> = [
   {
-    header: "About",
-    content: <AboutComponentAboutContent />,
-  },
-  {
-    header: "I'm a Data Person",
-    content: <AboutComponentDataPersonContent />,
-  },
-  {
-    header: "I do Graphics & Web Stuff",
-    content: <AboutComponentGraphicsContent />,
-  },
-  {
-    header: "Beyond the Screen...",
-    content: <AboutComponentBeyondScreenContent />,
+    title: "About",
+    content: (minigameState: MinigameState) => (
+      <DefaultContent minigameState={minigameState} />
+    ),
   },
 ];
 
-function IndexDotComponent({
-  onClick,
-  active,
-}: {
-  onClick: () => void;
-  active: boolean;
-}) {
-  return (
-    <motion.button
-      initial={false}
-      onClick={onClick}
-      className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
-      whileHover={{ backgroundColor: "#ffffff1a" }}
-    >
-      <motion.div
-        className="flex h-full w-full items-center justify-center"
-        whileHover={{ scale: 1.2 }}
-        whileTap={{ scale: 0.9 }}
-      >
-        <motion.div
-          className="h-3 w-3 rounded-full"
-          style={{
-            backgroundColor: PAGE_HTML_STYLE_CONFIGS.about.text,
-          }}
-          animate={{
-            opacity: active ? 1 : 0.5,
-          }}
-        />
-      </motion.div>
-    </motion.button>
-  );
-}
-
 export default function AboutHtml() {
-  const [aboutIndex, setAboutIndex] = useState(0);
-  const [direction, setDirection] = useState<1 | -1>(1);
+  const [minigameState, setMinigameState] = useState<MinigameState>({
+    minigameActive: false,
+    componentStartTime: null,
+    previousScore: null,
+    currentScore: 0,
+    currentMinigameIndex: 0,
+  });
 
-  function handleDirectionClick(newDirection: 1 | -1) {
-    const nextAboutIndex = wrap(
-      0,
-      aboutConfigs.length,
-      aboutIndex + newDirection,
-    );
-    setDirection(newDirection);
-    setAboutIndex(nextAboutIndex);
+  function onAnswer(isCorrect: boolean) {
+    setMinigameState((prevState) => {
+      const newScore = isCorrect
+        ? prevState.currentScore + 1
+        : prevState.currentScore;
+      return {
+        ...prevState,
+        currentScore: newScore,
+      };
+    });
   }
 
-  function handleDirectClick(newIndex: number) {
-    if (newIndex === aboutIndex) return;
-    const newDirection = newIndex > aboutIndex ? 1 : -1;
-    setDirection(newDirection);
-    setAboutIndex(newIndex);
+  function onBegin() {
+    setMinigameState({
+      minigameActive: true,
+      componentStartTime: 0,
+      currentScore: 0,
+      previousScore: minigameState.previousScore,
+      currentMinigameIndex: minigameState.currentMinigameIndex,
+      onAnswer: minigameState.onAnswer,
+      onBegin: minigameState.onBegin,
+    });
+  }
+
+  function onEnd() {
+    setMinigameState((prevState) => ({
+      ...prevState,
+      minigameActive: false,
+      previousScore: prevState.currentScore,
+    }));
   }
 
   return (
@@ -147,76 +115,18 @@ export default function AboutHtml() {
           <div className="w-full overflow-hidden text-left">
             <AnimatePresence mode="wait" initial={false}>
               <motion.h1
-                key={aboutConfigs[aboutIndex].header}
+                key={ABOUT_CONTENT[minigameState.currentMinigameIndex].title}
                 className="text-2xl font-bold tracking-tight md:text-4xl"
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
               >
-                {aboutConfigs[aboutIndex].header}
+                {ABOUT_CONTENT[minigameState.currentMinigameIndex].title}
               </motion.h1>
             </AnimatePresence>
           </div>
           <span className="w-full border-b border-inherit" />
-          <div className="pointer-events-auto flex h-50 w-full justify-center overflow-hidden sm:h-40">
-            <AnimatePresence
-              custom={direction}
-              mode="popLayout"
-              initial={false}
-            >
-              <motion.div
-                key={`${aboutConfigs[aboutIndex].header}-content`}
-                initial={{ opacity: 0, x: direction * 50 }}
-                animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
-                exit={{
-                  opacity: 0,
-                  x: direction * -50,
-                  transition: { duration: 0.1 },
-                }}
-                className="my-auto w-full text-base font-normal tracking-tight"
-              >
-                {aboutConfigs[aboutIndex].content}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-        <span className="w-full border-b border-inherit" />
-        <div className="flex h-10 w-70 items-center justify-center overflow-hidden">
-          <motion.button
-            initial={false}
-            onClick={() => handleDirectionClick(-1)}
-            className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
-            whileHover={{ backgroundColor: "#ffffff1a" }}
-          >
-            <motion.div
-              className="flex h-full w-full items-center justify-center"
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeftIcon className="h-10 w-10" />
-            </motion.div>
-          </motion.button>
-          {Array.from({ length: aboutConfigs.length }).map((_, index) => (
-            <IndexDotComponent
-              key={index}
-              onClick={() => handleDirectClick(index)}
-              active={index === aboutIndex}
-            />
-          ))}
-          <motion.button
-            initial={false}
-            onClick={() => handleDirectionClick(1)}
-            className="flex h-full w-9 flex-initial cursor-pointer items-center justify-center"
-            whileHover={{ backgroundColor: "#ffffff1a" }}
-          >
-            <motion.div
-              className="flex h-full w-full items-center justify-center"
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeftIcon className="h-10 w-10 -scale-x-100" />
-            </motion.div>
-          </motion.button>
+          <div className="pointer-events-auto flex h-50 w-full justify-center overflow-hidden sm:h-40"></div>
         </div>
       </div>
     </motion.div>
