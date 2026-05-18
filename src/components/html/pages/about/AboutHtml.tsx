@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useEffect, useState, type JSX } from "react";
+import { useState, type JSX } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 type MinigameState = {
@@ -9,18 +9,19 @@ type MinigameState = {
   previousScore: number | null;
   currentMinigameIndex: number;
   onAnswer?: (isCorrect: boolean) => void;
-  onBegin?: () => void;
-  onEnd?: () => void;
+  onBeginMinigame?: () => void;
+  onEndMinigame?: () => void;
+  onProceed?: () => void;
 };
 
 function DefaultContent({ minigameState }: { minigameState: MinigameState }) {
   return (
-    <div className="flex h-40 w-full items-center justify-center rounded-sm border">
+    <div className="flex h-40 w-full flex-col items-center justify-center">
       Placeholder Text
       {minigameState.previousScore === null && (
         <button
-          className="ml-4 rounded-sm bg-white/20 px-2 py-1"
-          onClick={() => minigameState.onBegin?.()}
+          className="ml-4 cursor-pointer rounded-sm bg-white/20 px-2 py-1"
+          onClick={() => minigameState.onBeginMinigame?.()}
         >
           Begin Minigame
         </button>
@@ -29,13 +30,59 @@ function DefaultContent({ minigameState }: { minigameState: MinigameState }) {
         <div className="ml-4 flex items-center gap-2 rounded-sm bg-white/20 px-2 py-1">
           <span>Previous Score: {minigameState.previousScore}</span>
           <button
-            className="rounded-sm bg-white/20 px-2 py-1"
-            onClick={() => minigameState.onBegin?.()}
+            className="cursor-pointer rounded-sm bg-white/20 px-2 py-1"
+            onClick={() => minigameState.onBeginMinigame?.()}
           >
             Play Again
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+type TrueFalseConfig = {
+  statement: string;
+  answer: boolean;
+  pointValue?: number;
+};
+
+function TrueFalseMinigame({
+  minigameState,
+  trueFalseConfig,
+}: {
+  minigameState: MinigameState;
+  trueFalseConfig: TrueFalseConfig;
+}) {
+  const [answered, setAnswered] = useState(false);
+
+  function handleResponse(userAnswer: boolean) {
+    const isCorrect = userAnswer === trueFalseConfig.answer;
+    minigameState.onAnswer?.(isCorrect);
+    setAnswered(true);
+    const timeoutId = setTimeout(() => {
+      minigameState.onProceed?.();
+    }, 1000);
+    return () => clearTimeout(timeoutId);
+  }
+
+  return (
+    <div className="flex h-40 w-full flex-col items-center justify-center">
+      <span>{trueFalseConfig.statement}</span>
+      <div className="mt-4 flex gap-4">
+        <button
+          className="rounded-sm bg-green-500 px-2 py-1 text-white"
+          onClick={() => handleResponse(true)}
+        >
+          True
+        </button>
+        <button
+          className="rounded-sm bg-red-500 px-2 py-1 text-white"
+          onClick={() => handleResponse(false)}
+        >
+          False
+        </button>
+      </div>
     </div>
   );
 }
@@ -52,6 +99,55 @@ const ABOUT_CONTENT: Array<AboutContentItem> = [
       <DefaultContent minigameState={minigameState} />
     ),
   },
+  {
+    title: "Test Test #1",
+    content: (minigameState: MinigameState) => (
+      <TrueFalseMinigame
+        minigameState={minigameState}
+        trueFalseConfig={{
+          statement: "The sky is blue.",
+          answer: true,
+        }}
+      />
+    ),
+  },
+  {
+    title: "Test Test #2",
+    content: (minigameState: MinigameState) => (
+      <TrueFalseMinigame
+        minigameState={minigameState}
+        trueFalseConfig={{
+          statement: "The grass is red.",
+          answer: false,
+        }}
+      />
+    ),
+  },
+  {
+    title: "Test Test #3",
+    content: (minigameState: MinigameState) => (
+      <TrueFalseMinigame
+        minigameState={minigameState}
+        trueFalseConfig={{
+          statement: "The earth is flat.",
+          answer: false,
+        }}
+      />
+    ),
+  },
+  {
+    title: "Test Test #4",
+    content: (minigameState: MinigameState) => (
+      <TrueFalseMinigame
+        minigameState={minigameState}
+        trueFalseConfig={{
+          statement:
+            "React is a JavaScript library for building user interfaces.",
+          answer: true,
+        }}
+      />
+    ),
+  },
 ];
 
 export default function AboutHtml() {
@@ -61,9 +157,14 @@ export default function AboutHtml() {
     previousScore: null,
     currentScore: 0,
     currentMinigameIndex: 0,
+    onAnswer: onAnswer,
+    onBeginMinigame: onBeginMinigame,
+    onEndMinigame: onEndMinigame,
+    onProceed: onProceed,
   });
 
   function onAnswer(isCorrect: boolean) {
+    console.log("User answered:", isCorrect);
     setMinigameState((prevState) => {
       const newScore = isCorrect
         ? prevState.currentScore + 1
@@ -75,24 +176,43 @@ export default function AboutHtml() {
     });
   }
 
-  function onBegin() {
-    setMinigameState({
+  function onBeginMinigame() {
+    console.log("Minigame started");
+    setMinigameState((prevState) => ({
+      ...prevState,
       minigameActive: true,
-      componentStartTime: 0,
+      componentStartTime: Date.now(),
       currentScore: 0,
-      previousScore: minigameState.previousScore,
-      currentMinigameIndex: minigameState.currentMinigameIndex,
-      onAnswer: minigameState.onAnswer,
-      onBegin: minigameState.onBegin,
-    });
+      currentMinigameIndex: 1,
+    }));
   }
 
-  function onEnd() {
+  function onEndMinigame() {
+    console.log("Minigame ended");
     setMinigameState((prevState) => ({
       ...prevState,
       minigameActive: false,
       previousScore: prevState.currentScore,
     }));
+  }
+
+  function onProceed() {
+    console.log("Proceeding to next minigame");
+    setMinigameState((prevState) => {
+      const nextMinigameIndex = prevState.currentMinigameIndex + 1;
+      if (nextMinigameIndex >= ABOUT_CONTENT.length) {
+        return {
+          ...prevState,
+          minigameActive: false,
+          previousScore: prevState.currentScore,
+          currentMinigameIndex: 0,
+        };
+      }
+      return {
+        ...prevState,
+        currentMinigameIndex: nextMinigameIndex,
+      };
+    });
   }
 
   return (
@@ -126,7 +246,25 @@ export default function AboutHtml() {
             </AnimatePresence>
           </div>
           <span className="w-full border-b border-inherit" />
-          <div className="pointer-events-auto flex h-50 w-full justify-center overflow-hidden sm:h-40"></div>
+          <div className="pointer-events-auto flex h-50 w-full justify-center overflow-hidden sm:h-40">
+            <AnimatePresence mode="popLayout" initial={false}>
+              <motion.div
+                key={`${ABOUT_CONTENT[minigameState.currentMinigameIndex].title}-content`}
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0, transition: { type: "spring" } }}
+                exit={{
+                  opacity: 0,
+                  x: -50,
+                  transition: { duration: 0.1 },
+                }}
+                className="my-auto w-full text-base font-normal tracking-tight"
+              >
+                {ABOUT_CONTENT[minigameState.currentMinigameIndex].content(
+                  minigameState,
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </motion.div>
