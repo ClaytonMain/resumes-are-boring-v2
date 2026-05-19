@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "motion/react";
-import { useState, type JSX } from "react";
+import { useEffect, useState, type JSX } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
 type MinigameState = {
@@ -19,24 +19,78 @@ function DefaultContent({ minigameState }: { minigameState: MinigameState }) {
     <div className="flex h-40 w-full flex-col items-center justify-center">
       Placeholder Text
       {minigameState.previousScore === null && (
-        <button
+        <motion.button
           className="ml-4 cursor-pointer rounded-sm bg-white/20 px-2 py-1"
           onClick={() => minigameState.onBeginMinigame?.()}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           Begin Minigame
-        </button>
+        </motion.button>
       )}
       {minigameState.previousScore !== null && (
         <div className="ml-4 flex items-center gap-2 rounded-sm bg-white/20 px-2 py-1">
           <span>Previous Score: {minigameState.previousScore}</span>
-          <button
+          <motion.button
             className="cursor-pointer rounded-sm bg-white/20 px-2 py-1"
             onClick={() => minigameState.onBeginMinigame?.()}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Play Again
-          </button>
+          </motion.button>
         </div>
       )}
+    </div>
+  );
+}
+
+type AnswerState = {
+  answered: boolean;
+  answeredCorrect?: boolean;
+};
+
+function TimerDisplay({
+  answerState,
+  outOfTimeAt,
+  setOutOfTime,
+}: {
+  answerState: AnswerState;
+  outOfTimeAt: number;
+  setOutOfTime: (outOfTime: boolean) => void;
+}) {
+  const [displayTime, setDisplayTime] = useState(() => ({
+    integer: Math.ceil((outOfTimeAt - Date.now()) / 1000),
+    decimal: Math.ceil((outOfTimeAt - Date.now()) % 1000),
+  }));
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      const timeLeft = outOfTimeAt - Date.now();
+      if (answerState.answered) {
+        clearInterval(intervalId);
+        return;
+      }
+      if (timeLeft <= 0) {
+        setDisplayTime({ integer: 0, decimal: 0 });
+        setOutOfTime(true);
+        clearInterval(intervalId);
+      } else {
+        setDisplayTime({
+          integer: Math.ceil(timeLeft / 1000),
+          decimal: Math.ceil(timeLeft % 1000),
+        });
+      }
+    }, 10);
+    return () => clearInterval(intervalId);
+  }, [outOfTimeAt, setOutOfTime, answerState.answered]);
+
+  return (
+    <div className="ml-4 flex items-center gap-1 rounded-sm bg-white/20 px-2 py-1">
+      <span>
+        Time Left: {displayTime.integer}.
+        {displayTime.decimal.toString().padStart(3, "0")}s
+      </span>
     </div>
   );
 }
@@ -45,6 +99,7 @@ type TrueFalseConfig = {
   statement: string;
   answer: boolean;
   pointValue?: number;
+  allowedTime?: number;
 };
 
 function TrueFalseMinigame({
@@ -54,34 +109,59 @@ function TrueFalseMinigame({
   minigameState: MinigameState;
   trueFalseConfig: TrueFalseConfig;
 }) {
-  const [answered, setAnswered] = useState(false);
+  const [answerState, setAnswerState] = useState<AnswerState>({
+    answered: false,
+  });
+  const [outOfTime, setOutOfTime] = useState(false);
+  const [outOfTimeAt] = useState(
+    () => Date.now() + (trueFalseConfig.allowedTime ?? 3000),
+  );
 
   function handleResponse(userAnswer: boolean) {
     const isCorrect = userAnswer === trueFalseConfig.answer;
     minigameState.onAnswer?.(isCorrect);
-    setAnswered(true);
+    setAnswerState({ answered: true, answeredCorrect: isCorrect });
     const timeoutId = setTimeout(() => {
       minigameState.onProceed?.();
     }, 1000);
     return () => clearTimeout(timeoutId);
   }
 
+  useEffect(() => {
+    console.log("outOfTime:", outOfTime);
+    if (outOfTime) {
+      handleResponse(!trueFalseConfig.answer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [outOfTime]);
+
   return (
-    <div className="flex h-40 w-full flex-col items-center justify-center">
-      <span>{trueFalseConfig.statement}</span>
-      <div className="mt-4 flex gap-4">
-        <button
-          className="rounded-sm bg-green-500 px-2 py-1 text-white"
+    <div className="flex h-full w-full flex-col justify-center gap-1 bg-amber-700">
+      <div className="w-full text-lg font-semibold tracking-tight">
+        <span className="bg-amber-300">{trueFalseConfig.statement}</span>
+        <TimerDisplay
+          answerState={answerState}
+          outOfTimeAt={outOfTimeAt}
+          setOutOfTime={setOutOfTime}
+        />
+      </div>
+      <div className="flex flex-1 gap-4 self-center bg-amber-50/20">
+        <motion.button
+          className="w-16 cursor-pointer rounded-sm bg-white/20 px-2 py-1"
           onClick={() => handleResponse(true)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           True
-        </button>
-        <button
-          className="rounded-sm bg-red-500 px-2 py-1 text-white"
+        </motion.button>
+        <motion.button
+          className="w-16 cursor-pointer rounded-sm bg-white/20 px-2 py-1"
           onClick={() => handleResponse(false)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
           False
-        </button>
+        </motion.button>
       </div>
     </div>
   );
@@ -164,7 +244,6 @@ export default function AboutHtml() {
   });
 
   function onAnswer(isCorrect: boolean) {
-    console.log("User answered:", isCorrect);
     setMinigameState((prevState) => {
       const newScore = isCorrect
         ? prevState.currentScore + 1
@@ -177,7 +256,6 @@ export default function AboutHtml() {
   }
 
   function onBeginMinigame() {
-    console.log("Minigame started");
     setMinigameState((prevState) => ({
       ...prevState,
       minigameActive: true,
@@ -188,7 +266,6 @@ export default function AboutHtml() {
   }
 
   function onEndMinigame() {
-    console.log("Minigame ended");
     setMinigameState((prevState) => ({
       ...prevState,
       minigameActive: false,
@@ -197,7 +274,6 @@ export default function AboutHtml() {
   }
 
   function onProceed() {
-    console.log("Proceeding to next minigame");
     setMinigameState((prevState) => {
       const nextMinigameIndex = prevState.currentMinigameIndex + 1;
       if (nextMinigameIndex >= ABOUT_CONTENT.length) {
@@ -257,7 +333,7 @@ export default function AboutHtml() {
                   x: -50,
                   transition: { duration: 0.1 },
                 }}
-                className="my-auto w-full text-base font-normal tracking-tight"
+                className="my-auto h-full w-full pb-2 text-base font-normal tracking-tight"
               >
                 {ABOUT_CONTENT[minigameState.currentMinigameIndex].content(
                   minigameState,
