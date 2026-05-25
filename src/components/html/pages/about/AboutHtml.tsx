@@ -47,6 +47,7 @@ function DefaultContent({ minigameState }: { minigameState: MinigameState }) {
 
 type AnswerState = {
   answered: boolean;
+  answerChosen?: boolean;
   answeredCorrect?: boolean;
 };
 
@@ -86,10 +87,11 @@ function TimerDisplay({
   }, [outOfTimeAt, setOutOfTime, answerState.answered]);
 
   return (
-    <div className="ml-4 flex items-center gap-1 rounded-sm bg-white/20 px-2 py-1">
-      <span>
-        Time Left: {displayTime.integer}.
-        {displayTime.decimal.toString().padStart(3, "0")}s
+    <div className="flex items-baseline bg-white/20 px-2 py-1">
+      <span className="w-4 text-right text-lg">{displayTime.integer}</span>
+      <span className="text-sm">.</span>
+      <span className="w-6 text-sm">
+        {displayTime.decimal.toString().padStart(3, "0")}
       </span>
     </div>
   );
@@ -114,13 +116,17 @@ function TrueFalseMinigame({
   });
   const [outOfTime, setOutOfTime] = useState(false);
   const [outOfTimeAt] = useState(
-    () => Date.now() + (trueFalseConfig.allowedTime ?? 3000),
+    () => Date.now() + (trueFalseConfig.allowedTime ?? 5000),
   );
 
   function handleResponse(userAnswer: boolean) {
     const isCorrect = userAnswer === trueFalseConfig.answer;
     minigameState.onAnswer?.(isCorrect);
-    setAnswerState({ answered: true, answeredCorrect: isCorrect });
+    setAnswerState({
+      answered: true,
+      answerChosen: userAnswer,
+      answeredCorrect: isCorrect,
+    });
     const timeoutId = setTimeout(() => {
       minigameState.onProceed?.();
     }, 1000);
@@ -136,29 +142,53 @@ function TrueFalseMinigame({
   }, [outOfTime]);
 
   return (
-    <div className="flex h-full w-full flex-col justify-center gap-1 bg-amber-700">
-      <div className="w-full text-lg font-semibold tracking-tight">
-        <span className="bg-amber-300">{trueFalseConfig.statement}</span>
+    <div className="flex h-full w-full flex-col justify-center gap-1">
+      <div className="flex w-full text-lg font-semibold tracking-tight">
+        <span className="flex-1">{trueFalseConfig.statement}</span>
         <TimerDisplay
           answerState={answerState}
           outOfTimeAt={outOfTimeAt}
           setOutOfTime={setOutOfTime}
         />
       </div>
-      <div className="flex flex-1 gap-4 self-center bg-amber-50/20">
+      <div className="flex flex-1 items-center gap-4 self-center">
         <motion.button
-          className="w-16 cursor-pointer rounded-sm bg-white/20 px-2 py-1"
+          className="h-10 w-16 cursor-pointer rounded-sm border px-2 py-1"
           onClick={() => handleResponse(true)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          animate={{
+            backgroundColor: answerState.answered
+              ? trueFalseConfig.answer === true
+                ? "#00ff0033"
+                : "#ff000033"
+              : "#ffffff33",
+            borderColor: answerState.answered
+              ? trueFalseConfig.answer === true
+                ? "#00ff0066"
+                : "#ff000066"
+              : "#ffffff66",
+          }}
         >
           True
         </motion.button>
         <motion.button
-          className="w-16 cursor-pointer rounded-sm bg-white/20 px-2 py-1"
+          className="h-10 w-16 cursor-pointer rounded-sm border px-2 py-1"
           onClick={() => handleResponse(false)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          animate={{
+            backgroundColor: answerState.answered
+              ? trueFalseConfig.answer === false
+                ? "#00ff0033"
+                : "#ff000033"
+              : "#ffffff33",
+            borderColor: answerState.answered
+              ? trueFalseConfig.answer === false
+                ? "#00ff0066"
+                : "#ff000066"
+              : "#ffffff66",
+          }}
         >
           False
         </motion.button>
