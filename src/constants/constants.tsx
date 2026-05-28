@@ -283,7 +283,7 @@ export const PROJECTS = [
   {
     name: "Conway's Symphony of Life",
     description:
-      "A synthesizer powered by Conway's Game of Life. Try it out! Not recommended on mobile, sorry!",
+      "A sequencer powered by Conway's Game of Life. Try it out! Not recommended on mobile, sorry!",
     url: "https://conways-symphony-of-life.vercel.app/",
     videoSrc: "/videos/symphonyOfLife.mp4",
   },
