@@ -5,10 +5,31 @@ import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 function LinksComponentLinksContent() {
   return (
     <div className="my-auto flex flex-col gap-2 indent-4 text-base/6 tracking-tight">
-      <span>
+      {/* <span>
         Be hypnotized by my graphics! Click on my links! Pay me $999k USD
         annually! Provide me with benefits and holidays! Relocate me and my
         family to Iceland, New Zealand, Ireland, or Scotland! Do it!
+      </span> */}
+      <span>
+        The above icons link to my{" "}
+        <a
+          href="https://github.com/ClaytonMain"
+          className="underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>{" "}
+        and my{" "}
+        <a
+          href="https://www.linkedin.com/in/clayton-main/"
+          className="underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          LinkedIn
+        </a>{" "}
+        pages. Check them out if you'd like!
       </span>
     </div>
   );
@@ -90,7 +111,7 @@ export default function LinksHtml() {
         <span className="w-full border-b border-inherit" />
         <div
           ref={viewportRef}
-          className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-auto w-full snap-y snap-mandatory flex-col gap-2 sm:h-40 sm:w-150"
+          className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-auto w-full snap-y snap-mandatory flex-col gap-2 sm:h-30 sm:w-150"
         >
           <LinksComponent
             key="links"

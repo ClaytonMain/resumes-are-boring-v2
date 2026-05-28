@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import useAppStore from "../../stores/useAppStore";
 import Navigation from "./Navigation";
-import AboutHtml from "./pages/about/AboutHtml";
+import AboutHtml from "./pages/about/OldAboutHtml";
 import HomeHtml from "./pages/home/HomeHtml";
 import LinksHtml from "./pages/links/LinksHtml";
 import ProjectsHtml from "./pages/projects/ProjectsHtml";

@@ -155,13 +155,16 @@ function TrueFalseMinigame({
         <motion.button
           className="h-10 w-16 cursor-pointer rounded-sm border px-2 py-1"
           onClick={() => handleResponse(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.05, transition: { duration: 0.1 } }}
+          whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+          transition={{
+            type: "spring",
+          }}
           animate={{
             backgroundColor: answerState.answered
               ? trueFalseConfig.answer === true
-                ? "#00ff0033"
-                : "#ff000033"
+                ? "#00ff0011"
+                : "#ff000011"
               : "#ffffff33",
             borderColor: answerState.answered
               ? trueFalseConfig.answer === true
@@ -175,13 +178,16 @@ function TrueFalseMinigame({
         <motion.button
           className="h-10 w-16 cursor-pointer rounded-sm border px-2 py-1"
           onClick={() => handleResponse(false)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.05, transition: { duration: 0.1 } }}
+          whileTap={{ scale: 0.95, transition: { duration: 0.1 } }}
+          transition={{
+            type: "spring",
+          }}
           animate={{
             backgroundColor: answerState.answered
               ? trueFalseConfig.answer === false
-                ? "#00ff0033"
-                : "#ff000033"
+                ? "#00ff0011"
+                : "#ff000011"
               : "#ffffff33",
             borderColor: answerState.answered
               ? trueFalseConfig.answer === false
