@@ -16,12 +16,12 @@ function isMouse1Down(event: MouseEvent) {
   return (event.buttons & 1) === 1;
 }
 
-export default function ContactDisplay() {
+export default function LinksDisplay() {
   const debug = useAppStore.getState().debug;
   const [states, setStates] = useState({
-    pageActive: useAppStore.getState().currentPage === "contact",
+    pageActive: useAppStore.getState().currentPage === "links",
     springsActive: false,
-    showLinks: useAppStore.getState().currentPage === "contact",
+    showLinks: useAppStore.getState().currentPage === "links",
   });
 
   const pointerOverGithubRef = useRef(false);
@@ -53,7 +53,7 @@ export default function ContactDisplay() {
       (value, previous) => {
         if (value === previous) return;
         const newStates = { ...states };
-        if (value === "contact") {
+        if (value === "links") {
           newStates.pageActive = true;
         } else {
           newStates.pageActive = false;
@@ -125,7 +125,7 @@ export default function ContactDisplay() {
 
   const uniforms = useMemo(() => {
     return {
-      uFloorColor: { value: new THREE.Color(PAGE_BLOCK_COLORS.contact) },
+      uFloorColor: { value: new THREE.Color(PAGE_BLOCK_COLORS.links) },
     };
   }, []);
 

@@ -116,70 +116,88 @@ export default function Navigation() {
   }, []);
 
   return (
-    <motion.nav
-      initial={{
-        opacity: 0,
-      }}
-      animate={navigationAnimate}
-      transition={{ duration: 1.0 }}
-      className="text-md pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b px-2 font-light tracking-tight backdrop-blur-sm select-none sm:px-4 sm:text-lg md:px-8 md:text-xl lg:text-2xl"
-    >
-      {showName && (
-        <motion.div
-          className="my-2 flex items-center gap-1 sm:my-3"
-          onPointerLeave={() => setNameHovered(false)}
-          onPointerEnter={() => setNameHovered(true)}
-        >
-          <h2>CLAYTON MAIN</h2>
-          <AnimatePresence>
-            {nameHovered && (
-              <motion.div
-                className="text-xs tracking-tight sm:text-sm"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {"👈 That's me!"}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      )}
-      <div className="mr-auto ml-auto flex items-center justify-center gap-0.5 sm:mr-0 sm:gap-1 md:gap-2">
-        {PAGE_NAMES.map((page) => (
+    <>
+      <motion.nav
+        initial={{
+          opacity: 0,
+        }}
+        animate={navigationAnimate}
+        transition={{ duration: 1.0 }}
+        className="pointer-events-auto fixed top-0 left-0 z-10 flex w-full items-stretch border-b px-2 text-lg font-light tracking-tight backdrop-blur-sm select-none sm:px-4 md:px-8 md:text-xl lg:text-2xl"
+      >
+        {showName && (
           <motion.div
-            key={page}
-            className="relative top-0 flex h-[calc(100%+18px)] cursor-pointer items-center p-1 select-none"
-            initial={false}
-            animate={{
-              color:
-                page === currentPage
-                  ? tabAnimate.color
-                  : navigationAnimate.color,
-            }}
-            transition={{
-              duration: 1.0,
-            }}
-            onClick={() => useAppStore.setState({ currentPage: page })}
+            className="my-2 flex items-center gap-1 sm:my-3"
+            onPointerLeave={() => setNameHovered(false)}
+            onPointerEnter={() => setNameHovered(true)}
           >
-            {page.toUpperCase()}
-            {page === currentPage ? (
-              <motion.div
-                className="absolute right-0 bottom-0 left-0 -z-1 h-full rounded-b-md sm:rounded-b-lg"
-                layoutId="selected-page-nav-indicator"
-                id="selected-page-nav-indicator"
-              >
+            <h2>CLAYTON MAIN</h2>
+            <AnimatePresence>
+              {nameHovered && (
                 <motion.div
-                  className="h-full w-full rounded-b-md sm:rounded-b-lg"
-                  initial={false}
-                  animate={tabAnimate}
-                  transition={{ duration: 1.0 }}
-                />
-              </motion.div>
-            ) : null}
+                  className="text-xs tracking-tight sm:text-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  {"👈 That's me!"}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
-        ))}
-      </div>
-    </motion.nav>
+        )}
+
+        <div className="mr-auto ml-auto flex items-center justify-center gap-0.5 sm:mr-0 sm:gap-1 md:gap-2">
+          {PAGE_NAMES.map((page) => (
+            <motion.div
+              key={page}
+              className="relative top-0 flex h-[calc(100%+18px)] cursor-pointer items-center p-1 select-none"
+              initial={false}
+              animate={{
+                color:
+                  page === currentPage
+                    ? tabAnimate.color
+                    : navigationAnimate.color,
+              }}
+              transition={{
+                duration: 1.0,
+              }}
+              onClick={() => useAppStore.setState({ currentPage: page })}
+            >
+              {page.toUpperCase()}
+              {page === currentPage ? (
+                <motion.div
+                  className="absolute right-0 bottom-0 left-0 -z-1 h-full rounded-b-md sm:rounded-b-lg"
+                  layoutId="selected-page-nav-indicator"
+                  id="selected-page-nav-indicator"
+                >
+                  <motion.div
+                    className="h-full w-full rounded-b-md sm:rounded-b-lg"
+                    initial={false}
+                    animate={tabAnimate}
+                    transition={{ duration: 1.0 }}
+                  />
+                </motion.div>
+              ) : null}
+            </motion.div>
+          ))}
+        </div>
+      </motion.nav>
+      {!showName && (
+        <motion.h2
+          initial={{
+            opacity: 0,
+          }}
+          animate={{
+            opacity: navigationAnimate.opacity,
+            color: navigationAnimate.color,
+          }}
+          transition={{ duration: 1.0 }}
+          className="fixed bottom-0 left-0 m-2 font-light tracking-tighter"
+        >
+          CLAYTON MAIN
+        </motion.h2>
+      )}
+    </>
   );
 }

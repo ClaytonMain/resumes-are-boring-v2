@@ -1,9 +1,9 @@
 import { AnimatePresence, motion } from "motion/react";
 import useAppStore from "../../stores/useAppStore";
 import Navigation from "./Navigation";
-import AboutHtml from "./pages/about/AboutHtml";
-import ContactHtml from "./pages/contact/ContactHtml";
+import AboutHtml from "./pages/about/OldAboutHtml";
 import HomeHtml from "./pages/home/HomeHtml";
+import LinksHtml from "./pages/links/LinksHtml";
 import ProjectsHtml from "./pages/projects/ProjectsHtml";
 import SkillsHtml from "./pages/skills/SkillsHtml";
 import ScreenWidthDebugDisplay from "./ScreenWidthDebugDisplay";
@@ -24,7 +24,7 @@ export default function HtmlElementsContainer() {
             {currentPage === "about" && <AboutHtml />}
             {currentPage === "skills" && <SkillsHtml />}
             {currentPage === "projects" && <ProjectsHtml />}
-            {currentPage === "contact" && <ContactHtml />}
+            {currentPage === "links" && <LinksHtml />}
           </AnimatePresence>
         </motion.div>
       )}

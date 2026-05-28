@@ -127,7 +127,7 @@ export default function HomeHtml() {
     >
       <motion.div
         key="home-html-content-div"
-        className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 text-3xl backdrop-blur-sm sm:p-1.5 sm:text-4xl md:p-2 md:text-6xl"
+        className="pointer-events-auto m-auto flex flex-col justify-center overflow-hidden rounded-lg border p-1 text-5xl backdrop-blur-sm sm:p-1.5 md:p-2 md:text-6xl"
         variants={CONTAINER_INTRO_STATE_VARIANTS}
         initial={{ opacity: 0 }}
         animate={variant}
@@ -135,7 +135,7 @@ export default function HomeHtml() {
       >
         <motion.div
           key="enter-html-content-resumes-are-boring-div"
-          className="m-1 flex items-center justify-center gap-2 sm:m-1.5 sm:gap-2.5 md:m-2 md:gap-4"
+          className="m-1 flex flex-col items-end justify-center gap-2 sm:m-1.5 sm:flex-row sm:items-center sm:gap-2.5 md:m-2 md:gap-4"
         >
           <motion.h1
             key="enter-resumes-h1"

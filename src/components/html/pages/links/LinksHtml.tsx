@@ -2,47 +2,60 @@ import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef, type JSX, type RefObject } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
-function ContactComponentContactContent() {
+function LinksComponentLinksContent() {
   return (
-    <div className="my-auto flex flex-col gap-2 text-base/6 tracking-tight">
+    <div className="my-auto flex flex-col gap-2 indent-4 text-base/6 tracking-tight">
+      {/* <span>
+        Be hypnotized by my graphics! Click on my links! Pay me $999k USD
+        annually! Provide me with benefits and holidays! Relocate me and my
+        family to Iceland, New Zealand, Ireland, or Scotland! Do it!
+      </span> */}
       <span>
-        If you're liking what you're seeing and want to chat about potential
-        opportunities, here are my links!
-      </span>
-      <span>
-        I've gotten this far on my own; Imagine what we could do together!
-      </span>
-      <span className="w-full text-right text-[0.5rem]/3 text-violet-50/80 sm:text-[0.5rem]/4">
-        Bonus points if you're willing to help relocate me to Scotland, Ireland,
-        Iceland, or New Zealand.
-        <br />
-        Hey, I can dream, can't I?
+        The above icons link to my{" "}
+        <a
+          href="https://github.com/ClaytonMain"
+          className="underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>{" "}
+        and my{" "}
+        <a
+          href="https://www.linkedin.com/in/clayton-main/"
+          className="underline"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          LinkedIn
+        </a>{" "}
+        pages. Check them out if you'd like!
       </span>
     </div>
   );
 }
 
-type ContactConfig = {
+type LinksConfig = {
   displayValues: [string, string];
   content: string | JSX.Element;
 };
 
-const CONTACT_CONFIGS: Record<string, ContactConfig> = {
-  contact: {
-    displayValues: ["", "Contact"],
-    content: <ContactComponentContactContent />,
+const LINKS_CONFIGS: Record<string, LinksConfig> = {
+  links: {
+    displayValues: ["", "Links"],
+    content: <LinksComponentLinksContent />,
   },
 };
 
-function ContactComponent({
+function LinksComponent({
   viewportRef,
   configKey,
 }: {
   viewportRef: RefObject<HTMLDivElement>;
-  configKey: keyof typeof CONTACT_CONFIGS;
+  configKey: keyof typeof LINKS_CONFIGS;
 }) {
   const divRef = useRef<HTMLDivElement>(null!);
-  const config = CONTACT_CONFIGS[configKey];
+  const config = LINKS_CONFIGS[configKey];
 
   return (
     <motion.div
@@ -57,7 +70,7 @@ function ContactComponent({
   );
 }
 
-export default function ContactHtml() {
+export default function LinksHtml() {
   const viewportRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
@@ -66,7 +79,7 @@ export default function ContactHtml() {
 
   return (
     <motion.div
-      key="contact-html-content-div"
+      key="links-html-content-div"
       className="flex h-svh w-full items-end justify-center gap-2"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { delay: 0.95, duration: 0.8 } }}
@@ -75,22 +88,22 @@ export default function ContactHtml() {
       <div
         className="pointer-events-auto mb-15 flex w-11/12 flex-col overflow-hidden rounded-md border p-1.5 backdrop-blur-sm sm:w-auto sm:rounded-lg sm:p-2"
         style={{
-          backgroundColor: PAGE_HTML_STYLE_CONFIGS.contact.bg,
-          color: PAGE_HTML_STYLE_CONFIGS.contact.text,
-          borderColor: PAGE_HTML_STYLE_CONFIGS.contact.border,
+          backgroundColor: PAGE_HTML_STYLE_CONFIGS.links.bg,
+          color: PAGE_HTML_STYLE_CONFIGS.links.text,
+          borderColor: PAGE_HTML_STYLE_CONFIGS.links.border,
         }}
       >
         <div className="flex gap-1 sm:gap-1.5 md:gap-2">
           <div className="flex gap-1 overflow-hidden sm:gap-1.5 md:gap-2">
             <AnimatePresence mode="wait" initial={false}>
               <motion.h1
-                key="contact-html-title"
+                key="links-html-title"
                 className="text-2xl font-bold tracking-tight md:text-4xl"
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: 100, opacity: 0 }}
               >
-                Contact
+                Links
               </motion.h1>
             </AnimatePresence>
           </div>
@@ -98,12 +111,12 @@ export default function ContactHtml() {
         <span className="w-full border-b border-inherit" />
         <div
           ref={viewportRef}
-          className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-auto w-full snap-y snap-mandatory flex-col gap-2 sm:h-40 sm:w-150"
+          className="relative top-0 right-0 bottom-0 left-0 mt-1.5 flex h-auto w-full snap-y snap-mandatory flex-col gap-2 sm:h-30 sm:w-150"
         >
-          <ContactComponent
-            key="contact"
+          <LinksComponent
+            key="links"
             viewportRef={viewportRef}
-            configKey="contact"
+            configKey="links"
           />
         </div>
       </div>

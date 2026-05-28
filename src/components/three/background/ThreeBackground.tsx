@@ -16,7 +16,7 @@ import {
   PAGE_PATTERN_NUMBERS,
 } from "../../../constants/constants.tsx";
 import useAppStore from "../../../stores/useAppStore.tsx";
-import ContactDisplay from "../pages/contact/ContactDisplay.tsx";
+import LinksDisplay from "../pages/links/LinksDisplay.tsx";
 import ProjectsDisplay from "../pages/projects/ProjectsDisplay.tsx";
 import SkillsController from "../pages/skills/SkillsController.tsx";
 import useMousePosition from "./hooks/useMousePosition.tsx";
@@ -604,7 +604,7 @@ export default function ThreeBackground() {
         hexagonZSpacing={HEXAGON_Z_SPACING}
       />
       <ProjectsDisplay />
-      <ContactDisplay />
+      <LinksDisplay />
     </>
   );
 }

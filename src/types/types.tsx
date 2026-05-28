@@ -1,6 +1,6 @@
 import * as THREE from "three";
 
-export type Page = "about" | "contact" | "home" | "projects" | "skills";
+export type Page = "about" | "links" | "home" | "projects" | "skills";
 
 export interface AppStore {
   currentPage: Page;
@@ -38,7 +38,7 @@ export type SkillName =
   | "React"
   | "GLSL"
   // Soft skills
-  | "Problem Solving"
+  | "Problem-solving"
   | "Creativity"
   | "Communication"
   | "Time Management";

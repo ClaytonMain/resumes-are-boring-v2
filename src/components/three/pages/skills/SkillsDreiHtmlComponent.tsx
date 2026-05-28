@@ -24,7 +24,7 @@ export function SkillsDreiHtmlComponent({
             animate={{ opacity: 1, transition: { delay: 0.05 * index } }}
             exit={{ opacity: 0 }}
           >
-            <motion.div className="mb-1 text-center text-sm tracking-tight">
+            <motion.div className="text-center text-xl font-bold tracking-tight text-neutral-800">
               {label}
             </motion.div>
             <NumberFlow
