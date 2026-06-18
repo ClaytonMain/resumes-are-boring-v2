@@ -3,7 +3,8 @@ import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { PAGE_HTML_STYLE_CONFIGS } from "../../../../constants/constants";
 
-const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 sm:text-base/6 text-sm/5";
+const ABOUT_COMPONENT_CONTENT_CLASS_NAME =
+  "indent-4 sm:text-base/6 text-sm/5 flex flex-col gap-2";
 
 // function AboutComponentAboutContent() {
 //   return (
@@ -16,13 +17,40 @@ const ABOUT_COMPONENT_CONTENT_CLASS_NAME = "indent-4 sm:text-base/6 text-sm/5";
 //   );
 // }
 
+// function AboutComponentAboutContent() {
+//   return (
+//     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
+//       I'm a data person professionally, and I do graphics & web stuff for fun. I
+//       built up my current employer's Data Ops. department from scratch despite
+//       having no formal training. I'm self-taught in React, Three.js, GLSL,
+//       Typescript, etc. and I'm always working to improve.
+//     </div>
+//   );
+// }
+
 function AboutComponentAboutContent() {
   return (
     <div className={ABOUT_COMPONENT_CONTENT_CLASS_NAME}>
-      I'm a data person professionally, and I do graphics & web stuff for fun. I
-      built up my current employer's Data Ops. department from scratch despite
-      having no formal training. I'm self-taught in React, Three.js, GLSL,
-      Typescript, etc. and I'm always working to improve.
+      <p>
+        Highly-motivated, fast-learning, self-starting data professional with a
+        passion for graphics and web development.
+      </p>
+      <p>
+        Founded my current employer's Data Ops. department and built our team
+        from scratch because I saw that it needed to be done and took the
+        initiative. Expertise in modern and traditional data tools including dbt
+        Cloud, Snowflake, Fivetran, Python, SQL, etc. Adept at creating
+        efficient data pipelines, optimizing data workflows, and implementing
+        data quality measures.
+      </p>
+      <p>
+        Embracing thoughtful adoption of modern AI technologies in the
+        workplace, but keeping my personal projects old-school without AI
+        assistance to keep improving my skills.
+      </p>
+      <p>
+        Always looking for new challenges and opportunities to learn and grow.
+      </p>
     </div>
   );
 }
@@ -172,7 +200,12 @@ export default function AboutHtml() {
             </AnimatePresence>
           </div>
           <span className="w-full border-b border-inherit" />
-          <div className="pointer-events-auto flex h-50 w-full justify-center overflow-hidden sm:h-40">
+          <div
+            className="pointer-events-auto mb-2 flex h-50 w-full justify-center overflow-y-scroll px-1 sm:h-40"
+            style={{
+              scrollbarColor: `${PAGE_HTML_STYLE_CONFIGS.about.scrollBar0} ${PAGE_HTML_STYLE_CONFIGS.about.scrollBar1}`,
+            }}
+          >
             <AnimatePresence
               custom={direction}
               mode="popLayout"
