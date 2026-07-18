@@ -36,17 +36,21 @@ function AboutComponentAboutContent() {
         passion for graphics and web development.
       </p>
       <p>
-        Founded my current employer's Data Ops. department and built our team
-        from scratch because I saw that it needed to be done and took the
-        initiative. Expertise in modern and traditional data tools including dbt
-        Cloud, Snowflake, Fivetran, Python, SQL, etc. Adept at creating
-        efficient data pipelines, optimizing data workflows, and implementing
-        data quality measures.
+        Proven history of building & maintaining complex data pipelines,
+        creating modular data models, and proactively identifying & solving
+        data-related problems.
       </p>
       <p>
-        Embracing thoughtful adoption of modern AI technologies in the
-        workplace, but keeping my personal projects old-school without AI
-        assistance to keep improving my skills.
+        Took the initiative and built my current employer's Data Ops. department
+        from scratch to fill a critical need within the business. Under my
+        guidance, the department has transformed from simple Python scripts and
+        Google Sheets projects to a fully-modern data stack leveraging dbt
+        Cloud, Snowflake, Fivetran, Hex, etc.
+      </p>
+      <p>
+        Embracing thoughtful adoption of modern AI technologies in the workplace
+        while keeping my personal projects old-school (no AI) to help me
+        continue to grow my own skills and knowledge.
       </p>
       <p>
         Always looking for new challenges and opportunities to learn and grow.
